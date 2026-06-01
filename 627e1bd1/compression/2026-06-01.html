@@ -1941,6 +1941,61 @@
                 grid-template-columns: 1fr 1.05fr !important;
             }
         }
+
+        /* ---- Table of contents (agenda) slide ---- */
+        .toc-list {
+            list-style: none;
+            margin: 32px 0 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .toc-item {
+            display: grid;
+            grid-template-columns: 86px 1fr;
+            align-items: baseline;
+            column-gap: 22px;
+            padding: 14px 20px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-left: 3px solid var(--accent);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .toc-item .toc-num {
+            font-variant-numeric: tabular-nums;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: var(--accent);
+            font-size: 0.92rem;
+        }
+
+        .toc-item .toc-text {
+            color: var(--ink);
+            font-size: 1.12rem;
+            line-height: 1.35;
+        }
+
+        .toc-item .toc-text small {
+            display: block;
+            margin-top: 3px;
+            color: var(--ink-mute);
+            font-size: 0.82rem;
+            letter-spacing: 0.02em;
+        }
+
+        .toc-item.toc-appendix {
+            border-left-color: var(--ink-mute);
+            box-shadow: none;
+            background: transparent;
+        }
+
+        .toc-item.toc-appendix .toc-num {
+            color: var(--ink-mute);
+        }
     </style>
 </head>
 
@@ -1960,7 +2015,52 @@
         </section>
 
         <!-- ============================================================
-         Slide 2 — Compression motivation
+         Slide 2 — Table of contents (agenda)
+         ============================================================ -->
+        <section class="slide" data-slide="toc">
+            <div class="eyebrow">Contents</div>
+            <h2 class="slide-title">목차</h2>
+            <ol class="toc-list">
+                <li class="toc-item">
+                    <span class="toc-num">01–02</span>
+                    <span class="toc-text">왜 지금 context / KV compression인가, 그리고 attention 메커니즘
+                        <small>Background</small></span>
+                </li>
+                <li class="toc-item">
+                    <span class="toc-num">03</span>
+                    <span class="toc-text">선행 연구는 어디를 줄였고, 어떤 아이디어로 접근했나?
+                        <small>Literature Review</small></span>
+                </li>
+                <li class="toc-item">
+                    <span class="toc-num">04</span>
+                    <span class="toc-text">각 접근의 한계점 — 선행 연구의 비판을 중심으로
+                        <small>Limitation of Related Work</small></span>
+                </li>
+                <li class="toc-item">
+                    <span class="toc-num">05</span>
+                    <span class="toc-text">자연어 기반 compression은 무엇을 다시 쓰고, 무엇을 보존하려 하나?
+                        <small>Related Work (Specified)</small></span>
+                </li>
+                <li class="toc-item">
+                    <span class="toc-num">06</span>
+                    <span class="toc-text">Context rewriting은 무엇을 최적화해야 하나?
+                        <small>Research Gap / Hypothesis</small></span>
+                </li>
+                <li class="toc-item">
+                    <span class="toc-num">07</span>
+                    <span class="toc-text">함께 논의하고 싶은 질문
+                        <small>Discussion</small></span>
+                </li>
+                <li class="toc-item toc-appendix">
+                    <span class="toc-num">A–G</span>
+                    <span class="toc-text">한계점 근거 문장 모음
+                        <small>Appendix · Evidence Quotes</small></span>
+                </li>
+            </ol>
+        </section>
+
+        <!-- ============================================================
+         Slide 3 — Compression motivation
          ============================================================ -->
         <section class="slide" data-slide="2">
             <div class="eyebrow">01 · Background</div>
