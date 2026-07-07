@@ -986,6 +986,38 @@
             font-weight: 850;
         }
 
+        .hypothesis-slide-body {
+            justify-content: flex-start;
+            gap: 14px;
+        }
+
+        .hypothesis-slide-body .hypothesis-bullets {
+            flex: 0 0 auto;
+            justify-content: flex-start;
+            gap: 12px;
+        }
+
+        .hypothesis-slide-body .hypothesis-bullets li {
+            font-size: 1.12rem;
+            line-height: 1.28;
+        }
+
+        .manifold-figure {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .manifold-figure img {
+            display: block;
+            width: min(100%, 920px);
+            max-height: 330px;
+            object-fit: contain;
+        }
+
         .argument-card {
             background: #fff;
             border: 1px solid var(--line);
@@ -1353,6 +1385,8 @@
             .pipeline-overview .evidence-points { grid-template-columns: 1fr; }
             .dist-card:not(:last-child)::after { display: none; }
             .slide-title { font-size: 1.6rem; }
+            .hypothesis-slide-body .hypothesis-bullets li { font-size: 1rem; }
+            .manifold-figure img { max-height: 260px; }
             .title-name { font-size: 2.2rem; }
             .deck-chrome { padding: 0 18px; }
             .nav-btns { display: none; }
@@ -1560,11 +1594,14 @@
     <section class="slide" data-slide="16">
         <div class="eyebrow">09 · 가설</div>
         <h2 class="slide-title">Task-completion filtering은 retained training distribution을 두 방향으로 bias할 수 있다.</h2>
-        <div class="slide-body">
+        <div class="slide-body hypothesis-slide-body">
             <ul class="hypothesis-bullets">
                 <li><strong>Initial condition coverage:</strong> evaluation configurations 중 일부가 underrepresented 또는 absent일 수 있다.</li>
                 <li><strong>Action manifold coverage:</strong> retained trajectories가 소수 source-derived successful behaviors를 과대표집할 수 있다.</li>
             </ul>
+            <figure class="manifold-figure">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5MjAiIGhlaWdodD0iMzYwIiB2aWV3Qm94PSIwIDAgOTIwIDM2MCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJDb3ZlcmFnZSBzdWJzZXRzIGluc2lkZSByZXRhaW5lZCB0cmFpbmluZyBtYW5pZm9sZCI+CiAgPGRlZnM+CiAgICA8cGF0dGVybiBpZD0iaGF0Y2giIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgcGF0dGVyblRyYW5zZm9ybT0icm90YXRlKDI4KSI+CiAgICAgIDxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMiIgc3Ryb2tlPSIjZDZkNmQ2IiBzdHJva2Utd2lkdGg9IjEuMiIvPgogICAgPC9wYXR0ZXJuPgogICAgPGZpbHRlciBpZD0ic29mdFNoYWRvdyIgeD0iLTEwJSIgeT0iLTEwJSIgd2lkdGg9IjEyMCUiIGhlaWdodD0iMTIwJSI+CiAgICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI1IiBzdGREZXZpYXRpb249IjciIGZsb29kLWNvbG9yPSIjMDAwMDAwIiBmbG9vZC1vcGFjaXR5PSIwLjEwIi8+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjkyMCIgaGVpZ2h0PSIzNjAiIGZpbGw9IiNmZmZmZmYiLz4KICA8cGF0aCBkPSJNOTggMTk3IEM3NiAxMTgsIDE1NCA1NiwgMjYwIDY4IEMzNTMgNzgsIDM5MSAzMiwgNDc4IDQ1IEM1ODYgNjEsIDY0MiAxMDMsIDcwMyA4NCBDNzg2IDU4LCA4NTggMTEzLCA4MzggMTg5IEM4MTggMjcwLCA3MjkgMzE1LCA2MTIgMjk0IEM1MTEgMjc2LCA0NzMgMzI1LCAzNTcgMzA1IEMyNjQgMjg5LCAxMjQgMjg2LCA5OCAxOTcgWiIgZmlsbD0iI2ZiZmJmYiIgc3Ryb2tlPSIjMTcxYTFmIiBzdHJva2Utd2lkdGg9IjMuMiIvPgogIDxwYXRoIGQ9Ik05OCAxOTcgQzc2IDExOCwgMTU0IDU2LCAyNjAgNjggQzM1MyA3OCwgMzkxIDMyLCA0NzggNDUgQzU4NiA2MSwgNjQyIDEwMywgNzAzIDg0IEM3ODYgNTgsIDg1OCAxMTMsIDgzOCAxODkgQzgxOCAyNzAsIDcyOSAzMTUsIDYxMiAyOTQgQzUxMSAyNzYsIDQ3MyAzMjUsIDM1NyAzMDUgQzI2NCAyODksIDEyNCAyODYsIDk4IDE5NyBaIiBmaWxsPSJ1cmwoI2hhdGNoKSIgb3BhY2l0eT0iMC40MiIvPgogIDxwYXRoIGQ9Ik0yNDUgMTk5IEMyMjYgMTQ2LCAyNzYgMTA1LCAzNTIgMTEyIEM0MTIgMTE4LCA0NTQgOTIsIDUxNSAxMDYgQzU3NSAxMTksIDYxNSAxNTYsIDYwNiAyMDUgQzU5NiAyNjAsIDUyNiAyODMsIDQzMyAyNjggQzM0NiAyNTQsIDI2OCAyNTQsIDI0NSAxOTkgWiIgZmlsbD0iI2ZmZTE1YSIgc3Ryb2tlPSIjMTcxYTFmIiBzdHJva2Utd2lkdGg9IjIuNyIgZmlsdGVyPSJ1cmwoI3NvZnRTaGFkb3cpIi8+CiAgPHBhdGggZD0iTTM3MCAyMTMgQzM1NSAxODAsIDM4NiAxNTMsIDQzMiAxNTYgQzQ3NyAxNTksIDUxOSAxNzcsIDUxOSAyMTEgQzUyMCAyNDUsIDQ3NCAyNjMsIDQyNSAyNTUgQzM4OCAyNDksIDM3OSAyMzYsIDM3MCAyMTMgWiIgZmlsbD0iI2Y1OWYyNyIgc3Ryb2tlPSIjMTcxYTFmIiBzdHJva2Utd2lkdGg9IjIuNSIgZmlsdGVyPSJ1cmwoI3NvZnRTaGFkb3cpIi8+CiAgPHBhdGggZD0iTTE0NSAyMTAgQzIyMiAxNjksIDMxOCAxNTgsIDQxNCAxNzEgQzUwMiAxODMsIDU5MSAxNjUsIDY5NSAxMjkiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzE3MWExZiIgc3Ryb2tlLXdpZHRoPSIyLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWRhc2hhcnJheT0iOCA5IiBvcGFjaXR5PSIwLjc0Ii8+CiAgPHBhdGggZD0iTTE3NSAyNDcgQzI2NyAyMjksIDMxOCAyMTQsIDQwOCAyMjcgQzQ4NSAyMzcsIDU0NSAyMzUsIDY2MCAxOTkiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzE3MWExZiIgc3Ryb2tlLXdpZHRoPSIxLjkiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWRhc2hhcnJheT0iMyA3IiBvcGFjaXR5PSIwLjU1Ii8+CiAgPGNpcmNsZSBjeD0iMzA1IiBjeT0iMTc5IiByPSI1LjIiIGZpbGw9IiMxNzFhMWYiLz4KICA8Y2lyY2xlIGN4PSI0NTYiIGN5PSIyMDUiIHI9IjUuMiIgZmlsbD0iIzE3MWExZiIvPgogIDxjaXJjbGUgY3g9IjU3NSIgY3k9IjIwMiIgcj0iNS4yIiBmaWxsPSIjMTcxYTFmIi8+CiAgPHRleHQgeD0iNzA1IiB5PSIyNTYiIGZvbnQtZmFtaWx5PSJTVElYIFR3byBNYXRoLCBTVElYR2VuZXJhbCwgQ2FtYnJpYSBNYXRoLCBHZW9yZ2lhLCBzZXJpZiIgZm9udC1zaXplPSI1NiIgZmlsbD0iIzE3MWExZiI+8J2TnDwvdGV4dD4KICA8dGV4dCB4PSI1MTYiIHk9IjEzNSIgZm9udC1mYW1pbHk9IlNUSVggVHdvIE1hdGgsIFNUSVhHZW5lcmFsLCBDYW1icmlhIE1hdGgsIEdlb3JnaWEsIHNlcmlmIiBmb250LXNpemU9IjQyIiBmaWxsPSIjMTcxYTFmIj7wnZOSPC90ZXh0PgogIDx0ZXh0IHg9IjQzMCIgeT0iMjI2IiBmb250LWZhbWlseT0iU1RJWCBUd28gTWF0aCwgU1RJWEdlbmVyYWwsIENhbWJyaWEgTWF0aCwgR2VvcmdpYSwgc2VyaWYiIGZvbnQtc2l6ZT0iMzYiIGZpbGw9IiMxNzFhMWYiPvCdk5A8L3RleHQ+CiAgPGxpbmUgeDE9IjcyNCIgeTE9IjI0NiIgeDI9Ijc3OCIgeTI9IjIyMCIgc3Ryb2tlPSIjMTcxYTFmIiBzdHJva2Utd2lkdGg9IjEuOCIvPgogIDxsaW5lIHgxPSI1MzEiIHkxPSIxMjgiIHgyPSI2NTAiIHkyPSI3OCIgc3Ryb2tlPSIjMTcxYTFmIiBzdHJva2Utd2lkdGg9IjEuOCIvPgogIDxsaW5lIHgxPSI0NjIiIHkxPSIyMTYiIHgyPSI2NTAiIHkyPSIxNTEiIHN0cm9rZT0iIzE3MWExZiIgc3Ryb2tlLXdpZHRoPSIxLjgiLz4KICA8ZyBmb250LWZhbWlseT0iU0YgUHJvIFRleHQsIC1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgSGVsdmV0aWNhLCBBcmlhbCwgc2Fucy1zZXJpZiIgZmlsbD0iIzE3MWExZiI+CiAgICA8dGV4dCB4PSI3ODQiIHk9IjIxNiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9Ijc1MCI+bWFuaWZvbGQ8L3RleHQ+CiAgICA8dGV4dCB4PSI3ODQiIHk9IjIzOCIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9Ijc1MCI+8J2TnDwvdGV4dD4KICAgIDx0ZXh0IHg9IjY1NiIgeT0iNzQiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3NTAiPmNvbmRpdGlvbiBjb3ZlcmFnZTwvdGV4dD4KICAgIDx0ZXh0IHg9IjY1NiIgeT0iOTYiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3NTAiPvCdk5Ig4oqCIPCdk5w8L3RleHQ+CiAgICA8dGV4dCB4PSI2NTYiIHk9IjE0OCIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9Ijc1MCI+YWN0aW9uIGNvdmVyYWdlPC90ZXh0PgogICAgPHRleHQgeD0iNjU2IiB5PSIxNzAiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3NTAiPvCdk5Ag4oqCIPCdk5I8L3RleHQ+CiAgPC9nPgo8L3N2Zz4=" alt="Coverage subsets inside retained training manifold diagram">
+            </figure>
         </div>
     </section>
 
