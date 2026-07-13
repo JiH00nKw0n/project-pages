@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bias in Synthetic Data Generation — 2026-07-14</title>
+    <style>
+        /*
+        ===========================================
+        COLOR PALETTE (사용 가능 — 주석으로 보관)
+        ===========================================
+
+        --- MIT palette ---
+        MIT Red               #750014
+        MIT Silver Gray       #8b959e
+        MIT Bright Red        #ff1423
+        Black                 #000000
+        White                 #ffffff
+
+        --- Berkeley primary ---
+        Berkeley Blue         #002676
+        California Gold       #FDB515
+        California Heritage Gold  #C09748
+
+        --- Berkeley secondary (dark) ---
+        Blue Dark             #010133
+        Gold Dark             #FC9313
+        Green Dark            #00553A
+        Rose Dark             #770747
+        Purple Dark           #431170
+
+        --- Berkeley secondary (medium) ---
+        Blue Medium           #004AAE
+        Gold Medium           #FFC31B
+        Green Medium          #018943
+        Rose Medium           #E7115E
+        Purple Medium         #8236C7
+
+        --- Berkeley secondary (light) ---
+        Blue Light            #9FD1FF
+        Gold Light            #FFE88D
+        Green Light           #B3E59A
+        Rose Light            #FFCFE5
+        Purple Light          #D9CEFF
+
+        --- Neutrals ---
+        Gray Medium           #808080
+        Gray Light            #F2F2F2
+
+        ===========================================
+        */
+
+        :root {
+            /* Active palette — 필요 시 위 주석 컬러로 교체 */
+            --accent: #750014;            /* MIT Red — primary accent */
+            --accent-soft: rgba(117, 0, 20, 0.08);
+            --accent-border: rgba(117, 0, 20, 0.22);
+            --accent-secondary: #002676;  /* Berkeley Blue — optional */
+
+            --ink: #1a1d21;               /* main text */
+            --ink-soft: #4f5660;          /* secondary text */
+            --ink-mute: #8b959e;          /* muted text */
+
+            --bg: #f6f7f8;
+            --panel: #ffffff;
+            --line: #d9dde2;
+            --shadow: 0 18px 40px rgba(0, 0, 0, 0.07);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; }
+
+        body {
+            /* Apple SF Pro (영문) + Apple SD 산돌고딕 Neo (한글) */
+            font-family:
+                "SF Pro Display", "SF Pro Text",
+                -apple-system, BlinkMacSystemFont,
+                "Apple SD Gothic Neo", AppleSDGothicNeo,
+                "Helvetica Neue", Arial, sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 12% 0%, rgba(139, 149, 158, 0.18), transparent 38%),
+                radial-gradient(circle at 90% 12%, rgba(117, 0, 20, 0.05), transparent 44%),
+                linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+            line-height: 1.5;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            letter-spacing: -0.005em;
+        }
+
+        /* Monospace = SF Mono */
+        .mono, .eyebrow, .counter, .step, .tag, .num {
+            font-family: "SF Mono", ui-monospace, "Menlo", monospace;
+        }
+
+        /* ---------- Deck shell ---------- */
+        .deck {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 32px;
+            margin: auto;
+            max-width: 1180px;
+            max-height: 720px;
+            background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(244,246,248,0.95));
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+            padding: 56px 64px;
+            opacity: 0;
+            transform: translateY(14px) scale(0.985);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        /* accent top bar on each content slide */
+        .slide::before {
+            content: "";
+            position: absolute;
+            left: 64px;
+            right: 64px;
+            top: 28px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), transparent 70%);
+            border-radius: 2px;
+            opacity: 0.85;
+        }
+        .slide.no-bar::before { display: none; }
+
+        /* ---------- Typography primitives ---------- */
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.72rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+        .eyebrow::before {
+            content: "";
+            display: inline-block;
+            width: 22px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        .slide-title {
+            font-size: clamp(1.95rem, 3vw, 2.4rem);
+            line-height: 1.12;
+            color: var(--ink);
+            margin-bottom: 28px;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+        }
+        .slide-title em {
+            font-style: normal;
+            color: var(--accent);
+        }
+
+        .slide-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        /* ---------- Title slide variant ---------- */
+        .slide-title-page {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .title-hero { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+        .title-eyebrow {
+            font-family: "SF Mono", ui-monospace, "Menlo", monospace;
+            font-size: 0.78rem; letter-spacing: 0.28em; text-transform: uppercase;
+            color: var(--accent); font-weight: 600;
+        }
+        .title-name {
+            font-size: clamp(3rem, 6vw, 4.6rem); line-height: 1;
+            color: var(--ink); font-weight: 700; letter-spacing: -0.025em;
+        }
+        .title-sub {
+            color: var(--ink-soft); font-size: 1.1rem; font-weight: 500;
+            max-width: 640px;
+        }
+        .title-divider {
+            width: 60px; height: 3px; background: var(--accent);
+            border-radius: 2px; margin: 2px 0;
+        }
+        .title-tokens { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
+        .title-tokens span {
+            font-family: "SF Mono", ui-monospace, "Menlo", monospace;
+            font-size: 0.78rem; letter-spacing: 0.08em;
+            padding: 6px 12px; border-radius: 999px;
+            background: var(--accent-soft); color: var(--accent);
+            border: 1px solid var(--accent-border);
+        }
+
+        /* ---------- Generic content blocks ---------- */
+        .card {
+            background: linear-gradient(155deg, #ffffff, #f6f8fa);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 24px 26px;
+            display: flex; flex-direction: column; gap: 12px;
+            position: relative;
+        }
+        .card .step {
+            font-size: 0.72rem;
+            letter-spacing: 0.16em;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        .card .head {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--ink);
+            line-height: 1.25;
+        }
+        .card .body-text {
+            font-size: 0.95rem;
+            color: var(--ink-soft);
+            line-height: 1.55;
+        }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; flex: 1; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; flex: 1; }
+
+        .tokens { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tokens span {
+            font-size: 0.82rem; font-weight: 600;
+            padding: 5px 12px; border-radius: 999px;
+            background: var(--accent-soft); color: var(--accent);
+            border: 1px solid var(--accent-border);
+        }
+        .tokens span.alt {
+            background: rgba(139,149,158,0.15); color: var(--ink);
+            border-color: var(--line);
+        }
+
+        /* Highlighted quote / thesis block */
+        .thesis {
+            display: flex; gap: 14px; align-items: flex-start;
+            background: linear-gradient(135deg, rgba(117,0,20,0.05), rgba(117,0,20,0.01));
+            border: 1px solid var(--accent-border);
+            border-left: 3px solid var(--accent);
+            padding: 14px 18px; border-radius: 12px;
+            color: var(--ink); font-size: 0.98rem; line-height: 1.5;
+        }
+        .thesis strong { color: var(--accent); font-weight: 700; }
+
+        /* ---------- Reference footnote (slide 바닥에 붙음) ---------- */
+        .footnote {
+            /* flex 흐름에 들어가 body 아래에 자연 정렬 + 바닥에 붙음 */
+            margin-top: auto;        /* body 끝까지 밀어 내림 */
+            margin-bottom: -38px;    /* slide 의 padding-bottom(56px) 안으로 밀어 바닥 가까이 */
+            padding-top: 8px;
+            font-size: 6pt;          /* ~8px */
+            line-height: 1.5;
+            color: #9a9a9a;           /* 회색 */
+            font-family: "SF Mono", ui-monospace, "Menlo", monospace;
+            letter-spacing: 0.02em;
+            border-top: 1px solid var(--line);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex-shrink: 0;
+            pointer-events: auto;
+        }
+        .footnote .fn-item {
+            display: flex;
+            gap: 6px;
+            align-items: baseline;
+        }
+        .footnote .fn-num {
+            color: #7a7a7a;           /* 약간 진한 회색 — 번호 강조 */
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .footnote .fn-text {
+            color: #9a9a9a;
+        }
+        .footnote em {
+            font-style: italic;
+            color: #7a7a7a;
+        }
+
+        /* In-text citation marker (본문 안 [1] 같은 표기) */
+        sup.cite {
+            font-family: "SF Mono", ui-monospace, "Menlo", monospace;
+            font-size: 0.6em;
+            color: #7a7a7a;            /* 회색 */
+            font-weight: 600;
+            margin-left: 1px;
+        }
+
+        /* ---------- Thank-you slide ---------- */
+        .slide-thanks { justify-content: center; align-items: center; text-align: center; }
+        .thanks-eyebrow {
+            font-family: "SF Mono", ui-monospace, "Menlo", monospace;
+            font-size: 0.8rem; letter-spacing: 0.28em; text-transform: uppercase;
+            color: var(--accent); margin-bottom: 14px;
+        }
+        .thanks-title {
+            font-size: clamp(3.4rem, 7vw, 5.6rem); line-height: 1;
+            color: var(--ink); font-weight: 700;
+            letter-spacing: -0.025em; margin-bottom: 14px;
+        }
+        .thanks-sub { color: var(--ink-soft); font-size: 1.05rem; max-width: 540px; }
+
+        /* ---------- Chrome ---------- */
+        .deck-chrome {
+            position: fixed; left: 0; right: 0; bottom: 18px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 36px; pointer-events: none; z-index: 10;
+        }
+        .progress { display: flex; gap: 6px; pointer-events: auto; }
+        .progress span {
+            width: 24px; height: 4px; border-radius: 2px;
+            background: rgba(139,149,158,0.35);
+            transition: background 0.2s ease, width 0.2s ease; cursor: pointer;
+        }
+        .progress span.active { background: var(--accent); width: 36px; }
+        .counter {
+            font-size: 0.78rem;
+            color: var(--ink-soft); letter-spacing: 0.08em;
+            background: rgba(255,255,255,0.7); border: 1px solid var(--line);
+            padding: 4px 10px; border-radius: 999px; pointer-events: auto;
+        }
+        .nav-btns {
+            position: fixed; top: 50%; transform: translateY(-50%);
+            display: flex; justify-content: space-between; width: 100%;
+            padding: 0 16px; pointer-events: none; z-index: 5;
+        }
+        .nav-btns button {
+            pointer-events: auto; width: 42px; height: 42px; border-radius: 50%;
+            border: 1px solid var(--line); background: rgba(255,255,255,0.85);
+            color: var(--ink); font-size: 1.1rem; cursor: pointer;
+            transition: all 0.2s ease; backdrop-filter: blur(8px);
+        }
+        .nav-btns button:hover {
+            border-color: var(--accent); color: var(--accent); transform: scale(1.05);
+        }
+        .hint {
+            position: fixed; top: 22px; right: 28px;
+            font-family: "SF Mono", ui-monospace, "Menlo", monospace;
+            font-size: 0.72rem;
+            color: var(--ink-soft); letter-spacing: 0.08em;
+            background: rgba(255,255,255,0.7); border: 1px solid var(--line);
+            padding: 5px 11px; border-radius: 999px; z-index: 10;
+        }
+        .hint kbd {
+            font-family: inherit; background: #fff; border: 1px solid var(--line);
+            border-radius: 4px; padding: 1px 5px; margin: 0 2px; font-size: 0.7rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .slide { padding: 32px 24px; inset: 12px; }
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+            .hint { display: none; }
+        }
+
+        /* Print (16:9 = 13.33in x 7.5in) */
+        @page { size: 13.33in 7.5in; margin: 0; }
+        @media print {
+            html, body {
+                overflow: visible; height: auto; width: 13.33in;
+                background: #ffffff; margin: 0; padding: 0;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+            .deck { display: block; width: 13.33in; height: auto; padding: 0; }
+            .slide {
+                position: relative !important;
+                inset: auto !important;
+                margin: 0 !important;
+                max-width: none !important;
+                max-height: none !important;
+                width: 13.33in !important;
+                height: 7.5in !important;
+                opacity: 1 !important;
+                transform: none !important;
+                pointer-events: auto !important;
+                page-break-after: always;
+                break-after: page;
+                border-radius: 0;
+                box-shadow: none;
+                border: none;
+                padding: 0.55in 0.7in !important;
+            }
+            .slide::before {
+                left: 0.7in !important;
+                right: 0.7in !important;
+                top: 0.35in !important;
+            }
+            .slide:last-child { page-break-after: auto; break-after: auto; }
+            .deck-chrome, .nav-btns, .hint { display: none !important; }
+            .grid-2 { grid-template-columns: 1fr 1fr !important; }
+            .grid-3 { grid-template-columns: repeat(3, 1fr) !important; }
+            .grid-4 { grid-template-columns: repeat(4, 1fr) !important; }
+        }
+    </style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+    <section class="slide slide-title-page no-bar active" data-slide="1">
+        <div class="title-hero">
+            <div class="title-eyebrow">MimicGen Survivor Bias · 2026-07-14</div>
+            <h1 class="title-name">Bias in Synthetic<br>Data Generation</h1>
+            <div class="title-divider"></div>
+            <p class="title-sub">성공(task-completion) 필터링이 남기는 학습 데이터 편향 — Motivation 실험</p>
+            <div class="title-tokens">
+                <span>Initial Condition</span>
+                <span>Transform → DGR</span>
+                <span>Source Ancestry</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-slide="2">
+        <div class="eyebrow">01 · Recall · Backgrounds</div>
+        <h2 class="slide-title">왜 <em>retained 분포의 다양성</em>이 중요한가</h2>
+        <div class="slide-body">
+            <div style="display:flex;flex-direction:column;gap:9px;">
+                <div style="border-left:3px solid var(--accent);padding:5px 0 5px 14px;"><div style="font-weight:700;color:var(--ink);font-size:0.98rem;line-height:1.3;">다양한 상황에 맞는 동작을 학습하기 위해 많은 데이터가 필요하다</div><div class="body-text" style="font-size:0.83rem;">물체 자세·배치·클러터에 따라 필요한 동작이 달라져, 소수 데모로는 deploy 시 상황을 못 덮는다.</div></div>
+                <div style="border-left:3px solid var(--accent);padding:5px 0 5px 14px;"><div style="font-weight:700;color:var(--ink);font-size:0.98rem;line-height:1.3;">많은 데이터를 만들기 위해 합성 데이터를 활용한다</div><div class="body-text" style="font-size:0.83rem;">실제 수집은 비싸고 오래 걸려, human 데모를 transform·stitch·retain으로 재활용해 자동 생성한다.</div></div>
+                <div style="border-left:3px solid var(--accent);padding:5px 0 5px 14px;"><div style="font-weight:700;color:var(--ink);font-size:0.98rem;line-height:1.3;">합성 데이터도 충분히 다양한 상황을 학습할 수 있어야 한다</div><div class="body-text" style="font-size:0.83rem;">학습에는 성공해 retain된 데모만 쓰이므로, retained 데이터셋이 다양성을 보존해야 한다.</div></div>
+                <div style="border-left:3px solid var(--accent);padding:5px 0 5px 14px;"><div style="font-weight:700;color:var(--ink);font-size:0.98rem;line-height:1.3;">그러나 실제로 합성 데이터가 충분히 다양한 상황을 다루는가?</div><div class="body-text" style="font-size:0.83rem;">널리 쓰는 data generation rate는 '얼마나 자주' 남는지만 볼 뿐 '무엇이' 남는지는 못 본다.</div></div>
+                <div style="border-left:3px solid var(--accent);padding:5px 0 5px 14px;"><div style="font-weight:700;color:var(--ink);font-size:0.98rem;line-height:1.3;">성공한 데이터만 남기는 과정은 최종 데이터셋 분포에 편향을 만들 수 있다</div><div class="body-text" style="font-size:0.83rem;">같은 DGR이라도 retained 분포와 policy 성능이 크게 달라질 수 있다.</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-slide="3">
+        <div class="eyebrow">02 · Recall · 연구 질문 &amp; 가설</div>
+        <h2 class="slide-title">성공 필터링은 필요한 분포를 <em>보존하는가?</em></h2>
+        <div class="slide-body">
+            <div class="thesis"><span><strong>연구 질문 —</strong> 효과적인 downstream 모방학습에 필요한 retained 분포의 성질은 무엇이며, task 성공 기준으로 rollout을 필터링하는 것이 그 성질을 보존하는가?</span></div>
+            <div class="grid-2">
+                <div class="card"><div class="step">가설 · 1</div><div class="body-text">성공한 rollout만 남기는 retention이, 다양한 물체 조건·source로 시도하더라도 <b>성공 가능성이 높은 조건의 데모를 과대표집</b>하여 다양성을 보존하지 못한다.</div></div>
+                <div class="card"><div class="step">가설 · 2</div><div class="body-text">이 <b>분포 변화가 downstream 정책 성능 차이</b>로 이어진다.</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-slide="4">
+        <div class="eyebrow">03 · Recall · Pipeline</div>
+        <h2 class="slide-title">MimicGen 파이프라인 — <em>Transform · Stitch · Retain</em></h2>
+        <div class="slide-body">
+            <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:22px;flex:1;align-items:center;">
+                <img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/system_v5.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);">
+                <div style="display:flex;flex-direction:column;gap:12px;">
+                    <div class="card" style="padding:15px 20px;"><div class="step">TRANSFORM</div><div class="body-text">source segment를 새로운 object configuration에 맞춘다.</div></div>
+                    <div class="card" style="padding:15px 20px;"><div class="step">STITCH</div><div class="body-text">transformed subtask segment들을 interpolation·execution으로 연결한다.</div></div>
+                    <div class="card" style="padding:15px 20px;"><div class="step">RETAIN</div><div class="body-text">task success 이후에만 trajectory를 dataset에 추가한다.</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-slide="5">
+        <div class="eyebrow">04 · 금주 진행 상황</div>
+        <h2 class="slide-title">이번 주: <em>초기조건(initial condition)</em> 축 검증</h2>
+        <div class="slide-body">
+            <div class="body-text" style="font-size:0.95rem;">가설의 첫 부분 — "성공 가능성이 높은 조건의 데모를 과대표집하여 다양성을 보존하지 못한다" — 을, 다양성의 한 factor인 <b>초기조건(물체들의 처음 배치)</b>으로 살펴봤다. 즉 "성공해서 남는 합성 데모가 정말 '쉬운' 초기조건 쪽으로 쏠리는가?"</div>
+            <div class="thesis"><span><strong>검증 질문 —</strong> source의 물체 위치와 합성 데이터의 물체 위치 차이(transform)가 <strong>작을수록 DGR이 높고, 클수록 낮은가?</strong> &nbsp;·&nbsp; 여기서 '쉬운' 초기조건 = source demo와 비슷한 배치(작은 transform).</span></div>
+            <div class="body-text" style="font-size:0.88rem;color:var(--ink-mute);">MimicGen이 데모·주석을 잘 제공하는 4개 task · 각 D0/D1/D2 분포에서 초기조건 샘플링 · 분포별 500 rollouts · 성공·실패 전량 로깅.</div>
+        </div>
+    </section>
+
+    <section class="slide" data-slide="6">
+        <div class="eyebrow">05 · Task Overview</div>
+        <h2 class="slide-title">대상 task 4개</h2>
+        <div class="slide-body">
+            <div class="grid-2" style="gap:14px;">
+                <div class="card" style="padding:12px;gap:7px;"><img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/task_Square.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);max-height:190px;object-fit:contain;"><div class="body-text" style="text-align:center;font-size:0.86rem;"><b>Square</b> · 정사각형 너트를 고정된 페그에 끼운다</div></div>
+                <div class="card" style="padding:12px;gap:7px;"><img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/task_ThreePieceAssembly.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);max-height:190px;object-fit:contain;"><div class="body-text" style="text-align:center;font-size:0.86rem;"><b>Three Piece Assembly</b> · 베이스 위에 두 조각을 순서대로 조립</div></div>
+                <div class="card" style="padding:12px;gap:7px;"><img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/task_Threading.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);max-height:190px;object-fit:contain;"><div class="body-text" style="text-align:center;font-size:0.86rem;"><b>Threading</b> · 바늘을 삼각대 구멍에 통과시킨다</div></div>
+                <div class="card" style="padding:12px;gap:7px;"><img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/task_CoffeePrep.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);max-height:190px;object-fit:contain;"><div class="body-text" style="text-align:center;font-size:0.86rem;"><b>Coffee Prep</b> · 커피 팟을 머신에 넣고 뚜껑을 닫는다</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-slide="7">
+        <div class="eyebrow">06 · Distribution Overview</div>
+        <h2 class="slide-title">D0 → D1 → D2 : 초기조건 분포가 넓어지거나 <em>이동</em></h2>
+        <div class="slide-body">
+            <div class="body-text" style="font-size:0.88rem;">데모는 10개(D0에서 샘플링) · 합성 데이터는 D0/D1/D2 분포에서 초기조건을 샘플링해 생성 · 아래는 각 task의 D0/D1/D2 배치 범위를 장면에 얹은 것.</div>
+            <div class="grid-4" style="gap:12px;">
+                <div class="card" style="padding:9px;gap:5px;"><img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/overlay_square.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);max-height:320px;object-fit:contain;"><div class="body-text" style="text-align:center;font-size:0.78rem;">Square</div></div>
+                <div class="card" style="padding:9px;gap:5px;"><img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/overlay_three_piece_assembly.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);max-height:320px;object-fit:contain;"><div class="body-text" style="text-align:center;font-size:0.78rem;">Three Piece</div></div>
+                <div class="card" style="padding:9px;gap:5px;"><img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/overlay_threading.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);max-height:320px;object-fit:contain;"><div class="body-text" style="text-align:center;font-size:0.78rem;">Threading</div></div>
+                <div class="card" style="padding:9px;gap:5px;"><img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/overlay_coffee.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);max-height:320px;object-fit:contain;"><div class="body-text" style="text-align:center;font-size:0.78rem;">Coffee Prep</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-slide="8">
+        <div class="eyebrow">07 · Data Generation Rate vs Transform</div>
+        <h2 class="slide-title">transform이 커질수록 <em>DGR이 낮아진다</em></h2>
+        <div class="slide-body">
+            <div class="thesis"><span>분포가 넓어질수록(D0→D2) source에서 더 많이 변형해야 하고, 데이터 생성 성공률(DGR)이 떨어진다. (x축: 물체 offset 합, y축: 성공률)</span></div>
+            <div class="grid-4" style="gap:12px;">
+                <div class="card" style="padding:8px;"><img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/line_square_SUM.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);max-height:290px;object-fit:contain;"><div class="body-text" style="text-align:center;font-size:0.78rem;">Square</div></div>
+                <div class="card" style="padding:8px;"><img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/line_three_piece_assembly_SUM.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);max-height:290px;object-fit:contain;"><div class="body-text" style="text-align:center;font-size:0.78rem;">Three Piece</div></div>
+                <div class="card" style="padding:8px;"><img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/line_threading_SUM.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);max-height:290px;object-fit:contain;"><div class="body-text" style="text-align:center;font-size:0.78rem;">Threading</div></div>
+                <div class="card" style="padding:8px;"><img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/line_coffee_SUM.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);max-height:290px;object-fit:contain;"><div class="body-text" style="text-align:center;font-size:0.78rem;">Coffee Prep</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-slide="9">
+        <div class="eyebrow">08 · Success by Transform Offset (D2)</div>
+        <h2 class="slide-title">소스 대비 <em>상대 위치(Δ)</em>별 성공/실패</h2>
+        <div class="slide-body">
+            <div class="body-text" style="font-size:0.88rem;">각 점 = (gen − source) 부호 있는 차이, 중심(★)=소스와 동일, 반경=transform. Square·Three Piece는 소스 주변으로 방사 확산, Threading·Coffee는 소스 반대편으로 이동(mirror).</div>
+            <div class="grid-4" style="gap:12px;">
+                <div class="card" style="padding:8px;"><img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/conc_square_square_nut.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);max-height:280px;object-fit:contain;"><div class="body-text" style="text-align:center;font-size:0.78rem;">Square · nut</div></div>
+                <div class="card" style="padding:8px;"><img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/conc_three_piece_assembly_piece_1.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);max-height:280px;object-fit:contain;"><div class="body-text" style="text-align:center;font-size:0.78rem;">Three Piece · piece_1</div></div>
+                <div class="card" style="padding:8px;"><img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/conc_threading_needle.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);max-height:280px;object-fit:contain;"><div class="body-text" style="text-align:center;font-size:0.78rem;">Threading · needle</div></div>
+                <div class="card" style="padding:8px;"><img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/conc_coffee_coffee_pod.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);max-height:280px;object-fit:contain;"><div class="body-text" style="text-align:center;font-size:0.78rem;">Coffee · pod</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-slide="10">
+        <div class="eyebrow">09 · Source-Demo Ancestry Bias</div>
+        <h2 class="slide-title">transform이 커질수록 <em>특정 source demo에 쏠린다</em></h2>
+        <div class="slide-body">
+            <div style="display:grid;grid-template-columns:1fr 1.15fr;gap:20px;flex:1;align-items:center;">
+                <div style="display:flex;flex-direction:column;gap:9px;">
+                    <div style="border-left:3px solid var(--accent);padding:5px 0 5px 14px;"><div style="font-weight:700;color:var(--ink);font-size:0.98rem;line-height:1.3;">transform ↑ → 특정 source demo 의존</div><div class="body-text" style="font-size:0.83rem;">성공해서 남는 합성 데이터가 소수 source의 후손으로 쏠린다(Ancestry Bias).</div></div>
+                    <div style="border-left:3px solid var(--accent);padding:5px 0 5px 14px;"><div style="font-weight:700;color:var(--ink);font-size:0.98rem;line-height:1.3;">rule-based 변환의 함의</div><div class="body-text" style="font-size:0.83rem;">초기조건 편향이 action trajectory 편향으로 이어질 수 있다.</div></div>
+                    <div class="thesis" style="font-size:0.9rem;"><span>retained top-3 source 비중 · Square <strong>D1 53% / D2 46%</strong> (attempted 41% / 36%) · Three Piece <strong>D1 39% / D2 44%</strong> (att 35%)</span></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                    <img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/anc_square.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);max-height:150px;object-fit:contain;">
+                    <img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/anc_three_piece_assembly.png" style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line);max-height:150px;object-fit:contain;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-slide="11">
+        <div class="eyebrow">10 · Takeaway &amp; Next Step</div>
+        <h2 class="slide-title">정리 &amp; 다음 단계</h2>
+        <div class="slide-body">
+            <div class="grid-2">
+                <div class="card"><div class="step">TAKEAWAY 1</div><div class="body-text">초기 조건에 따라 필요한 transform의 정도가 달라지고, 그에 따라 DGR이 달라진다 — transform을 더 많이 해야 할수록 성공 비율이 낮아진다.</div></div>
+                <div class="card"><div class="step">TAKEAWAY 2</div><div class="body-text">transform을 더 많이 해야 할수록 특정 source demo에 더 많이 의존하여 생성하는 경향 — action trajectory의 편향을 야기할 위험이 있다.</div></div>
+            </div>
+            <div class="thesis"><span><strong>Next —</strong> 특정 초기 조건에 몰릴수록 / 특정 source demo에 더 많이 의존할수록 <strong>policy 성능은 낮아질까?</strong></span></div>
+        </div>
+    </section>
+
+    <section class="slide slide-thanks no-bar" data-slide="12">
+        <div class="thanks-eyebrow">— 감사합니다 —</div>
+        <div class="thanks-title">Thank You</div>
+        <p class="thanks-sub">MimicGen Survivor Bias · 2026-07-14</p>
+    </section>
+
+</div>
+
+<!-- Navigation chrome -->
+<div class="nav-btns">
+    <button id="prev" aria-label="Previous slide">&lsaquo;</button>
+    <button id="next" aria-label="Next slide">&rsaquo;</button>
+</div>
+
+<div class="deck-chrome">
+    <div class="progress" id="progress"></div>
+    <div class="counter" id="counter">01 / 12</div>
+</div>
+
+<div class="hint"><kbd>&larr;</kbd><kbd>&rarr;</kbd> navigate · <kbd>F</kbd> fullscreen</div>
+
+<script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const total = slides.length;
+    let idx = 0;
+
+    const progress = document.getElementById('progress');
+    const counter = document.getElementById('counter');
+
+    slides.forEach((_, i) => {
+        const dot = document.createElement('span');
+        if (i === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => go(i));
+        progress.appendChild(dot);
+    });
+    const dots = Array.from(progress.children);
+
+    function go(n) {
+        idx = Math.max(0, Math.min(total - 1, n));
+        slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+        counter.textContent = String(idx + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+    }
+
+    document.getElementById('prev').addEventListener('click', () => go(idx - 1));
+    document.getElementById('next').addEventListener('click', () => go(idx + 1));
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+            e.preventDefault(); go(idx + 1);
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+            e.preventDefault(); go(idx - 1);
+        } else if (e.key === 'Home') {
+            go(0);
+        } else if (e.key === 'End') {
+            go(total - 1);
+        } else if (e.key === 'f' || e.key === 'F') {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else document.exitFullscreen();
+        }
+    });
+
+    let touchStart = null;
+    document.addEventListener('touchstart', (e) => { touchStart = e.changedTouches[0].screenX; });
+    document.addEventListener('touchend', (e) => {
+        if (touchStart === null) return;
+        const dx = e.changedTouches[0].screenX - touchStart;
+        if (Math.abs(dx) > 50) go(idx + (dx < 0 ? 1 : -1));
+        touchStart = null;
+    });
+</script>
+</body>
+</html>
