@@ -435,7 +435,22 @@
     </section>
 
     <section class="slide" data-slide="2">
-        <div class="eyebrow">01 · Recall · Backgrounds</div>
+        <div class="eyebrow">01 · Recall · Pipeline</div>
+        <h2 class="slide-title">MimicGen 파이프라인 — <em>Transform · Stitch · Retain</em></h2>
+        <div class="slide-body" style="gap:14px;">
+            <div style="flex:1;display:flex;align-items:center;justify-content:center;min-height:0;">
+                <img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/system_v5.png" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;border:1px solid var(--line);">
+            </div>
+            <div class="grid-3" style="flex:none;gap:14px;">
+                <div class="card" style="padding:11px 16px;flex-direction:row;align-items:baseline;gap:10px;"><div class="step" style="flex-shrink:0;">TRANSFORM</div><div class="body-text" style="font-size:0.85rem;">source segment를 새 object configuration에 맞춘다.</div></div>
+                <div class="card" style="padding:11px 16px;flex-direction:row;align-items:baseline;gap:10px;"><div class="step" style="flex-shrink:0;">STITCH</div><div class="body-text" style="font-size:0.85rem;">interpolation·execution으로 연결한다.</div></div>
+                <div class="card" style="padding:11px 16px;flex-direction:row;align-items:baseline;gap:10px;"><div class="step" style="flex-shrink:0;">RETAIN</div><div class="body-text" style="font-size:0.85rem;">성공한 trajectory만 dataset에 추가한다.</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-slide="3">
+        <div class="eyebrow">02 · Recall · Backgrounds</div>
         <h2 class="slide-title">왜 <em>retained 분포의 다양성</em>이 중요한가</h2>
         <div class="slide-body">
             <div style="display:flex;flex-direction:column;gap:9px;">
@@ -449,28 +464,13 @@
     </section>
 
     <section class="slide" data-slide="3">
-        <div class="eyebrow">02 · Recall · 연구 질문 &amp; 가설</div>
+        <div class="eyebrow">03 · Recall · 연구 질문 &amp; 가설</div>
         <h2 class="slide-title">성공 필터링은 필요한 분포를 <em>보존하는가?</em></h2>
         <div class="slide-body">
             <div class="thesis"><span><strong>연구 질문 —</strong> 효과적인 downstream 모방학습에 필요한 retained 분포의 성질은 무엇이며, task 성공 기준으로 rollout을 필터링하는 것이 그 성질을 보존하는가?</span></div>
             <div class="grid-2">
                 <div class="card"><div class="step">가설 · 1</div><div class="body-text">성공한 rollout만 남기는 retention이, 다양한 물체 조건으로 시도하더라도 <b>성공 가능성이 높은 조건의 데모를 과대표집</b>하여 다양성을 보존하지 못한다.</div></div>
                 <div class="card"><div class="step">가설 · 2</div><div class="body-text">이 <b>분포 변화가 downstream 정책 성능 차이</b>로 이어진다.</div></div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" data-slide="4">
-        <div class="eyebrow">03 · Recall · Pipeline</div>
-        <h2 class="slide-title">MimicGen 파이프라인 — <em>Transform · Stitch · Retain</em></h2>
-        <div class="slide-body" style="gap:14px;">
-            <div style="flex:1;display:flex;align-items:center;justify-content:center;min-height:0;">
-                <img src="https://raw.githubusercontent.com/JiH00nKw0n/mimic_the_mimicgen/master/figures/report/system_v5.png" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;border:1px solid var(--line);">
-            </div>
-            <div class="grid-3" style="flex:none;gap:14px;">
-                <div class="card" style="padding:11px 16px;flex-direction:row;align-items:baseline;gap:10px;"><div class="step" style="flex-shrink:0;">TRANSFORM</div><div class="body-text" style="font-size:0.85rem;">source segment를 새 object configuration에 맞춘다.</div></div>
-                <div class="card" style="padding:11px 16px;flex-direction:row;align-items:baseline;gap:10px;"><div class="step" style="flex-shrink:0;">STITCH</div><div class="body-text" style="font-size:0.85rem;">interpolation·execution으로 연결한다.</div></div>
-                <div class="card" style="padding:11px 16px;flex-direction:row;align-items:baseline;gap:10px;"><div class="step" style="flex-shrink:0;">RETAIN</div><div class="body-text" style="font-size:0.85rem;">성공한 trajectory만 dataset에 추가한다.</div></div>
             </div>
         </div>
     </section>
