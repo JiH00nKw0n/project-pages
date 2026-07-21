@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rebuttal 준비 — Multimodal SAE · 2026.07.22</title>
+<style>
+:root{
+  --accent:#750014; --accent-soft:rgba(117,0,20,0.08); --accent-border:rgba(117,0,20,0.22);
+  --accent2:#002676; --good:#00553A; --good-soft:rgba(0,85,58,0.10);
+  --ink:#1a1d21; --ink-soft:#4f5660; --ink-mute:#8b959e;
+  --bg:#f6f7f8; --panel:#ffffff; --line:#d9dde2; --shadow:0 18px 40px rgba(0,0,0,0.07);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  font-family:"SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",AppleSDGothicNeo,"Helvetica Neue",Arial,sans-serif;
+  color:var(--ink);
+  background:radial-gradient(circle at 12% 0%,rgba(139,149,158,0.18),transparent 38%),
+             radial-gradient(circle at 90% 12%,rgba(117,0,20,0.05),transparent 44%),
+             linear-gradient(180deg,#0e0f12 0%,#16181c 100%);
+  line-height:1.5;overflow:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;letter-spacing:-0.005em;
+}
+.mono,.eyebrow,.counter,.step,.num,.tag{font-family:"SF Mono",ui-monospace,"Menlo",monospace;}
+
+/* ---------- Deck shell: 16:9 stage scaled to fill viewport width ---------- */
+.deck{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.stage{
+  position:relative;width:1280px;height:720px;flex:0 0 auto;
+  transform-origin:center center;
+}
+.slide{
+  position:absolute;inset:0;
+  background:linear-gradient(150deg,#ffffff 0%,#f4f6f8 100%);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  padding:46px 60px 44px;
+  opacity:0;visibility:hidden;
+  transition:opacity .22s ease;
+  pointer-events:none;display:flex;flex-direction:column;overflow:hidden;
+}
+.slide.active{opacity:1;visibility:visible;pointer-events:auto;}
+.slide::before{content:"";position:absolute;left:60px;right:60px;top:24px;height:3px;
+  background:linear-gradient(90deg,var(--accent),transparent 72%);border-radius:2px;opacity:.9;}
+.slide.no-bar::before{display:none;}
+
+/* ---------- Typography ---------- */
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600;}
+.eyebrow::before{content:"";display:inline-block;width:22px;height:1px;background:var(--accent);}
+.slide-title{font-size:1.9rem;line-height:1.12;margin-bottom:16px;font-weight:700;letter-spacing:-0.015em;}
+.slide-title em{font-style:normal;color:var(--accent);}
+.slide-title .sub{display:block;font-size:1rem;font-weight:500;color:var(--ink-soft);margin-top:6px;letter-spacing:0;}
+.slide-body{flex:1;display:flex;flex-direction:column;gap:14px;min-height:0;}
+
+/* ---------- Title page ---------- */
+.slide-title-page{justify-content:center;align-items:center;text-align:center;}
+.title-eyebrow{font-family:"SF Mono",monospace;font-size:.8rem;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:18px;}
+.title-name{font-size:3.6rem;line-height:1.04;font-weight:700;letter-spacing:-0.025em;}
+.title-divider{width:64px;height:3px;background:var(--accent);border-radius:2px;margin:20px 0;}
+.title-sub{color:var(--ink-soft);font-size:1.12rem;font-weight:500;max-width:720px;}
+.title-tokens{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:22px;}
+.title-tokens span{font-family:"SF Mono",monospace;font-size:.76rem;letter-spacing:.06em;padding:6px 13px;border-radius:999px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-border);}
+
+/* ---------- Thesis / callout ---------- */
+.thesis{display:flex;gap:12px;align-items:flex-start;background:linear-gradient(135deg,rgba(117,0,20,.05),rgba(117,0,20,.01));border:1px solid var(--accent-border);border-left:3px solid var(--accent);padding:12px 16px;border-radius:11px;font-size:.95rem;line-height:1.5;}
+.thesis strong{color:var(--accent);font-weight:700;}
+.thesis.good{background:linear-gradient(135deg,var(--good-soft),rgba(0,85,58,.01));border-color:rgba(0,85,58,.28);border-left-color:var(--good);}
+.thesis.good strong{color:var(--good);}
+
+/* ---------- Table ---------- */
+.rtable{width:100%;border-collapse:collapse;font-size:.9rem;font-variant-numeric:tabular-nums;}
+.rtable th,.rtable td{padding:7px 12px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;}
+.rtable th:first-child,.rtable td:first-child{text-align:left;}
+.rtable thead th{font-size:.72rem;letter-spacing:.03em;color:var(--ink-mute);font-weight:600;text-transform:uppercase;border-bottom:1.5px solid var(--ink-soft);}
+.rtable tbody tr.ours{background:var(--accent-soft);}
+.rtable tbody tr.ours td{font-weight:600;color:var(--ink);}
+.rtable td.win{color:var(--good);font-weight:700;}
+.rtable td.dim{color:var(--ink-mute);}
+.rtable .mlabel{font-weight:600;}
+.rtable caption{caption-side:bottom;font-size:.72rem;color:var(--ink-mute);text-align:left;padding-top:8px;font-family:"SF Mono",monospace;}
+.grouphdr th{border-bottom:none;padding-bottom:2px;color:var(--ink-soft);}
+
+/* ---------- Cards / grid ---------- */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;flex:1;min-height:0;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;flex:1;min-height:0;}
+.card{background:linear-gradient(155deg,#fff,#f6f8fa);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:9px;}
+.card .step{font-size:.68rem;letter-spacing:.14em;color:var(--accent);font-weight:700;}
+.card .head{font-size:1.02rem;font-weight:700;line-height:1.25;}
+.card .body-text{font-size:.9rem;color:var(--ink-soft);line-height:1.5;}
+.card .big{font-size:1.7rem;font-weight:700;color:var(--accent);letter-spacing:-0.02em;}
+.card.good .big{color:var(--good);}
+.card .big small{font-size:.85rem;color:var(--ink-mute);font-weight:600;}
+
+ul.clean{list-style:none;display:flex;flex-direction:column;gap:9px;}
+ul.clean li{position:relative;padding-left:20px;font-size:.95rem;color:var(--ink-soft);line-height:1.5;}
+ul.clean li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:7px;border-radius:2px;background:var(--accent);}
+ul.clean li b{color:var(--ink);font-weight:700;}
+ul.clean li.done::before{background:var(--good);}
+
+.tag-row{display:flex;gap:8px;flex-wrap:wrap;}
+.tag-row .tag{font-size:.76rem;font-weight:600;padding:4px 11px;border-radius:999px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-border);}
+.tag-row .tag.done{background:var(--good-soft);color:var(--good);border-color:rgba(0,85,58,.28);}
+.tag-row .tag.pend{background:rgba(139,149,158,.14);color:var(--ink-soft);border-color:var(--line);}
+
+.note{font-size:.82rem;color:var(--ink-mute);line-height:1.5;}
+.note b,.note sub,.note sup{color:var(--ink-soft);}
+
+/* Sinkhorn vs Hungarian 비교표 (보강자료) */
+.cmp{border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:.8rem;}
+.cmp-row{display:grid;grid-template-columns:.72fr 1fr 1.15fr;border-bottom:1px solid var(--line);}
+.cmp-row:last-child{border-bottom:none;}
+.cmp-row>div{padding:7px 11px;line-height:1.35;}
+.cmp-row>div:first-child{font-weight:600;color:var(--ink-soft);background:rgba(139,149,158,.08);border-right:1px solid var(--line);}
+.cmp-row>div:nth-child(2){border-right:1px solid var(--line);color:var(--ink-soft);}
+.cmp-row>div:nth-child(3){color:var(--ink);}
+.cmp-head>div{font-weight:700!important;color:var(--ink)!important;background:var(--accent-soft)!important;font-size:.78rem;}
+.cmp-head>div:first-child{color:var(--accent)!important;}
+.two-col{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;flex:1;min-height:0;align-items:start;}
+
+/* ---------- 1:N mini table + case-study helpers ---------- */
+.mini{width:100%;border-collapse:collapse;font-size:.82rem;font-variant-numeric:tabular-nums;margin:3px 0 5px;}
+.mini th,.mini td{padding:4px 9px;text-align:right;border-bottom:1px solid var(--line);}
+.mini th:first-child,.mini td:first-child{text-align:left;}
+.mini thead th{font-size:.64rem;letter-spacing:.03em;color:var(--ink-mute);font-weight:600;text-transform:uppercase;border-bottom:1.5px solid var(--ink-soft);}
+.mini tr.hl td{color:var(--good);font-weight:700;}
+.card .step sup.cite{color:var(--ink-mute);}
+
+.case{background:linear-gradient(155deg,#fff,#f6f8fa);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:9px 13px;}
+.case.good{border-left-color:var(--good);}
+.case-h{font-size:.9rem;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+.case-h .cc{font-family:"SF Mono",monospace;font-size:.66rem;color:var(--ink-mute);font-weight:600;white-space:nowrap;}
+.case-b{font-size:.84rem;color:var(--ink-soft);margin-top:6px;line-height:1.4;display:flex;flex-wrap:wrap;gap:5px;align-items:center;}
+.case-b .why{color:var(--ink-mute);font-size:.8rem;}
+.case-b .why b{color:var(--ink-soft);font-weight:700;}
+.pill{font-size:.74rem;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-border);white-space:nowrap;}
+.case.good .pill{background:var(--good-soft);color:var(--good);border-color:rgba(0,85,58,.28);}
+
+.dist{display:flex;flex-direction:column;gap:6px;}
+.dist-row{display:grid;grid-template-columns:82px 1fr 26px;gap:9px;align-items:center;font-size:.78rem;}
+.dist-row .lb{color:var(--ink-soft);white-space:nowrap;}
+.dist-row .lb b{color:var(--ink);font-weight:700;}
+.dist-row .track{height:9px;border-radius:3px;background:rgba(139,149,158,.16);overflow:hidden;}
+.dist-row .track>i{display:block;height:100%;background:var(--accent);opacity:.82;border-radius:3px;}
+.dist-row.top .track>i{background:var(--good);opacity:.9;}
+.dist-row .ct{font-family:"SF Mono",monospace;font-size:.72rem;color:var(--ink-mute);font-weight:600;text-align:right;}
+.panel{background:linear-gradient(155deg,#fff,#f6f8fa);border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+.panel .ph{font-size:.68rem;letter-spacing:.14em;color:var(--accent);font-weight:700;margin-bottom:10px;text-transform:uppercase;font-family:"SF Mono",monospace;}
+
+/* ---------- Case-study cards (3-up) ---------- */
+.grid-3.cases{gap:14px;}
+.card.cs{padding:13px 15px;gap:7px;}
+.cs-title{font-size:.98rem;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.cs-tag{font-size:.66rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-border);}
+.card.cs.dup .cs-tag{background:var(--good-soft);color:var(--good);border-color:rgba(0,85,58,.28);}
+.cs-map{font-size:.76rem;color:var(--ink-soft);line-height:1.45;background:rgba(139,149,158,.09);border-radius:7px;padding:6px 9px;font-variant-numeric:tabular-nums;}
+.cs-map b{color:var(--ink);font-weight:700;}
+.cs-variant{font-size:.79rem;color:var(--ink-soft);line-height:1.42;}
+.cs-variant b{color:var(--accent);font-weight:700;}
+.card.cs.dup .cs-variant b{color:var(--good);}
+.cs-caps{display:flex;flex-direction:column;gap:2px;margin-top:2px;}
+.cs-caps .cap{font-size:.685rem;color:var(--ink-soft);line-height:1.3;font-style:italic;padding-left:11px;position:relative;}
+.cs-caps .cap::before{content:"·";position:absolute;left:2px;top:-1px;color:var(--accent);font-style:normal;font-weight:700;}
+
+/* ---------- Footnote ---------- */
+.footnote{margin-top:auto;padding-top:8px;font-size:7pt;line-height:1.5;color:#9a9a9a;font-family:"SF Mono",monospace;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:2px;flex-shrink:0;}
+.footnote .fn-item{display:flex;gap:6px;align-items:baseline;}
+.footnote .fn-num{color:#7a7a7a;font-weight:600;flex-shrink:0;}
+.footnote em{font-style:italic;color:#7a7a7a;}
+sup.cite{font-family:"SF Mono",monospace;font-size:.6em;color:#7a7a7a;font-weight:600;margin-left:1px;}
+
+/* ---------- Chrome ---------- */
+.deck-chrome{position:fixed;left:0;right:0;bottom:14px;display:flex;justify-content:space-between;align-items:center;padding:0 30px;pointer-events:none;z-index:10;}
+.progress{display:flex;gap:5px;pointer-events:auto;}
+.progress span{width:22px;height:4px;border-radius:2px;background:rgba(255,255,255,.28);transition:all .2s;cursor:pointer;}
+.progress span.active{background:var(--accent);width:34px;}
+.counter{font-size:.74rem;color:#cfd3d8;letter-spacing:.08em;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.14);padding:4px 10px;border-radius:999px;pointer-events:auto;}
+.nav-btns{position:fixed;top:50%;transform:translateY(-50%);display:flex;justify-content:space-between;width:100%;padding:0 14px;pointer-events:none;z-index:5;}
+.nav-btns button{pointer-events:auto;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.35);color:#e8eaed;font-size:1.1rem;cursor:pointer;transition:all .2s;backdrop-filter:blur(8px);}
+.nav-btns button:hover{border-color:var(--accent);color:#fff;transform:scale(1.06);}
+.hint{position:fixed;top:16px;right:22px;font-family:"SF Mono",monospace;font-size:.7rem;color:#cfd3d8;letter-spacing:.06em;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.14);padding:5px 11px;border-radius:999px;z-index:10;}
+.hint kbd{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:1px 5px;margin:0 2px;font-size:.68rem;}
+
+@media print{
+  @page{size:13.33in 7.5in;margin:0;}
+  html,body{overflow:visible;height:auto;background:#fff;}
+  .deck{position:static;display:block;}
+  .stage{transform:none!important;width:13.33in;height:auto;}
+  .slide{position:relative!important;inset:auto!important;width:13.33in!important;height:7.5in!important;opacity:1!important;transform:none!important;page-break-after:always;box-shadow:none;border:none;padding:.5in .66in!important;}
+  .deck-chrome,.nav-btns,.hint{display:none!important;}
+}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+<div class="stage" id="stage">
+
+<!-- 1 · Title -->
+<section class="slide slide-title-page no-bar active">
+  <div class="title-eyebrow">Rebuttal 준비 · 2026.07.22</div>
+  <h1 class="title-name">Rebuttal 실험 준비<br>진행 공유</h1>
+  <div class="title-divider"></div>
+</section>
+
+<!-- 2 · Recap -->
+<section class="slide">
+  <div class="eyebrow">00 · Recap</div>
+  <h2 class="slide-title">리부탈 전에 미리 준비한 실험 리스트 <span class="sub">지난 미팅에서 도출한 우선순위 실험에 따라 실험을 진행하였고, 아래와 같이 준비가 완료됨</span></h2>
+  <div class="two-col">
+    <div>
+      <div class="note" style="margin-bottom:8px;font-weight:600;color:var(--ink-soft);">리뷰 예상 질문 (우선순위)</div>
+      <ul class="clean">
+        <li><b>노이즈 웹데이터 강건성</b> — 제안된 방법론이 필터링되지 않은 웹 캡션 데이터에서도 잘 작동하나?</li>
+        <li><b>Group-Sparse 대비 강점 추가 확인</b> — 추가 데이터셋에서 우리 방법의 우위 입증</li>
+        <li><b>Soft 매칭</b> — strict 1:1 Hungarian 대신 soft 매칭을 적용할 수 있는가?</li>
+        <li><b>Coactivation 매칭의 견고성</b> — 모든 concept이 모달리티 간 1:1 대응이 아닐 수 있다.</li>
+        <li><b>AIMv2 백본</b> — 통합/LiT 인코더에서도 방법론이 전이되나?</li>
+      </ul>
+    </div>
+    <div>
+      <div class="note" style="margin-bottom:8px;font-weight:600;color:var(--ink-soft);">준비 완료</div>
+      <ul class="clean">
+        <li class="done"><b>LAION-400M 재학습</b> — 노이즈 데이터 강건성</li>
+        <li class="done"><b>광역 downstream 평가</b> — Flickr30k + CIFAR-100</li>
+        <li class="done"><b>Sinkhorn soft 매칭</b> — hard 1:1 대비 성능</li>
+        <li class="done"><b>Coactivation 1:N 정밀 분석</b> — 규모·정체·비용</li>
+      </ul>
+      <div class="tag-row" style="margin-top:14px;">
+        <span class="tag pend">AIMv2 백본 — 진행 중 (뒤에 추가 예정)</span>
+      </div>
+    </div>
+  </div>
+  <div class="thesis" style="margin-top:2px;">
+    <span>기본 세팅 — <strong>CLIP ViT-B/32 · CC3M 학습 · TopK SAE (L=8192, k=32) · 3 seeds</strong>. 평가: MS-COCO retrieval + ImageNet zero-shot.</span>
+  </div>
+</section>
+
+<!-- 3 · Noise robustness (LAION) -->
+<section class="slide">
+  <div class="eyebrow">01 · 노이즈 웹데이터 강건성</div>
+  <h2 class="slide-title">웹 캡션 데이터셋 <em>LAION-400M</em>에서도 우위 유지 <span class="sub">LAION-400M에서 랜덤 추출한 3M 쌍으로 학습·평가해도 우리 방법론의 우위가 유지됨</span></h2>
+  <div style="max-width:820px;">
+    <table class="rtable">
+      <thead><tr><th>Method</th><th>I→T R@1</th><th>T→I R@1</th><th>IN zs</th></tr></thead>
+      <tbody>
+        <tr><td class="mlabel">Shared SAE</td><td>10.08</td><td>6.74</td><td class="dim">22.06</td></tr>
+        <tr><td class="mlabel">+ Iso-Energy<sup class="cite">[1]</sup></td><td>9.88</td><td>6.14</td><td class="dim">21.21</td></tr>
+        <tr><td class="mlabel">+ Group-Sparse<sup class="cite">[2]</sup></td><td>11.88</td><td>6.23</td><td class="win">34.47</td></tr>
+        <tr><td class="mlabel">Modality-Specific</td><td class="dim">0.02</td><td class="dim">0.03</td><td class="dim">0.03</td></tr>
+        <tr class="ours"><td class="mlabel">+ Post-hoc (Ours)</td><td class="win">17.66</td><td class="win">11.56</td><td>22.63</td></tr>
+      </tbody>
+      <caption>LAION-400M<sup class="cite">[3]</sup> 3M 학습, seed 0 · 단위 % · MS-COCO retrieval / ImageNet zero-shot</caption>
+    </table>
+  </div>
+  <div class="footnote">
+    <div class="fn-item"><span class="fn-num">[1]</span><span>Dhimoïla et al. <em>Cross-Modal Redundancy and the Geometry of Vision–Language Embeddings.</em> ICLR 2026.</span></div>
+    <div class="fn-item"><span class="fn-num">[2]</span><span>Kaushik et al. <em>Decomposing multimodal embedding spaces with group-sparse autoencoders.</em> ICLR 2026.</span></div>
+    <div class="fn-item"><span class="fn-num">[3]</span><span>Schuhmann et al. <em>LAION-400M: Open Dataset of CLIP-Filtered 400 Million Image-Text Pairs.</em> NeurIPS 2021 Workshop.</span></div>
+  </div>
+</section>
+
+<!-- 4 · Broad downstream eval -->
+<section class="slide">
+  <div class="eyebrow">02 · Group-Sparse 대비 강점 추가 확인</div>
+  <h2 class="slide-title">추가로 실험한 <em>Flickr30k</em>와 <em>CIFAR-100</em>에서도 우리 방법론이 우위 유지 <span class="sub">기존 CC3M 체크포인트 재사용 (재학습 없음) · Flickr30k retrieval + CIFAR-100 zero-shot · 3 seeds</span></h2>
+  <table class="rtable">
+    <thead>
+      <tr><th rowspan="2">Method</th><th colspan="3">Flickr30k<sup class="cite">[3]</sup> · Image→Text</th><th colspan="3">Flickr30k · Text→Image</th><th rowspan="2">CIFAR-100<sup class="cite">[4]</sup><br>zero-shot</th></tr>
+      <tr class="grouphdr"><th>R@1</th><th>R@5</th><th>R@10</th><th>R@1</th><th>R@5</th><th>R@10</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="mlabel">Shared SAE</td><td>12.53</td><td>23.73</td><td>30.57</td><td>8.35</td><td>19.37</td><td>25.39</td><td>18.85</td></tr>
+      <tr><td class="mlabel">+ Iso-Energy<sup class="cite">[1]</sup></td><td>11.90</td><td>24.27</td><td>32.23</td><td>5.13</td><td>13.85</td><td>20.28</td><td>17.93</td></tr>
+      <tr><td class="mlabel">+ Group-Sparse<sup class="cite">[2]</sup></td><td>16.53</td><td>33.53</td><td>43.70</td><td>12.07</td><td>26.09</td><td>32.76</td><td>20.33</td></tr>
+      <tr><td class="mlabel">Modality-Specific</td><td class="dim">0.13</td><td class="dim">0.50</td><td class="dim">0.77</td><td class="dim">0.08</td><td class="dim">0.37</td><td class="dim">0.68</td><td class="dim">0.93</td></tr>
+      <tr class="ours"><td class="mlabel">+ Post-hoc (Ours)</td><td class="win">35.17</td><td class="win">59.33</td><td class="win">70.23</td><td class="win">25.50</td><td class="win">50.29</td><td class="win">60.81</td><td class="win">45.59</td></tr>
+    </tbody>
+    <caption>3-seed 평균 · 단위 % · 각 열 최고 <b>굵게</b> · 모든 지표에서 Ours가 최고 (Group-Sparse 대비 2배 이상)</caption>
+  </table>
+  <div class="footnote">
+    <div class="fn-item"><span class="fn-num">[3]</span><span>Young et al. <em>From image descriptions to visual denotations (Flickr30k).</em> TACL 2014.</span></div>
+    <div class="fn-item"><span class="fn-num">[4]</span><span>Krizhevsky. <em>Learning Multiple Layers of Features from Tiny Images (CIFAR).</em> 2009.</span></div>
+  </div>
+</section>
+
+<!-- 5 · Soft matching -->
+<section class="slide">
+  <div class="eyebrow">03 · Soft matching</div>
+  <h2 class="slide-title">이산 할당(Hungarian) → soft 할당(Sinkhorn)에서 <em>미세한 성능 개선</em>
+    <span class="sub">텍스트 latent를 이미지 좌표계로 옮기는 정렬 연산자 M만 교체 — 유사도는 동일하게 cos(z<sub>I</sub>, M·z<sub>T</sub>).</span></h2>
+  <div class="two-col">
+    <div>
+      <table class="rtable">
+        <thead><tr><th>정렬 연산자 M</th><th>I→T R@1</th><th>T→I R@1</th><th>IN zs</th></tr></thead>
+        <tbody>
+          <tr><td class="mlabel">Hungarian (본문, 1:1)</td><td>16.49</td><td>11.09</td><td>24.99</td></tr>
+          <tr><td class="mlabel">Greedy 1:1</td><td>15.45</td><td>10.78</td><td>24.10</td></tr>
+          <tr><td class="mlabel">Decoder-cosine 1:1</td><td>17.43</td><td>11.07</td><td>25.52</td></tr>
+          <tr class="ours"><td class="mlabel">Sinkhorn ε=0.01</td><td class="win">18.89</td><td class="win">12.20</td><td class="win">29.42</td></tr>
+          <tr><td class="mlabel">Sinkhorn ε=0.05</td><td>16.81</td><td class="dim">7.09</td><td>26.83</td></tr>
+          <tr><td class="mlabel">Sinkhorn ε=0.1</td><td class="dim">12.30</td><td class="dim">4.60</td><td class="dim">20.58</td></tr>
+        </tbody>
+        <caption>3-seed 평균 · 단위 % · CC3M / CLIP ViT-B/32</caption>
+      </table>
+      <div class="eps">
+        <div class="eps-title">Sinkhorn 목적식 &amp; ε — <span class="mono">max<sub>T</sub> ⟨T, C⟩ + ε·H(T)</span></div>
+        <ul class="clean" style="gap:5px;">
+          <li><b>매칭 형태</b> — Hungarian은 순열 행렬 <b>P</b>로 <span class="mono">z<sub>I</sub><sup>⊤</sup>P&nbsp;z<sub>T</sub></span>(엄격 1:1), Sinkhorn은 soft 수송 행렬 <b>T</b>로 <span class="mono">z<sub>I</sub><sup>⊤</sup>T&nbsp;z<sub>T</sub></span>(가중 할당)를 계산.</li>
+          <li><b>ε은 무엇의 계수?</b> — C는 두 latent의 co-activation 상관 행렬이고 ⟨T,C⟩는 매칭 점수, <b>H(T)는 할당 행렬 T의 엔트로피</b>(퍼짐 정도). <b>ε은 그 엔트로피 항의 가중치</b>.</li>
+          <li><b>ε의 효과</b> — <b>ε→0이면 T가 순열 P로 수렴</b>(≈Hungarian), <b>ε이 크면</b> 여러 latent에 넓게 <b>섞인 soft 할당</b> → 과혼합으로 성능 하락.</li>
+        </ul>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="cmp">
+        <div class="cmp-row cmp-head"><div>구분</div><div>Hungarian</div><div>Sinkhorn<sup class="cite">[7]</sup></div></div>
+        <div class="cmp-row"><div>매칭 형태</div><div>이산(0/1) 1:1 엄격 할당</div><div>연속 가중치의 soft 할당 행렬</div></div>
+        <div class="cmp-row"><div>최적화 목표</div><div>비용 행렬의 최적값 정확 탐색</div><div>엔트로피 정규 최적수송(Wasserstein) 근사</div></div>
+        <div class="cmp-row"><div>연산 속도</div><div>O(V³), 규모↑ 시 급증</div><div>행렬곱 반복 — GPU 병렬로 매우 빠름</div></div>
+        <div class="cmp-row"><div>미분 가능성</div><div>불가 (non-differentiable)</div><div>가능 — end-to-end 학습에 통합 가능</div></div>
+      </div>
+      <div class="thesis good"><span>재학습 없이 후처리만 교체 — 보조 손실 방식과 달리 <strong>더 풍부한 정렬 구조로 확장이 가능</strong>하다는 점에서 우리 접근법의 장점.</span></div>
+    </div>
+  </div>
+  <div class="footnote">
+    <div class="fn-item"><span class="fn-num">[7]</span><span>Cuturi. <em>Sinkhorn Distances: Lightspeed Computation of Optimal Transport.</em> NeurIPS 2013.</span></div>
+  </div>
+</section>
+
+<!-- 6 · 1:N analysis -->
+<section class="slide">
+  <div class="eyebrow">04 · Coactivation 1:N 분석</div>
+  <h2 class="slide-title">모달리티 간의 의미 대응이 <em>1:1에 가까운가?</em> 1:N인 경우는 없는가?
+    <span class="sub">"모달리티 간 의미 대응이 실제로는 1:N일 수도 있는데, 제안된 방법은 1:1만 고려해 Hungarian만 쓴 것 아닌가"라는 예상 질문에 대한 분석</span></h2>
+  <div class="grid-3" style="align-items:stretch;">
+
+    <!-- ① 판단 기준 -->
+    <div class="card">
+      <div class="step">① 1:N인지 판단하는 기준</div>
+      <ul class="clean" style="gap:8px;">
+        <li>전체 <b>CC3M 280만 쌍</b>에서 이미지-latent ↔ 텍스트-latent <b>공동활성 상관행렬 C</b> 계산 (3 seeds).</li>
+        <li>이미지 latent마다 상관 <b>C ≥ τ</b>인 <b>대응 텍스트 latent</b>를 셈 → 그 수가 <b>≥2면 1:N</b>.</li>
+        <li>1:N을 가르는 <b>기준선 τ가 애매</b>해 하나로 못 박음 → <b>τ를 0.1~0.5로 스윕</b>해 민감도 확인.</li>
+      </ul>
+    </div>
+
+    <!-- ② 비율 -->
+    <div class="card good">
+      <div class="step">② 1:N으로 대응되는 image latent 비율은?</div>
+      <table class="mini">
+        <thead><tr><th>기준 τ</th><th>1:N 비율</th></tr></thead>
+        <tbody>
+          <tr><td>0.1 (약한 상관)</td><td>64.4%</td></tr>
+          <tr><td>0.3</td><td>15.6%</td></tr>
+          <tr><td>0.4</td><td>6.2%</td></tr>
+          <tr class="hl"><td>0.5 (강한 상관)</td><td>2.2%</td></tr>
+        </tbody>
+      </table>
+      <div class="note" style="margin-top:2px;">1:N 비율 = 살아있는(alive) 이미지 latent 중 대응 텍스트 latent(C≥τ)가 <b>2개 이상</b>인 것의 비율.</div>
+    </div>
+
+    <!-- ③ 왜 1:N처럼 나타나나 -->
+    <div class="card">
+      <div class="step">③ 어떤 경우에 1:N처럼 나타나나 — feature splitting<sup class="cite">[8]</sup></div>
+      <div class="body-text" style="margin-bottom:1px;">사례 분석 결과, 이미지 개념이 <b>여러 다른 의미</b>에 매핑돼서가 아니라, 같은 개념이 텍스트 사전에서 <b>언어 변주·측면별로 잘게 쪼개지는 feature splitting</b>으로 보임.</div>
+      <ul class="clean" style="gap:7px;">
+        <li><b>근거</b> — 상관 높은 N개 텍스트 latent가 <b>모두 같은 샘플에서 함께 activate</b>되는 경향을 확인.</li>
+        <li>각 텍스트 latent가 <b>반응하는 샘플 집합</b>을 구해, 대응 latent들 간 <b>Jaccard 유사도</b>(교집합/합집합) 측정 → <b>중앙값 0.52</b>, 완전분리(J&lt;0.1)는 <b>0%</b>.</li>
+        <li>대응되는 N개 텍스트 latent가 반응하는 샘플을 다 합쳐도, <b>그 93–95%는 가장 강한 것 하나가 이미 반응</b> — 나머지는 거의 같은 샘플에 겹쳐 반응할 뿐, <b>새 샘플을 더하지 않음(사실상 중복)</b>.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="thesis good" style="margin-top:2px;"><span><strong>1:N은 일부 존재</strong>하는 것으로 보인다. 하지만 그 중 대다수는 <strong>같은 개념이 여러 latent coordinate에 나뉘어 activate되는 feature splitting</strong> 때문인 것으로 보인다.</span></div>
+  <div class="footnote">
+    <div class="fn-item"><span class="fn-num">[8]</span><span>Chanin et al. <em>A is for Absorption: Studying Feature Splitting and Absorption in Sparse Autoencoders.</em> NeurIPS 2025.</span></div>
+  </div>
+</section>
+
+<!-- 7 · 1:N Case study -->
+<section class="slide">
+  <div class="eyebrow">04 · 1:N Feature splitting 분석 — Case study</div>
+  <h2 class="slide-title">1:N 사례가 실제로 <em>같은 개념이 여러 latent coordinate에 나눠져 대응</em>된 것인지 확인
+    <span class="sub">각 사례: 어느 image latent에 어느 text latent들이 1:N 대응했고(coactivation 상관), 발화 샘플이 얼마나 겹치는지(Jaccard) + 실제 caption</span></h2>
+  <div class="grid-3 cases" style="align-items:stretch;">
+
+    <!-- Case 1 -->
+    <div class="card cs">
+      <div class="cs-title">① 구기 연습 장면 <span class="cs-tag">언어 변주</span></div>
+      <div class="cs-map">이미지 latent <b>#2931</b>에 텍스트 latent <b>#3901</b>(.80)·<b>#2313</b>(.74)·<b>#1067</b>(.67)이 1:N 대응. 세 latent 발화 샘플의 <b>Jaccard J=.83</b>.</div>
+      <div class="cs-variant">같은 "운동 연습" 장면을 텍스트가 <b>쓰인 단어별로 분할</b>: training session · practice · drill.</div>
+      <div class="cs-caps">
+        <div class="cap">A policeman riding his bike during a training session.</div>
+        <div class="cap">A trainer practicing frisbee agility training with his dog.</div>
+        <div class="cap">Baseball players playing ball during a practice session.</div>
+        <div class="cap">Two men in blue jerseys swinging baseball bats during practice.</div>
+        <div class="cap">The practicing team is wearing maroon and white uniforms.</div>
+        <div class="cap">A tennis player is swinging her racket during practice.</div>
+        <div class="cap">A batter getting ready to take a swing during practice.</div>
+        <div class="cap">Professional baseball players are walking around during practice.</div>
+        <div class="cap">The soccer players are participating in important drills.</div>
+        <div class="cap">A group of boys doing cone drills for soccer.</div>
+      </div>
+    </div>
+
+    <!-- Case 2 -->
+    <div class="card cs">
+      <div class="cs-title">② 여객 기차 <span class="cs-tag">측면 분할</span></div>
+      <div class="cs-map">이미지 latent <b>#2860</b>에 텍스트 latent <b>#2417</b>(.68)·<b>#2347</b>(.67)·<b>#2358</b>(.42)이 1:N 대응. <b>Jaccard J=.68</b>.</div>
+      <div class="cs-variant">같은 "기차" 개념을 <b>장면의 측면별로 분할</b>: 역·플랫폼 / 마을 통과 / 기관차 디테일.</div>
+      <div class="cs-caps">
+        <div class="cap">People board passenger trains at a train station.</div>
+        <div class="cap">Two trains passing each other in a train station.</div>
+        <div class="cap">A train station with people standing on a platform beside a train.</div>
+        <div class="cap">A woman holding a handbag, standing next to train tracks at a station.</div>
+        <div class="cap">A train going through a residential neighborhood.</div>
+        <div class="cap">A train traveling through a town next to a blue and white building.</div>
+        <div class="cap">A train moving through a residential, wooded area.</div>
+        <div class="cap">A white and black train engine pulling several cars next to trees.</div>
+        <div class="cap">A diesel locomotive approaching a rural grade crossing.</div>
+        <div class="cap">A steam locomotive passes by some houses on a track.</div>
+      </div>
+    </div>
+
+    <!-- Case 3 -->
+    <div class="card cs">
+      <div class="cs-title">③ 무대 공연 <span class="cs-tag">측면 분할</span></div>
+      <div class="cs-map">이미지 latent <b>#1573</b>에 텍스트 latent <b>#3638</b>(.65)·<b>#679</b>(.64)·<b>#3830</b>(.64)이 1:N 대응. <b>Jaccard J=.71</b>.</div>
+      <div class="cs-variant">같은 "무대 공연" 개념을 <b>측면별로 분할</b>: 공연 동작(performing) / 무대·마이크 상황 / 밴드·음악.</div>
+      <div class="cs-caps">
+        <div class="cap">A man is performing on stage at an event.</div>
+        <div class="cap">A musician performs a song in front of an audience.</div>
+        <div class="cap">Two people on stage performing a song to a crowd.</div>
+        <div class="cap">A band on a stage performing for an audience.</div>
+        <div class="cap">A band playing on a portable stage for a crowd in a town square.</div>
+        <div class="cap">A professional musician playing the violin during a concert.</div>
+        <div class="cap">A musician at a microphone singing onstage at a concert.</div>
+        <div class="cap">A young man singing and playing the guitar.</div>
+        <div class="cap">There is a man standing on a stage with a microphone.</div>
+        <div class="cap">A man on stage being handed a teddy bear.</div>
+      </div>
+    </div>
+  </div>
+  <div class="footnote">
+    <div class="fn-item"><span class="fn-num">[8]</span><span>Chanin et al. <em>A is for Absorption: Studying Feature Splitting and Absorption in Sparse Autoencoders.</em> NeurIPS 2025.</span></div>
+    <div class="fn-item"><span class="fn-num">*</span><span>#N = SAE latent coordinate 인덱스 · 괄호값 = coactivation 상관 · J = 대응 텍스트 latent들의 발화 샘플집합 Jaccard · caption은 COCO 활성 상위. τ=0.4, seed 0.</span></div>
+  </div>
+</section>
+
+<!-- 8 · Placeholder for AIMv2 (다음 회차) -->
+<section class="slide slide-title-page no-bar">
+  <div class="title-eyebrow">— 진행 중 —</div>
+  <h1 class="title-name" style="font-size:2.6rem;">AIMv2 백본 실험</h1>
+  <div class="title-divider"></div>
+  <p class="title-sub">통합/LiT 인코더로의 전이 — 결과 정리 후 이 뒤에 추가 예정</p>
+</section>
+
+</div><!-- /stage -->
+</div><!-- /deck -->
+
+<div class="nav-btns"><button id="prev" aria-label="이전">&lsaquo;</button><button id="next" aria-label="다음">&rsaquo;</button></div>
+<div class="deck-chrome"><div class="progress" id="progress"></div><div class="counter" id="counter">01 / 08</div></div>
+<div class="hint"><kbd>&larr;</kbd><kbd>&rarr;</kbd> navigate · <kbd>F</kbd> fullscreen</div>
+
+<script>
+const stage=document.getElementById('stage');
+function fit(){const s=Math.min(window.innerWidth/1280,window.innerHeight/720);stage.style.transform='scale('+s+')';}
+window.addEventListener('resize',fit);fit();
+
+const slides=Array.from(document.querySelectorAll('.slide'));
+const total=slides.length;let idx=0;
+const progress=document.getElementById('progress'),counter=document.getElementById('counter');
+slides.forEach((_,i)=>{const d=document.createElement('span');if(i===0)d.classList.add('active');d.addEventListener('click',()=>go(i));progress.appendChild(d);});
+const dots=Array.from(progress.children);
+function go(n){idx=Math.max(0,Math.min(total-1,n));slides.forEach((s,i)=>s.classList.toggle('active',i===idx));dots.forEach((d,i)=>d.classList.toggle('active',i===idx));counter.textContent=String(idx+1).padStart(2,'0')+' / '+String(total).padStart(2,'0');}
+document.getElementById('prev').addEventListener('click',()=>go(idx-1));
+document.getElementById('next').addEventListener('click',()=>go(idx+1));
+document.addEventListener('keydown',(e)=>{
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();go(idx+1);}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(idx-1);}
+  else if(e.key==='Home'){go(0);} else if(e.key==='End'){go(total-1);}
+  else if(e.key==='f'||e.key==='F'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}
+});
+let ts=null;document.addEventListener('touchstart',e=>{ts=e.changedTouches[0].screenX;});
+document.addEventListener('touchend',e=>{if(ts===null)return;const dx=e.changedTouches[0].screenX-ts;if(Math.abs(dx)>50)go(idx+(dx<0?1:-1));ts=null;});
+</script>
+</body>
+</html>
