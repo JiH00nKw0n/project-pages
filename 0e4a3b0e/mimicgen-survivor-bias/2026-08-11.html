@@ -370,7 +370,10 @@
     <p>Action 자체가 모델이 학습하기에 용이한 패턴인가를 원인으로 두는 가설.</p>
     <ul>
       <li><span class="em">모방 가능성</span>: 애초에 움직임에 일관된 패턴이 없어서, 모델이 패턴을 익히기 어려운 경우다.
-        <ul><li>motion planning이 만든 궤적을 behavior cloning하면 잘 안 되는 것이 대표 사례 <button class="cite" data-k="zhou2025">Zhou et al., arXiv 2025</button> <button class="cite" data-k="mimicgenH">Mandlekar et al., CoRL 2023 · App.H</button></li></ul>
+        <ul>
+          <li>motion planning이 만든 궤적을 behavior cloning하면 잘 안 되는 것이 대표 사례 <button class="cite" data-k="zhou2025">Zhou et al., arXiv 2025</button></li>
+          <li>보간으로 만든 이동 구간은 중간 동작과 관측 사이에 연관이 없어 모방하기 어렵다 <button class="cite" data-k="mimicgenH">Mandlekar et al., CoRL 2023 · App.H</button></li>
+        </ul>
       </li>
       <li><span class="em">Multimodal mode</span>: 성공하는 방법이 여러 가지인데 각각을 따로 학습하기 어려우면, 모델이 그 사이의 평균적인 움직임을 배워서 실패할 수 있다.
         <ul><li>장애물을 왼쪽으로 돌아도 되고 오른쪽으로 돌아도 되는데, 평균을 배우면 가운데로 직진해 부딪히는 것과 같다.</li></ul>
