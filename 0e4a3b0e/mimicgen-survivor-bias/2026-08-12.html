@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bias in Synthetic Data Generation for Imitation Learning</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #202124;
+      --muted: #656970;
+      --line: #dfe1e5;
+      --soft: #f6f7f8;
+      --accent: #3158a6;
+      --accent-soft: #eef3ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #fff;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      line-height: 1.72;
+    }
+
+    main {
+      width: min(900px, calc(100% - 40px));
+      margin: 48px auto 72px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      line-height: 1.18;
+      letter-spacing: -0.035em;
+    }
+
+    h2 {
+      margin: 30px 0 12px;
+      font-size: 1.35rem;
+      letter-spacing: -0.015em;
+    }
+
+    .outline {
+      margin: 0;
+      padding-left: 22px;
+    }
+
+    .outline > li {
+      padding-left: 5px;
+    }
+
+    .outline > li + li {
+      margin-top: 10px;
+    }
+
+    .outline .topic {
+      font-weight: 720;
+    }
+
+    .outline .suboutline {
+      margin: 8px 0 0;
+      padding-left: 22px;
+      font-weight: 400;
+    }
+
+    .outline .suboutline > li {
+      padding-left: 4px;
+    }
+
+    .outline .suboutline > li + li {
+      margin-top: 8px;
+    }
+
+    .outline > li::marker {
+      color: var(--accent);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.18em;
+    }
+
+    .citation {
+      white-space: nowrap;
+      font-size: 0.94em;
+    }
+
+    sup a {
+      padding: 0 2px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .footnotes {
+      margin-top: 28px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: calc(1rem - 1pt);
+      line-height: 1.58;
+    }
+
+    .footnotes h2,
+    .references h2 {
+      font-size: 1rem;
+      letter-spacing: 0;
+    }
+
+    .footnotes ol {
+      margin: 0;
+      padding-left: 22px;
+    }
+
+    .footnotes li p {
+      margin: 0;
+    }
+
+    .backref {
+      margin-left: 5px;
+      text-decoration: none;
+    }
+
+    .references {
+      margin-top: 26px;
+      padding: 16px 20px;
+      background: var(--soft);
+      border-radius: 10px;
+      color: #44484e;
+      font-size: 0.9rem;
+    }
+
+    .references ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .references li + li {
+      margin-top: 8px;
+    }
+
+    @media (max-width: 680px) {
+      main {
+        width: min(100% - 28px, 900px);
+        margin-top: 36px;
+      }
+
+    }
+
+    @media print {
+      main {
+        width: 100%;
+        margin: 0;
+      }
+
+      a {
+        color: inherit;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Working paper outline · 2026-08-12</p>
+    <h1>Bias in Synthetic Data Generation for Imitation Learning</h1>
+
+    <section aria-labelledby="introduction-title">
+      <h2 id="introduction-title">1. Introduction</h2>
+
+      <ul class="outline">
+        <li class="topic">
+          Imitation Learning
+          <ul class="suboutline">
+            <li>
+              <strong>정의:</strong> Imitation learning은 전문가의 시연으로부터 로봇이 주어진 관측에서 어떤 행동을 해야 하는지 학습하는 방법이다. 가장 일반적인 behavioral cloning은 관측에서 행동으로의 관계를 지도학습으로 학습한다
+              <a class="citation" href="https://doi.org/10.1016/j.robot.2008.10.024" target="_blank" rel="noopener">(Argall et al., 2009)</a>.
+            </li>
+
+            <li>
+              <strong>장점:</strong> 사람이 작업별 로봇 움직임을 일일이 프로그래밍하는 것보다 복잡한 manipulation skill을 직관적으로 지정할 수 있고, 강화학습처럼 보상함수를 세밀하게 설계하거나 실제 로봇에서 많은 시행착오를 반복할 필요가 적다
+              <a class="citation" href="https://proceedings.neurips.cc/paper_files/paper/1996/file/68d13cf26c4b4f4f932e3eff990093ba-Paper.pdf" target="_blank" rel="noopener">(Schaal, 1996)</a>.
+            </li>
+
+            <li>
+              <strong>현재 활용:</strong> 이러한 장점 때문에 imitation learning은 실제 로봇 manipulation에서 널리 사용된다. ACT와 Diffusion Policy 같은 task-specific policy부터 대규모 vision-language-action model까지, 최근의 주요 로봇 정책은 인간 또는 로봇 시연에서 행동을 학습한다
+              <a class="citation" href="https://arxiv.org/abs/2304.13705" target="_blank" rel="noopener">(Zhao et al., 2023)</a>
+              <a class="citation" href="https://www.roboticsproceedings.org/rss19/p026.html" target="_blank" rel="noopener">(Chi et al., 2023)</a>
+              <a class="citation" href="https://proceedings.mlr.press/v270/kim25c.html" target="_blank" rel="noopener">(Kim et al., 2025)</a>.
+            </li>
+
+            <li>
+              <strong>핵심 한계:</strong> 정책은 시연에서 충분히 경험하지 못한 상황에서 실패하기 쉽다. 실행 중 작은 오차로 낯선 상태에 들어가면 적절한 복구 행동을 알지 못해 오차가 누적될 수 있으므로, 실제 배포 환경을 덮는 다양한 시연이 필요하다
+              <a class="citation" href="https://proceedings.mlr.press/v15/ross11a.html" target="_blank" rel="noopener">(Ross et al., 2011)</a>.
+            </li>
+
+            <li>
+              <strong>다양성의 조건:</strong> 물체 위치, 로봇 상태, 접촉 상태처럼 배포 중 달라지는 상황은 폭넓게 포함해야 한다. 반면 정책이 같은 상황으로 인식하는 입력에 서로 충돌하는 행동이 대응되거나, 제어 명령에 불필요한 흔들림이 섞이면 학습이 어려워질 수 있다<sup id="fnref-action-diversity"><a href="#fn-action-diversity" aria-label="각주 1">1</a></sup>
+              <a class="citation" href="https://papers.neurips.cc/paper_files/paper/2023/hash/fe692980c5d9732cf153ce27947653a7-Abstract-Conference.html" target="_blank" rel="noopener">(Belkhale et al., 2023)</a>
+              <a class="citation" href="https://papers.neurips.cc/paper_files/paper/2022/hash/90d17e882adbdda42349db6f50123817-Abstract-Conference.html" target="_blank" rel="noopener">(Shafiullah et al., 2022)</a>.
+            </li>
+          </ul>
+        </li>
+
+        <li class="topic">
+          Synthetic Data Generation and MimicGen
+          <ul class="suboutline">
+            <li>
+              <strong>동기:</strong> 다양한 배포 상황을 사람이 직접 시연하려면 많은 시간과 비용이 든다. 따라서 소수의 인간 시연으로부터 추가 trajectory를 자동 생성하는 연구가 등장했다.
+            </li>
+
+            <li>
+              <strong>기본 발상:</strong> 새로운 행동을 처음부터 만드는 대신, 기존 시연을 새로운 물체 위치와 장면 구성에 맞게 변환하여 시연 데이터의 상황 coverage를 확장한다.
+            </li>
+
+            <li>
+              <strong>MimicGen:</strong> 원본 시연을 물체 중심의 subtask로 나누고, 각 구간을 새로운 물체 pose에 맞게 변환·연결한 뒤 로봇으로 실행한다. 성공한 실행은 새로운 demonstration으로 저장한다
+              <a class="citation" href="https://proceedings.mlr.press/v229/mandlekar23a.html" target="_blank" rel="noopener">(Mandlekar et al., 2023)</a>.
+            </li>
+
+            <li>
+              <strong>성과:</strong> 약 200개의 인간 시연으로 18개 작업에서 50,000개 이상의 시연을 생성했으며, 생성 데이터로 학습한 정책이 넓은 초기 상태 분포와 장기·정밀 작업에서 높은 성능을 보였다
+              <a class="citation" href="https://proceedings.mlr.press/v229/mandlekar23a.html" target="_blank" rel="noopener">(Mandlekar et al., 2023)</a>.
+            </li>
+
+            <li>
+              <strong>후속 연구:</strong> MimicGen을 다양한 로봇과 더 복잡한 작업으로 확장하는 한편, 작업 생성·분해와 trajectory 생성을 자동화하고 그 품질을 높이는 방향으로 발전해 왔다
+              <a class="citation" href="https://arxiv.org/abs/2410.24185" target="_blank" rel="noopener">(Jiang et al., 2024)</a>
+              <a class="citation" href="https://arxiv.org/abs/2406.02523" target="_blank" rel="noopener">(Nasiriany et al., 2024)</a>
+              <a class="citation" href="https://proceedings.mlr.press/v270/garrett25a.html" target="_blank" rel="noopener">(Garrett et al., 2025)</a>
+              <a class="citation" href="https://www.roboticsproceedings.org/rss21/p157.html" target="_blank" rel="noopener">(Xue et al., 2025)</a>.
+            </li>
+          </ul>
+        </li>
+
+        <li class="topic">
+          Bias in Synthetic Data Generation
+          <ul class="suboutline">
+            <li>
+              <strong>성공 필터링:</strong> MimicGen은 새로운 장면에서 trajectory를 실행하고 성공한 결과만 저장한다. 따라서 생성하기 어려운 장면과 원본 움직임은 최종 데이터에서 줄어들거나 사라질 수 있다. 기존 연구는 이를 부분적으로만 분석했다.
+            </li>
+
+            <li>
+              <strong>장면 — 생성률과 정책 성능은 보고했지만 bias는 분석하지 않음:</strong> MimicGen은 D0, D1, D2 장면별 생성 성공률과 정책 성능을 모두 보고했다. 그러나 시도한 장면 중 어떤 장면이 더 많이 탈락했으며, 그 분포 변화가 정책에 어떤 영향을 주었는지는 분석하지 않았다
+              <a class="citation" href="https://proceedings.mlr.press/v229/mandlekar23a.html" target="_blank" rel="noopener">(Mandlekar et al., 2023)</a>.
+            </li>
+
+            <li>
+              <strong>원본 시연 선택 — 부분적으로 둘 다 분석:</strong> 현재 장면과 가까운 원본을 선택하거나 subtask마다 원본을 다시 선택하면 생성률은 크게 높아졌지만, 정책 성능의 향상은 대부분 작았다. 즉, 생성하기 좋은 원본을 고르는 것이 반드시 더 유용한 학습 데이터를 만드는 것은 아니었다
+              <a class="citation" href="https://proceedings.mlr.press/v229/mandlekar23a.html" target="_blank" rel="noopener">(Mandlekar et al., 2023)</a>.
+            </li>
+
+            <li>
+              <strong>Skill transformation — 정책만 분석:</strong> DexMimicGen은 원본 동작을 그대로 replay할지, 새 물체 위치에 맞게 transform할지에 따른 정책 성능을 비교했다. 그러나 같은 조건에서 생성 성공률이 어떻게 달라지는지는 보고하지 않았다
+              <a class="citation" href="https://arxiv.org/abs/2410.24185" target="_blank" rel="noopener">(Jiang et al., 2024)</a>.
+            </li>
+
+            <li>
+              <strong>Motion stitching — 일부만 함께 분석:</strong> MimicGen은 interpolation 시간을 늘리면 정책 성능이 떨어진다는 것을 보였지만, 생성률에 미치는 영향은 통제 실험으로 측정하지 않았다. 반면 MinInter는 subtask 사이의 연결 거리를 줄였을 때 생성률이 평균 12.8%p, 정책 성공률도 평균 약 4.9%p 높아지는 것을 함께 보였다
+              <a class="citation" href="https://proceedings.mlr.press/v229/mandlekar23a.html" target="_blank" rel="noopener">(Mandlekar et al., 2023)</a>
+              <a class="citation" href="https://arxiv.org/abs/2606.24078" target="_blank" rel="noopener">(Wang et al., 2026)</a>.
+            </li>
+
+            <li>
+              <strong>남은 문제:</strong> 기존 연구는 각 요소의 생성률이나 정책 성능을 부분적으로 비교했을 뿐, 왜 어떤 데이터가 더 자주 성공하고 왜 그 차이가 최종 정책에 유익하거나 해로운지를 전체 과정에서 연결해 분석하지 않았다.
+            </li>
+          </ul>
+        </li>
+
+        <li class="topic">
+          연구 방향
+          <ul class="suboutline">
+            <li>
+              본 연구는 <strong>성공 필터가 합성 데이터를 어떻게 바꾸고, 그 변화가 최종 정책 성능으로 어떻게 이어지는지</strong>를 생성 전 과정에서 추적한다.
+            </li>
+
+            <li>
+              <strong>What:</strong> 생성 시도와 성공 데이터를 비교하여, 성공 필터가 <strong>장면·원본 시연·skill transformation·motion stitching</strong>의 분포를 어떻게 바꾸는지 확인한다.
+            </li>
+
+            <li>
+              <strong>Why generation:</strong> 로봇의 도달 가능 범위, 제어 오차, 접촉 조건, subtask 연결 상태 등을 분석하여 특정 조합이 더 자주 성공하는 이유를 설명한다.
+            </li>
+
+            <li>
+              <strong>Policy effect:</strong> 데이터 수와 평가 조건을 같게 통제한 뒤, 각 분포 변화가 최종 정책 성공률을 높이는지 낮추는지 측정한다.
+            </li>
+
+            <li>
+              <strong>Why policy:</strong> 정책 성능 차이를 최대 두 원인으로 설명한다.
+              <ol>
+                <li>필요한 장면이 데이터에서 사라지는 <strong>coverage 감소</strong></li>
+                <li>남은 trajectory의 움직임과 subtask 연결이 더 쉬워지거나 불안정해지는 <strong>행동·handoff 품질 변화</strong></li>
+              </ol>
+            </li>
+
+            <li>
+              <strong>Interaction:</strong> 한 요소에서 좋은 선택이 다른 요소와 결합될 때도 좋은지 검증한다. 예를 들어 가까운 원본을 선택해 transformation을 줄였더라도 subtask 사이의 연결이 길어질 수 있다. 이러한 상호작용이 존재한다면 네 요소를 각각 최적화하는 대신 <strong>장면–원본–변환–연결을 함께 선택해야 한다.</strong>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+
+    <section class="footnotes" aria-labelledby="footnotes-title">
+      <h2 id="footnotes-title">각주</h2>
+      <ol>
+        <li id="fn-action-diversity">
+          <p>
+            여기서 문제가 되는 것은 행동의 종류가 많다는 사실 자체가 아니다. 예를 들어 컵의 위치가 달라져 그에 맞는 접근 방향도 달라지는 것은 필요한 다양성이다. 문제는 정책에 주어진 관측만으로 구별하기 어려운 동일한 상황에 왼쪽 우회와 오른쪽 우회처럼 서로 다른 행동이 함께 나타나는 경우다. 단순한 MSE 기반 behavioral cloning은 이 조건부 행동 분포의 평균을 예측해 어느 전략에도 속하지 않는 행동을 만들 수 있다. Behavior Transformer, ACT, Diffusion Policy와 같은 생성형 정책은 여러 행동 모드를 표현하여 이 현상을 완화하지만, 전략을 구별할 관측 정보가 없거나 필요한 상태와 복구 행동이 데이터에서 빠진 문제까지 해결하지는 못한다
+            <a class="citation" href="https://papers.neurips.cc/paper_files/paper/2022/hash/90d17e882adbdda42349db6f50123817-Abstract-Conference.html" target="_blank" rel="noopener">(Shafiullah et al., 2022)</a>
+            <a class="citation" href="https://arxiv.org/abs/2304.13705" target="_blank" rel="noopener">(Zhao et al., 2023)</a>
+            <a class="citation" href="https://www.roboticsproceedings.org/rss19/p026.html" target="_blank" rel="noopener">(Chi et al., 2023)</a>.
+            <a class="backref" href="#fnref-action-diversity" aria-label="본문으로 돌아가기">↩</a>
+          </p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="references" aria-labelledby="references-title">
+      <h2 id="references-title">References cited in this outline</h2>
+      <ul>
+        <li>Argall et al. (2009), <a href="https://doi.org/10.1016/j.robot.2008.10.024" target="_blank" rel="noopener"><em>A Survey of Robot Learning from Demonstration</em></a>.</li>
+        <li>Schaal (1996), <a href="https://proceedings.neurips.cc/paper_files/paper/1996/file/68d13cf26c4b4f4f932e3eff990093ba-Paper.pdf" target="_blank" rel="noopener"><em>Learning from Demonstration</em></a>.</li>
+        <li>Ross et al. (2011), <a href="https://proceedings.mlr.press/v15/ross11a.html" target="_blank" rel="noopener"><em>A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning</em></a>.</li>
+        <li>Shafiullah et al. (2022), <a href="https://papers.neurips.cc/paper_files/paper/2022/hash/90d17e882adbdda42349db6f50123817-Abstract-Conference.html" target="_blank" rel="noopener"><em>Behavior Transformers: Cloning k Modes with One Stone</em></a>.</li>
+        <li>Belkhale et al. (2023), <a href="https://papers.neurips.cc/paper_files/paper/2023/hash/fe692980c5d9732cf153ce27947653a7-Abstract-Conference.html" target="_blank" rel="noopener"><em>Data Quality in Imitation Learning</em></a>.</li>
+        <li>Zhao et al. (2023), <a href="https://arxiv.org/abs/2304.13705" target="_blank" rel="noopener"><em>Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware</em></a>.</li>
+        <li>Chi et al. (2023), <a href="https://www.roboticsproceedings.org/rss19/p026.html" target="_blank" rel="noopener"><em>Diffusion Policy: Visuomotor Policy Learning via Action Diffusion</em></a>.</li>
+        <li>Kim et al. (2025), <a href="https://proceedings.mlr.press/v270/kim25c.html" target="_blank" rel="noopener"><em>OpenVLA: An Open-Source Vision-Language-Action Model</em></a>.</li>
+        <li>Mandlekar et al. (2023), <a href="https://proceedings.mlr.press/v229/mandlekar23a.html" target="_blank" rel="noopener"><em>MimicGen: A Data Generation System for Scalable Robot Learning using Human Demonstrations</em></a>.</li>
+        <li>Jiang et al. (2024), <a href="https://arxiv.org/abs/2410.24185" target="_blank" rel="noopener"><em>DexMimicGen: Automated Data Generation for Bimanual Dexterous Manipulation via Imitation Learning</em></a>.</li>
+        <li>Nasiriany et al. (2024), <a href="https://arxiv.org/abs/2406.02523" target="_blank" rel="noopener"><em>RoboCasa: Large-Scale Simulation of Everyday Tasks for Generalist Robots</em></a>.</li>
+        <li>Garrett et al. (2025), <a href="https://proceedings.mlr.press/v270/garrett25a.html" target="_blank" rel="noopener"><em>SkillMimicGen: Automated Demonstration Generation for Efficient Skill Learning and Deployment</em></a>.</li>
+        <li>Xue et al. (2025), <a href="https://www.roboticsproceedings.org/rss21/p157.html" target="_blank" rel="noopener"><em>DemoGen: Synthetic Demonstration Generation for Data-Efficient Visuomotor Policy Learning</em></a>.</li>
+        <li>Wang et al. (2026), <a href="https://arxiv.org/abs/2606.24078" target="_blank" rel="noopener"><em>MinInter: Minimizing Trajectory Interpolation During Data Augmentation for Imitation Learning</em></a>.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
