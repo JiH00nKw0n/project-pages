@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>2026-08-18 서면보고 · MimicGen Survivor Bias</title>
+  <style>
+    :root {
+      --ink: #202124;
+      --muted: #686d75;
+      --line: #dde1e7;
+      --soft: #f6f7f9;
+      --accent: #3164c6;
+      --accent-ink: #244f9f;
+      --accent-soft: #eaf1ff;
+      --question: #f4f7ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: #fff;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      font-size: 16px;
+      line-height: 1.72;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+
+    .page {
+      width: min(940px, calc(100% - 40px));
+      margin: 48px auto 80px;
+    }
+
+    .eyebrow {
+      margin: 0 0 9px;
+      color: var(--accent-ink);
+      font-size: 0.82rem;
+      font-weight: 750;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .report-title {
+      margin: 0 0 26px;
+      font-size: clamp(2rem, 5vw, 3.1rem);
+      line-height: 1.16;
+      letter-spacing: -0.045em;
+    }
+
+    h2 {
+      margin: 56px 0 16px;
+      padding-top: 4px;
+      font-size: 1.43rem;
+      line-height: 1.38;
+      letter-spacing: -0.025em;
+    }
+
+    p { margin: 0 0 15px; }
+
+    a {
+      color: var(--accent-ink);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.18em;
+    }
+
+    strong { font-weight: 750; }
+
+    ul, ol {
+      margin: 10px 0 18px;
+      padding-left: 1.45rem;
+    }
+
+    li { padding-left: 0.18rem; }
+    li + li { margin-top: 7px; }
+    li::marker { color: var(--accent); }
+
+    blockquote {
+      margin: 22px 0 24px;
+      padding: 18px 21px;
+      border: 1px solid #cbd9f7;
+      border-left: 4px solid var(--accent);
+      border-radius: 10px;
+      background: var(--question);
+      font-size: 1.08rem;
+    }
+
+    blockquote p { margin: 0; }
+
+    code {
+      padding: 0.16rem 0.36rem;
+      border: 1px solid #d9dde4;
+      border-radius: 5px;
+      background: var(--soft);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9em;
+    }
+
+    .toc {
+      margin: 28px 0 42px;
+      padding: 18px 22px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--soft);
+    }
+
+    .toc-title {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 750;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .toc ul {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 5px 24px;
+      margin: 0;
+      padding-left: 1.1rem;
+    }
+
+    .toc li { margin: 0; }
+    .toc a { text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+
+    figure {
+      margin: 28px 0 34px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 10px 30px rgba(25, 40, 70, 0.06);
+    }
+
+    figure svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    figcaption {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      text-align: center;
+    }
+
+    article > p:first-of-type {
+      font-size: 1.02rem;
+    }
+
+    @media (max-width: 680px) {
+      .page {
+        width: min(100% - 28px, 940px);
+        margin-top: 30px;
+      }
+
+      .toc ul { grid-template-columns: 1fr; }
+      h2 { margin-top: 44px; }
+      figure { padding: 8px; }
+    }
+
+    @media print {
+      .page { width: 100%; margin: 0; }
+      .toc { break-inside: avoid; }
+      a { color: inherit; }
+      figure { box-shadow: none; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <p class="eyebrow">Research update · 2026-08-18</p>
+    <h1 class="report-title">2026-08-18 서면보고</h1>
+        <nav class="toc" aria-label="목차">
+      <p class="toc-title">Contents</p>
+      <ul>
+      <li><a href="#어떤-문제를-풀고자-하는가-연구-질문의-재구성"
+      id="toc-어떤-문제를-풀고자-하는가-연구-질문의-재구성">1. 어떤
+      문제를 풀고자 하는가? – 연구 질문의 재구성</a></li>
+      <li><a
+      href="#연구-질문에-어떻게-답할-것인가-접근-방법과-예상-기여"
+      id="toc-연구-질문에-어떻게-답할-것인가-접근-방법과-예상-기여">2.
+      연구 질문에 어떻게 답할 것인가? – 접근 방법과 예상 기여</a></li>
+      <li><a
+      href="#기존-연구는-어디까지-다루었는가-선행-연구-대비-포지셔닝"
+      id="toc-기존-연구는-어디까지-다루었는가-선행-연구-대비-포지셔닝">3.
+      기존 연구는 어디까지 다루었는가? – 선행 연구 대비
+      포지셔닝</a></li>
+      <li><a
+      href="#데이터의-어떤-특성을-보아야-하는가-선행-연구에서-얻은-분석-관점"
+      id="toc-데이터의-어떤-특성을-보아야-하는가-선행-연구에서-얻은-분석-관점">4.
+      데이터의 어떤 특성을 보아야 하는가? – 선행 연구에서 얻은 분석
+      관점</a></li>
+      <li><a href="#논문을-어떤-순서로-구성할-것인가-논문-초안-구조"
+      id="toc-논문을-어떤-순서로-구성할-것인가-논문-초안-구조">5. 논문을
+      어떤 순서로 구성할 것인가? – 논문 초안 구조</a></li>
+      <li><a href="#어떤-환경에서-검증할-것인가-실험-세팅"
+      id="toc-어떤-환경에서-검증할-것인가-실험-세팅">6. 어떤 환경에서
+      검증할 것인가? – 실험 세팅</a></li>
+      <li><a href="#장의-질문을-어떻게-검증할-것인가-4장-실험-설계"
+      id="toc-장의-질문을-어떻게-검증할-것인가-4장-실험-설계">7. 4장의
+      질문을 어떻게 검증할 것인가? – 4장 실험 설계</a></li>
+      <li><a href="#실험-계획과-차주-보고-계획"
+      id="toc-실험-계획과-차주-보고-계획">8. 실험 계획과 차주 보고
+      계획</a></li>
+      </ul>
+    </nav>
+        <article>
+      <p>안녕하세요, 교수님. 지난주에는 그동안의 실험 결과를 바탕으로
+      논문의 전체 방향을 초안으로 정리하여 보고드렸습니다.</p>
+      <p>현재 연구에서는 MimicGen 계열의 합성 시연 생성 방법에서
+      <strong>성공한 trajectory만 학습 데이터로 남기는 과정</strong>이
+      데이터 분포를 의도치 않게 바꾸는지 분석하는 것에서 출발하려
+      합니다. 이어서 이 분포 변화가 정책 성능에 미치는 영향을 규명하고,
+      정책에 유리한 데이터가 남도록 candidate trajectory의 생성과 선택을
+      조절하는 방법을 제안하려 합니다.</p>
+      <p>지난 발표에서는 MimicGen 계열의 생성 과정을 구조화하고, 그
+      과정에서 분석할 요소를 정리했습니다. 다만 본격적인 실험을 시작하기
+      전에 다음 부분을 더 명확히 할 필요가 있다고 판단했습니다.</p>
+      <ul>
+      <li>개별 실험 결과와 분석 요소가 논문의 중심 연구 질문 및 최종
+      기여와 충분히 연결되지 않았습니다.</li>
+      <li>하나의 중심 연구 질문, 이를 구성하는 세부 질문, 각 질문에
+      답하기 위한 실험 순서가 명확히 구분되지 않았습니다.</li>
+      <li>선행 연구가 이미 분석한 범위와 본 연구가 추가로 다루는 범위를
+      정확히 구분하지 못했습니다.</li>
+      <li>Task, robot, source demonstration과 policy를 어떤 근거로
+      선택할지 실험 세팅이 충분히 정리되지 않았습니다.</li>
+      </ul>
+      <p>이에 이번 주에는 다음 세 질문을 중심으로 연구 방향을 다시
+      검토했습니다.</p>
+      <ol type="1">
+      <li>이 논문이 풀고자 하는 문제와 기여를 하나의 연구 질문으로
+      어떻게 정리할 수 있는가?</li>
+      <li>이 연구 질문을 어떤 세부 질문과 실험 순서로 나누어 답할
+      것인가?</li>
+      <li>관련 선행 연구와 비교했을 때 본 연구의 차이는 무엇이며, 선행
+      연구에서 어떤 분석 관점과 실험 세팅을 차용할 수 있는가?</li>
+      </ol>
+      <p>아래에서는 위 질문에 답하는 과정에서 정리한 연구 질문, 기여,
+      선행 연구 대비 포지셔닝, 논문 구성과 4장 실험 계획을 순서대로
+      공유드립니다. 부족한 부분이나 추가로 검토할 사항에 대해 의견을
+      주시면 반영하겠습니다.</p>
+      <ul>
+      <li><strong>지난 보고:</strong> <a
+      href="https://project.jihoonkwon.info/0e4a3b0e/mimicgen-survivor-bias/2026-08-11.html">실험
+      관찰과 전체 연구 그림 정리 (2026-08-11)</a></li>
+      <li><strong>연구 구조 정리:</strong> <a
+      href="https://project.jihoonkwon.info/0e4a3b0e/mimicgen-survivor-bias/2026-08-12.html">선행
+      연구의 분석 범위와 연구 진행 순서 정리 (2026-08-12)</a></li>
+      </ul>
+      <h2 id="어떤-문제를-풀고자-하는가-연구-질문의-재구성">1. 어떤
+      문제를 풀고자 하는가? – 연구 질문의 재구성</h2>
+      <p>지금까지 관찰한 initial-condition 및 source bias를 정책 성능과
+      최종 방법론까지 하나의 흐름으로 연결하고, 개별 생성 요소의 효과를
+      분석한 선행 연구와 범위를 구분하기 위해 중심 연구 질문을 다음과
+      같이 정리했습니다.</p>
+      <blockquote>
+      <p><strong>성공 필터는 합성 시연의 분포를 어떻게 바꾸며, 그 변화는
+      정책 성능에 어떤 영향을 주는가?</strong></p>
+      </blockquote>
+      <p>이 질문은 다음 세 개의 세부 질문으로 나누었습니다.</p>
+      <ol type="1">
+      <li>성공 필터는 시도한 데이터 중 어떤 조건과 행동을 더 많이
+      남기며, 그러한 선택이 발생하는 이유는 무엇인가?</li>
+      <li>각 분포 변화는 정책 성능을 높이는가, 낮추는가?</li>
+      <li>정책에 유리한 분포가 남도록 candidate trajectory의 생성과
+      선택을 어떻게 조절할 수 있는가?</li>
+      </ol>
+      <h2 id="연구-질문에-어떻게-답할-것인가-접근-방법과-예상-기여">2.
+      연구 질문에 어떻게 답할 것인가? – 접근 방법과 예상 기여</h2>
+      <p>논문에서는 중심 연구 질문에 답하기 위해 분석과 방법론을 세
+      단계로 연결하려 합니다. 먼저 성공 필터가 어떤 bias를 만들며 왜
+      그러한 bias가 발생하는지 설명하고, 다음으로 관측된 bias가 정책
+      성능에 미치는 영향을 검증한 뒤, 마지막으로 두 분석의 결과를 이용해
+      생성 과정을 개선하는 구조로 구성하려 합니다.</p>
+      <p>이에 논문의 예상 기여에는 다음 내용을 담으려 합니다.</p>
+      <ol type="1">
+      <li><strong>Bias characterization:</strong> 생성 시도와 retained
+      data를 비교하여 성공 필터가 condition과 action의 분포를 어떻게
+      바꾸는지 보여주고, 그 변화가 발생하는 이유를 설명하는 내용을
+      담으려 합니다.</li>
+      <li><strong>Policy effect:</strong> 데이터 수와 평가 조건을 통제한
+      상태에서 각 분포 변화가 정책 성능에 미치는 영향을 측정하고, 그
+      차이를 condition coverage와 action learnability의 두 축으로
+      설명하려 합니다.</li>
+      <li><strong>Generation method:</strong> 앞선 분석에서 정책 성능에
+      영향을 준 요소를 candidate trajectory의 생성과 선택에 반영하여,
+      retained distribution을 정책 학습에 유리하게 조절하는 방법을
+      제안하려 합니다.</li>
+      </ol>
+      <p>첫 번째 기여를 구체화하려면 MimicGen 계열의 생성 구조에서 분석
+      축을 도출할 필요가 있었습니다. 이에 합성 시연이 생성되는 과정을
+      initial-condition sampling, source demonstration selection, skill
+      transformation, motion stitching, execution과 success filtering의
+      순서로 정리했습니다.</p>
+      <figure>
+            <svg viewBox="0 0 720 596" role="img" aria-label="생성 과정의 네 단계: 물체 배치 뽑기, 계획 단계, 실행 단계, 판정. 계획 단계의 결과는 실행 전에 계산할 수 있고, 실행에서 계획과의 오차가 발생한다.">
+              <defs>
+                <marker id="ar2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 1 L 8 5 L 0 9 z" fill="currentColor"/>
+                </marker>
+              </defs>
+              <rect x="70" y="14" width="380" height="62" rx="10" fill="none" stroke="var(--accent)" stroke-width="1.6"/>
+              <text x="90" y="41" font-size="15" font-weight="700" fill="currentColor">물체 배치 뽑기</text>
+              <text x="215" y="41" font-size="10.5" fill="currentColor" opacity="0.55">Initial-condition sampling</text>
+              <text x="90" y="62" font-size="12" fill="currentColor" opacity="0.62">초기 배치 분포 (실험자가 정하는 입력)</text>
+
+              <line x1="260" y1="76" x2="260" y2="128" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar2)"/>
+
+              <rect x="70" y="132" width="380" height="124" rx="10" fill="none" stroke="var(--accent)" stroke-width="1.6"/>
+              <text x="90" y="158" font-size="15" font-weight="700" fill="currentColor">계획 단계</text>
+              <text x="162" y="158" font-size="10.5" fill="currentColor" opacity="0.55">Planning stage</text>
+
+              <rect x="84" y="170" width="100" height="46" rx="7" fill="none" stroke="currentColor" stroke-width="1.1"/>
+              <text x="134" y="190" font-size="11" font-weight="700" text-anchor="middle" fill="currentColor">Demo selection</text>
+              <text x="134" y="206" font-size="10" text-anchor="middle" fill="currentColor" opacity="0.6">원본 선택</text>
+
+              <line x1="186" y1="193" x2="194" y2="193" stroke="currentColor" stroke-width="1.1" marker-end="url(#ar2)"/>
+
+              <rect x="198" y="170" width="124" height="46" rx="7" fill="none" stroke="currentColor" stroke-width="1.1"/>
+              <text x="260" y="190" font-size="11" font-weight="700" text-anchor="middle" fill="currentColor">Skill transformation</text>
+              <text x="260" y="206" font-size="10" text-anchor="middle" fill="currentColor" opacity="0.6">구간별 변환</text>
+
+              <line x1="324" y1="193" x2="332" y2="193" stroke="currentColor" stroke-width="1.1" marker-end="url(#ar2)"/>
+
+              <rect x="336" y="170" width="100" height="46" rx="7" fill="none" stroke="currentColor" stroke-width="1.1"/>
+              <text x="386" y="190" font-size="11" font-weight="700" text-anchor="middle" fill="currentColor">Motion stitching</text>
+              <text x="386" y="206" font-size="10" text-anchor="middle" fill="currentColor" opacity="0.6">이동 구간 합성</text>
+
+              <text x="90" y="240" font-size="12" fill="currentColor" opacity="0.62">원본, 배치, 규칙이 정해지면 계획 궤적은 하나로 정해진다</text>
+              <rect x="470" y="164" width="196" height="30" rx="7" fill="var(--accent-soft)"/>
+              <text x="568" y="183" font-size="12" font-weight="700" text-anchor="middle" fill="var(--accent-ink)">실행 전에 계산 가능</text>
+              <text x="568" y="212" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.55">시도 전체를 미리 분석할 수 있는 근거</text>
+
+              <line x1="260" y1="256" x2="260" y2="296" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar2)"/>
+              <text x="276" y="282" font-size="11.5" fill="currentColor" opacity="0.62">계획 궤적</text>
+
+              <rect x="70" y="300" width="380" height="112" rx="10" fill="none" stroke="currentColor" stroke-width="1.3"/>
+              <text x="90" y="329" font-size="15" font-weight="700" fill="currentColor">실행 단계</text>
+              <text x="162" y="329" font-size="10.5" fill="currentColor" opacity="0.55">Execution stage</text>
+              <text x="90" y="352" font-size="12.5" fill="currentColor" opacity="0.75">매 스텝, 실제 팔 위치에서 계획점을 향해 움직인다</text>
+              <text x="90" y="372" font-size="12" fill="currentColor" opacity="0.62">계획과 실행의 오차가 발생한다</text>
+              <text x="568" y="349" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor" opacity="0.8">물리적 과업 실패는</text>
+              <text x="568" y="366" font-size="12" font-weight="700" text-anchor="middle" fill="currentColor" opacity="0.8">여기서 발생</text>
+
+              <line x1="260" y1="412" x2="260" y2="464" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar2)"/>
+              <text x="276" y="444" font-size="11.5" fill="currentColor" opacity="0.62">실행 궤적</text>
+
+              <rect x="70" y="468" width="380" height="88" rx="10" fill="none" stroke="currentColor" stroke-width="1.3"/>
+              <text x="90" y="497" font-size="15" font-weight="700" fill="currentColor">판정 (성공 필터)</text>
+              <text x="225" y="497" font-size="10.5" fill="currentColor" opacity="0.55">Success filtering</text>
+              <text x="90" y="520" font-size="12.5" fill="currentColor" opacity="0.75">고정된 판정식을 실행 결과에 적용해 남기거나 버린다</text>
+            </svg>
+          <figcaption>MimicGen-style synthetic demonstration generation pipeline and success filtering.</figcaption></figure>
+      <p>이 구조를 바탕으로 분석 대상을 <strong>condition</strong>과
+      <strong>action</strong>의 두 축으로 나누었습니다.</p>
+      <ul>
+      <li><strong>Condition axis:</strong> Initial-condition sampling
+      단계에서는 합성 시연이 다룰 object의 위치와 회전이 정해집니다.
+      지금까지의 실험에서는 성공 필터가 condition coverage를 축소하며,
+      target object pose가 source demonstration의 pose로부터 더 많이
+      이동하거나 회전할수록 generation success가 낮아지는 경향을
+      관찰했습니다. Condition 축에는 source pose로부터의 위치·회전
+      변화량에 따라 어떤 initial condition이 얼마나 제거되는지 분석하는
+      내용을 담으려 합니다.</li>
+      <li><strong>Action axis:</strong> Candidate trajectory는 source
+      demonstration을 선택하고, source skill을 새로운 object pose에 맞게
+      transform한 뒤, 연속한 skill 사이를 motion stitching으로 연결하여
+      구성합니다. 이 과정에서 계획한 end-effector pose와 실제 pose
+      사이의 오차가 클수록 실행이 실패하여 성공 필터에서 제거될 것이라고
+      가정했습니다. Action 축에는 source selection, skill
+      transformation과 motion stitching이 각각 계획–실행 오차를 얼마나
+      유발하며, 그 오차가 retention과 어떤 관계를 갖는지 분석하는 내용을
+      담으려 합니다.</li>
+      </ul>
+      <p><code>source selection / skill transformation / motion stitching → plan–execution error → retention</code></p>
+      <p>즉, bias characterization은 condition 축에서 어떤 initial
+      condition이 사라지는지를 설명하고, action 축에서 candidate
+      trajectory를 구성하는 세 요소가 계획–실행 오차를 통해 어떤 행동을
+      사라지게 하는지를 설명하는 구조로 구성하려 합니다.</p>
+      <h2
+      id="기존-연구는-어디까지-다루었는가-선행-연구-대비-포지셔닝">3.
+      기존 연구는 어디까지 다루었는가? – 선행 연구 대비 포지셔닝</h2>
+      <p>논문의 Related Work와 포지셔닝은 두 갈래의 선행 연구를 중심으로
+      구성하려 합니다. 첫 번째는 합성 시연을 어떤 파이프라인으로
+      생성하고, 개별 generation choice가 생성률과 정책 성능에 어떤
+      영향을 주는지 연구한 synthetic demonstration generation입니다. 두
+      번째는 어떤 condition과 action으로 구성된 데이터가
+      imitation-learning policy의 성능에 도움이 되는지 연구한 data
+      composition and selection입니다. 이 절에는 첫 번째 연구 흐름과 본
+      연구의 차이를 담고, 다음 절에는 두 번째 연구 흐름에서 가져올 분석
+      관점을 담으려 합니다.</p>
+      <p>MimicGen은 소수의 인간 시연을 새로운 object configuration에
+      맞게 변환하고 연결하여 합성 시연을 생성하는 파이프라인을
+      제안했습니다 <a
+      href="https://proceedings.mlr.press/v229/mandlekar23a.html">(Mandlekar
+      et al., 2023, CoRL)</a>. 후속 연구는 이 구조를 바탕으로 적용할
+      task와 embodiment를 확장하고, 사람이 제공하던 skill structure를
+      자동화하며, candidate trajectory의 구성과 선택을 개선했습니다 <a
+      href="https://research.nvidia.com/labs/srl/publication/jiang-2025-dex-mimic-gen/">(Jiang
+      et al., 2025, ICRA)</a> <a
+      href="https://proceedings.mlr.press/v270/garrett25a.html">(Garrett
+      et al., 2025, CoRL)</a> <a
+      href="https://arxiv.org/abs/2606.24078">(Wang et al., 2026,
+      arXiv)</a>.</p>
+      <p>이 과정에서 개별 generation choice와 bias에 관한 다음 결과도
+      보고되었습니다.</p>
+      <ul>
+      <li>MimicGen은 initial-state distribution, source selection,
+      action noise와 interpolation에 따라 generation rate 또는 policy
+      performance가 달라지는 사례를 보고했습니다 <a
+      href="https://proceedings.mlr.press/v229/mandlekar23a.html">(Mandlekar
+      et al., 2023, CoRL)</a>.</li>
+      <li>DexMimicGen은 source motion을 그대로 replay하거나 새 object
+      pose에 맞게 transform하는 방식에 따라 정책 성능이 달라짐을
+      보였습니다 <a
+      href="https://research.nvidia.com/labs/srl/publication/jiang-2025-dex-mimic-gen/">(Jiang
+      et al., 2025, ICRA)</a>.</li>
+      <li>MinInter는 현재 scene에 필요한 interpolation이 적은 source
+      demonstration을 선택하여 generation rate와 policy success rate를
+      함께 높였습니다 <a href="https://arxiv.org/abs/2606.24078">(Wang
+      et al., 2026, arXiv)</a>.</li>
+      </ul>
+      <p>이 연구들은 initial condition, source selection,
+      transformation과 interpolation이 생성률 또는 정책 성능에 영향을 줄
+      수 있음을 각각 보여줍니다. 본 연구의 차이는 이 요소들을 공통 생성
+      파이프라인의 분석 축으로 통합하고, <strong>attempted
+      distribution에서 retained distribution으로의 변화, 그 변화가
+      발생하는 이유, 정책 성능에 미치는 영향</strong>을 순서대로
+      연결하는 것으로 설명하려 합니다. 이를 통해 개별 generation
+      choice의 효과를 보고하는 것을 넘어, success filtering이 최종 학습
+      데이터의 구성을 어떻게 결정하는지를 연구 범위로 제시하려
+      합니다.</p>
+      <h2
+      id="데이터의-어떤-특성을-보아야-하는가-선행-연구에서-얻은-분석-관점">4.
+      데이터의 어떤 특성을 보아야 하는가? – 선행 연구에서 얻은 분석
+      관점</h2>
+      <p>두 번째 선행 연구 흐름은 imitation learning의 data composition
+      and selection입니다. 이 연구들은 데이터의 양만으로 정책 성능을
+      설명할 수 없으며, 학습 데이터에 어떤 condition과 action이
+      포함되는지가 중요하다는 점을 보였습니다. 이 결과는 앞 절에서
+      도출한 condition/action 분석 축을 정책 성능과 연결하는 근거가
+      됩니다.</p>
+      <ul>
+      <li>환경, 물체와 환경–물체 조합이 다양할수록 새로운 조건에서의
+      정책 성능이 높아졌습니다 <a
+      href="https://openreview.net/forum?id=h4rw3Kepzo">(Lin et al.,
+      2025, ICLR)</a>.</li>
+      <li>Camera pose, object type과 spatial arrangement의 coverage 및
+      평가 조건과의 alignment가 정책 성능에 중요했습니다 <a
+      href="https://proceedings.iclr.cc/paper_files/paper/2025/hash/16466b6c95c5924784486ac5a3feeb65-Abstract-Conference.html">(Saxena
+      et al., 2025, ICLR)</a>.</li>
+      <li>같은 imitation-learning algorithm을 사용하더라도 action
+      divergence와 transition diversity 같은 데이터 특성에 따라 정책
+      성능이 달라졌습니다 <a
+      href="https://proceedings.neurips.cc/paper_files/paper/2023/hash/fe692980c5d9732cf153ce27947653a7-Abstract-Conference.html">(Belkhale
+      et al., 2023, NeurIPS)</a>.</li>
+      <li>DataMIL은 이미 수집된 demonstration 중 정책 성능에 도움이 되는
+      데이터를 사후적으로 선택합니다 <a
+      href="https://openreview.net/forum?id=AcTsKglDdh">(Dass et al.,
+      2026, ICLR)</a>.</li>
+      </ul>
+      <p>이러한 선행 연구를 바탕으로 policy effect에 관한 분석은 다음 두
+      축으로 구성하려 합니다.</p>
+      <ul>
+      <li><strong>Condition coverage:</strong> 배포 시 필요한 object
+      pose, robot state와 task condition이 retained dataset에서
+      줄어들거나 사라지는지를 분석하려 합니다.</li>
+      <li><strong>Action learnability:</strong> Retained trajectory의
+      행동과 subtask 연결이 policy가 학습하기 쉬운 형태로 바뀌는지, 또는
+      실행 오차와 불안정한 연결이 남아 학습을 어렵게 만드는지를 분석하려
+      합니다.</li>
+      </ul>
+      <p>Synthetic demonstration generation 연구는 데이터를 어떻게
+      생성할지를 다루고, data-composition 연구는 어떤 데이터가 정책에
+      유용한지를 다룹니다. 본 연구는 두 흐름을 연결하여, <strong>success
+      filtering이 의도한 generation distribution을 실제 training-data
+      composition으로 어떻게 바꾸며 그 변화가 정책 성능으로 어떻게
+      이어지는지</strong>를 설명하는 것으로 포지셔닝하려 합니다.</p>
+      <h2 id="논문을-어떤-순서로-구성할-것인가-논문-초안-구조">5. 논문을
+      어떤 순서로 구성할 것인가? – 논문 초안 구조</h2>
+      <p>연구 질문, 예상 기여와 선행 연구 대비 범위를 정리한 뒤, 각
+      질문에 답하는 순서가 그대로 논문 구조에 드러나도록 초안을
+      구성했습니다.</p>
+      <ol type="1">
+      <li><strong>Introduction:</strong> 합성 시연 생성의 필요성,
+      success filtering이 만드는 문제와 중심 연구 질문을 제시하려
+      합니다.</li>
+      <li><strong>Related Work:</strong> imitation learning for robot
+      manipulation, synthetic demonstration generation, data composition
+      and selection으로 나누어 본 연구의 범위를 구분하려 합니다.</li>
+      <li><strong>Preliminaries on Synthetic Demonstration
+      Generation:</strong> Imitation learning과 MimicGen 계열의 합성
+      시연 생성 파이프라인을 formal하게 정의하고, 이후 분석에 사용할
+      notation과 assumptions을 정리하려 합니다.</li>
+      <li><strong>Effects of Success Filtering on the Distribution of
+      Synthetic Demonstrations:</strong> Attempted distribution이
+      retained distribution으로 어떻게 바뀌며 왜 그러한 변화가
+      발생하는지 분석하려 합니다.</li>
+      <li><strong>Effects of the Distribution Shifts on Policy
+      Performance:</strong> 데이터 수와 평가 조건을 통제하여 각 분포
+      변화가 정책 성능에 미치는 영향을 측정하려 합니다.</li>
+      <li><strong>Method for Controlling the Retained
+      Distribution:</strong> 앞선 분석 결과를 candidate trajectory의
+      생성과 선택에 반영하는 방법을 제안하려 합니다.</li>
+      <li><strong>Experiments and Conclusion:</strong> 제안 방법의
+      효과와 요소 사이의 interaction을 검증하고, 연구의 한계를 정리하려
+      합니다.</li>
+      </ol>
+      <p>논문의 세 기여는 4–6장에 각각 대응하도록 구성하려 합니다.
+      4장에서는 무엇이 왜 남는지를 설명하고, 5장에서는 그 변화가 정책에
+      유익한지 해로운지를 판정하며, 6장에서는 retained distribution을
+      정책에 유리한 방향으로 조절하는 방법을 제안하려 합니다.</p>
+      <h2 id="어떤-환경에서-검증할-것인가-실험-세팅">6. 어떤 환경에서
+      검증할 것인가? – 실험 세팅</h2>
+      <p>본격적인 실험에 앞서 유사 선행 연구에서 사용한 robot, task,
+      source demonstration과 policy model을 검토하고, 이를 바탕으로
+      다음과 같은 실험 환경을 구성하려 합니다. 새로운 demonstration과
+      annotation을 처음부터 수집하기보다 공개 자산을 재사용하여 구현
+      부담을 줄이고, 기존 결과와 비교할 수 있는 설정을 우선 채택하려
+      합니다.</p>
+      <ul>
+      <li><strong>Robot:</strong> MimicGen과 MinInter에서 공통적으로
+      사용한 Franka Panda 7-DoF single arm과 parallel-jaw gripper를
+      사용하려 합니다 <a
+      href="https://proceedings.mlr.press/v229/mandlekar23a.html">(Mandlekar
+      et al., 2023, CoRL)</a> <a
+      href="https://arxiv.org/abs/2606.24078">(Wang et al., 2026,
+      arXiv)</a>.</li>
+      <li><strong>Source demonstrations:</strong> MimicGen이 공개한
+      작업별 human source demonstrations와 subtask annotations를
+      활용하려 합니다 <a
+      href="https://proceedings.mlr.press/v229/mandlekar23a.html">(Mandlekar
+      et al., 2023, CoRL)</a>.</li>
+      <li><strong>Tasks:</strong> 정밀한 위치·회전 정렬이 필요한 Square,
+      Coffee와 Threading, 여러 subtask와 handoff를 포함하는 Stack
+      Three를 사용하려 합니다. Task 선정에는 contact-rich, long-horizon
+      및 high-variance task에서 source selection과 interpolation의
+      영향이 크게 나타났다는 선행 연구의 결과를 참고했습니다 <a
+      href="https://arxiv.org/abs/2606.24078">(Wang et al., 2026,
+      arXiv)</a>.</li>
+      <li><strong>Policy models:</strong> MimicGen 및 MinInter와 직접
+      비교할 수 있는 BC-RNN을 주 실험에 사용하려 합니다. 또한 주요
+      결과가 특정 policy architecture에만 나타나는지 확인하기 위해
+      Diffusion Policy를 보조 실험에서 평가하려 합니다 <a
+      href="https://proceedings.mlr.press/v229/mandlekar23a.html">(Mandlekar
+      et al., 2023, CoRL)</a> <a
+      href="https://roboticsproceedings.org/rss19/p026.html">(Chi et
+      al., 2023, RSS)</a>. 이러한 구성은 BC 계열 policy와 Diffusion
+      Policy를 함께 비교한 MimicLabs와 DexMimicGen의 실험을 참고했습니다
+      <a
+      href="https://proceedings.iclr.cc/paper_files/paper/2025/hash/16466b6c95c5924784486ac5a3feeb65-Abstract-Conference.html">(Saxena
+      et al., 2025, ICLR)</a> <a
+      href="https://research.nvidia.com/labs/srl/publication/jiang-2025-dex-mimic-gen/">(Jiang
+      et al., 2025, ICRA)</a>.</li>
+      </ul>
+      <p>4장의 generation analysis에는 policy를 학습하지 않고 attempted
+      distribution과 retained distribution의 차이 및 계획–실행 오차의
+      역할을 분석하는 내용을 담으려 합니다. Policy model 비교는 5장에서
+      분포 변화가 정책 성능에 미치는 영향을 검증하는 실험으로 구성하려
+      합니다.</p>
+      <h2 id="장의-질문을-어떻게-검증할-것인가-4장-실험-설계">7. 4장의
+      질문을 어떻게 검증할 것인가? – 4장 실험 설계</h2>
+      <p>4장에는 성공 필터가 어떤 데이터를 남기며 왜 그러한 선택이
+      발생하는지를 설명하는 가설과 분석을 담으려 합니다. 구체적으로 다음
+      네 가지 가설을 검증하려 합니다.</p>
+      <ul>
+      <li><strong>Initial conditions:</strong> Target object pose가
+      source demonstration의 object pose에서 더 멀리 이동하거나
+      회전할수록 retention probability가 낮아질 것으로 예상합니다.</li>
+      <li><strong>Source demonstration:</strong> Source demonstration에
+      따라 transformation 이후 발생하는 계획–실행 오차의 크기가 다르며,
+      더 큰 오차를 만드는 source는 성공 필터에서 덜 남을 것으로
+      예상합니다.</li>
+      <li><strong>Transformed skill:</strong> 더 큰 translation 또는
+      rotation을 요구하는 transformed skill일수록 계획–실행 오차가
+      커지며, 오차가 큰 skill은 성공 필터에서 덜 남을 것으로
+      예상합니다.</li>
+      <li><strong>Motion stitching:</strong> 연속한 skill 사이의 이동이
+      클수록 stitching 과정과 다음 skill 시작 시점의 계획–실행 오차가
+      커지며, 이러한 trajectory는 성공 필터에서 덜 남을 것으로
+      예상합니다.</li>
+      </ul>
+      <p>가설 검증 분석은 다음 순서로 구성하려 합니다.</p>
+      <ol type="1">
+      <li>Generation attempt와 retained data 사이의 factor별 분포
+      비교</li>
+      <li>Source, transformation 및 stitching factor와 position·rotation
+      tracking error의 관계 분석</li>
+      <li>Position·rotation tracking error와 generation success의 관계
+      분석</li>
+      <li>Tracking error를 고려하기 전후의 factor–retention 관계
+      비교</li>
+      </ol>
+      <p>4장에는 계획–실행 오차로 설명되지 않는 실패를 구분하는 내용도
+      담으려 합니다. 오차가 작은데도 실패한 trajectory가 많거나 factor와
+      retention의 관계가 tracking error를 고려한 뒤에도 유지된다면, 계획
+      자체의 infeasibility 또는 접촉 과정의 다른 실패 원인을 별도로
+      분석하려 합니다.</p>
+      <h2 id="실험-계획과-차주-보고-계획">8. 실험 계획과 차주 보고
+      계획</h2>
+      <p>다음 주에는 Square, Coffee, Threading과 Stack Three의 네 task를
+      대상으로 4장의 전체 실험을 수행하고, 그 결과를 보고드리려
+      합니다.</p>
+    </article>
+  </main>
+</body>
+</html>
