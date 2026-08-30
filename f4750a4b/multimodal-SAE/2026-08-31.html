@@ -618,8 +618,8 @@
           <li><a href="#rq1"><strong>3. RQ1과 대응 점수 실험</strong><small>correlation이 실제로 같은 의미를 나타내는 feature pair를 얼마나 정확히 찾는지 검증합니다.</small></a></li>
           <li><a href="#rq2"><strong>4. RQ2와 대응 구조 실험</strong><small>각 개념을 설명하는 feature 수와 모달리티 간 연결 수를 측정합니다.</small></a></li>
           <li><a href="#expected"><strong>5. 기대 결과</strong><small>두 기존 가정에서 모두 문제가 나타날 것으로 예상합니다.</small></a></li>
-          <li><a href="#method-c"><strong>6. 방법론 후보</strong><small>대응 점수행렬의 확장</small></a></li>
-          <li><a href="#method-p"><strong>7. 대응행렬 \(\mathbf P\)</strong><small>Hungarian matching에서 필요한 제약만 푼 부분 \(b\)-매칭을 유도합니다.</small></a></li>
+          <li><a href="#method-c"><strong>6. 방법론 후보</strong><small>대응 점수행렬 \(\mathbf C\)의 확장</small></a></li>
+          <li><a href="#method-p"><strong>7. 방법론 후보</strong><small>대응 행렬 \(\mathbf P\)의 확장</small></a></li>
           <li><a href="#validation"><strong>8. 방법 검증</strong><small>RQ 이후에 점수와 대응 구조의 효과를 분리해 측정합니다.</small></a></li>
           <li><a href="#claims"><strong>9. 최종 주장</strong><small>증거가 지지하는 범위에서 논문의 기여를 정리합니다.</small></a></li>
         </ol>
@@ -934,7 +934,7 @@
           <div class="section-head">
             <div class="section-no">6</div>
             <div>
-              <h2>방법론 후보 (대응 점수행렬의 확장)</h2>
+              <h2>방법론 후보 (대응 점수행렬 \(\mathbf C\)의 확장)</h2>
               <p>기존 correlation을 한 feature씩 계산한 regression coefficient로 해석한 뒤, 같은 모달리티의 다른 feature도 함께 사용하는 regression coefficient로 확장합니다.</p>
             </div>
           </div>
@@ -1079,8 +1079,8 @@
           <div class="section-head">
             <div class="section-no">7</div>
             <div>
-              <h2>대응행렬 \(\mathbf P\)는 Hungarian matching의 두 제약만 완화합니다</h2>
-              <p>부분 \(b\)-매칭은 Hungarian matching의 이진 연결을 유지합니다. RQ2에서 여러 feature가 필요하거나 상대 모달리티에 대응되는 feature가 없는 경우가 확인되면, 연결 수를 1로 제한하는 제약과 모든 feature를 반드시 연결하는 제약만 완화하려 합니다.</p>
+              <h2>방법론 후보 (대응 행렬 \(\mathbf P\)의 확장)</h2>
+              <p>RQ2에서 여러 feature가 필요하거나 상대 모달리티에 대응되는 feature가 없는 경우가 확인된다면, 대응 행렬 \(\mathbf P\)는 Hungarian matching의 일부 제약을 완화하는 방향으로 확장할 수 있을 것으로 예상합니다. 현재 우선 검토하는 후보는 이진 연결을 유지하면서 feature 하나당 연결 수와 대응 없음을 조절할 수 있는 부분 \(b\)-매칭입니다.</p>
             </div>
           </div>
 
@@ -1098,8 +1098,8 @@
           </div>
           <p>이 정의에는 세 조건이 있습니다. 모든 연결은 선택하거나 선택하지 않는 이진값입니다. 각 image feature는 정확히 한 개의 text feature와 연결됩니다. 각 text feature도 정확히 한 개의 image feature와 연결됩니다.</p>
 
-          <h3>RQ2의 목표에 필요한 최소 완화</h3>
-          <p>RQ2에서 \(N{:}M\) 대응과 대응 없음이 각각 성능을 개선한다면 바꿔야 하는 조건은 두 가지입니다. 각 행과 열의 연결 수를 1보다 크게 허용해야 합니다. 또한 연결 수가 반드시 1이어야 한다는 등식을 최대 연결 수를 나타내는 부등식으로 바꿔야 합니다. 각 연결은 선택 여부가 분명한 이진값으로 유지합니다.</p>
+          <h3>RQ2의 결과를 반영할 수 있는 최소 완화 후보</h3>
+          <p>RQ2에서 \(N{:}M\) 대응과 대응 없음이 각각 성능을 개선한다면, 먼저 두 조건을 완화하는 방법을 검토하려 합니다. 각 행과 열이 둘 이상의 연결을 가질 수 있게 하고, 연결 수가 반드시 1이어야 한다는 등식을 최대 연결 수를 나타내는 부등식으로 바꿉니다. 개별 연결을 해석하기 쉽도록 각 원소는 우선 이진값으로 유지하려 합니다. 이 정도의 완화만으로 RQ2에서 관측한 구조를 충분히 표현할 수 있는지는 실험으로 확인해야 합니다.</p>
           <div class="equation p">
             \[
               \mathcal B(K_{\mathrm I},K_{\mathrm T})
@@ -1112,7 +1112,8 @@
           </div>
           <p>image feature 하나는 최대 \(K_{\mathrm I}\)개의 text feature와 연결되고, text feature 하나는 최대 \(K_{\mathrm T}\)개의 image feature와 연결됩니다. 적절한 연결이 없으면 해당 행이나 열을 0으로 남길 수 있습니다. 이처럼 각 feature의 최대 연결 수를 정하면서 일부 feature는 연결하지 않는 문제를 최대 가중치 부분 \(b\)-매칭이라고 합니다.</p>
 
-          <h3>연결 수 자체에도 비용을 두어 불필요한 연결을 막습니다</h3>
+          <h3>불필요한 연결을 줄이기 위한 후보 제약</h3>
+          <p>최대 연결 수만 정하면 점수가 조금이라도 양수인 연결을 상한까지 선택할 수 있습니다. 이를 줄이기 위해 연결 하나를 추가할 때마다 비용을 부과하는 목적함수를 다음과 같이 검토할 수 있습니다.</p>
           <div class="equation p">
             \[
               \boxed{
@@ -1132,9 +1133,9 @@
             \(K_{\mathrm I}=K_{\mathrm T}=1\)로 두고 두 부등식을 등식으로 바꾸면 모든 허용 행렬은 permutation matrix가 됩니다. 모든 permutation matrix는 연결 수가 \(m\)으로 같으므로 연결 비용도 상수가 됩니다. 따라서 새 최적화는 기존 Hungarian 문제와 정확히 같아집니다.
           </div>
 
-          <h3>대응행렬과 activation 변환은 분리합니다</h3>
-          <p>부분 \(b\)-매칭으로 얻은 \(\hat{\mathbf P}\)는 어떤 image feature와 text feature가 연결되는지만 나타냅니다. permutation matrix는 좌표를 그대로 재배치할 수 있지만, 한 행에 여러 개의 1이 있는 행렬을 activation에 곧바로 곱하면 한 activation이 여러 좌표로 복제되거나 여러 activation이 더해집니다. 따라서 \(\hat{\mathbf P}\) 자체를 activation 변환행렬로 사용하지 않으려 합니다.</p>
-          <p>실제 alignment에서는 \(\hat{\mathbf P}\)가 선택한 연결에만 0이 아닌 가중치를 허용하고, 그 가중치를 학습 표본에서 ridge regression으로 구하려 합니다. 이미지에서 텍스트로 activation을 옮기는 가중치 \(\mathbf W^{\mathrm{I\rightarrow T}}\)는 다음과 같이 학습합니다.</p>
+          <h3>대응 행렬과 activation 변환을 분리하는 방안을 검토합니다</h3>
+          <p>부분 \(b\)-매칭으로 얻은 \(\hat{\mathbf P}\)는 어떤 image feature와 text feature가 연결되는지만 나타낼 수 있습니다. permutation matrix는 좌표를 그대로 재배치할 수 있지만, 한 행에 여러 개의 1이 있는 행렬을 activation에 곧바로 곱하면 한 activation이 여러 좌표로 복제되거나 여러 activation이 더해집니다. 따라서 현재 후보에서는 \(\hat{\mathbf P}\) 자체를 activation 변환행렬로 사용하지 않고, 대응 구조와 실제 변환 가중치를 분리하는 편이 적절할 것으로 봅니다.</p>
+          <p>이 후보를 실제 alignment에 사용할 때는 \(\hat{\mathbf P}\)가 선택한 연결에만 0이 아닌 가중치를 허용하고, 그 가중치를 학습 표본에서 ridge regression으로 구하는 방안을 검토하려 합니다. 이미지에서 텍스트로 activation을 옮기는 가중치 \(\mathbf W^{\mathrm{I\rightarrow T}}\)는 다음과 같이 학습할 수 있습니다.</p>
           <div class="equation p">
             \[
               \hat{\mathbf W}^{\mathrm{I\rightarrow T}}
@@ -1148,8 +1149,8 @@
           <p>여기서 \(\operatorname{supp}(\mathbf W)\)는 가중치가 0이 아닌 위치의 집합입니다. 위 제약은 대응행렬 \(\hat{\mathbf P}\)가 선택하지 않은 연결의 가중치를 반드시 0으로 둡니다. 텍스트에서 이미지 방향의 가중치도 \(\hat{\mathbf P}^{\top}\)가 허용한 연결 안에서 따로 학습하려 합니다. 이 구분을 통해 \(\hat{\mathbf P}\)는 해석 가능한 대응 구조를 담당하고, \(\mathbf W\)는 선택된 관계 안에서 실제 activation의 크기를 맞춥니다. 기존 Hungarian 방법은 \(\hat{\mathbf P}\)를 permutation matrix로 제한하고 \(\mathbf W=\hat{\mathbf P}\)로 고정한 특수한 경우입니다.</p>
 
           <div class="callout">
-            <strong>가중치 \(\mathbf W\)는 대응 구조를 더 완화하기 위해 추가하는 변수가 아닙니다</strong>
-            permutation matrix는 좌표를 한 번씩 옮기므로 별도의 크기 조정이 필요하지 않습니다. 여러 연결을 허용하면 한 feature의 activation을 어느 비율로 나눌지 정해야 하므로 가중치가 필요합니다. 주된 비교에서는 모든 대응 구조에 같은 가중치 학습 절차를 적용하고, 선택된 연결에 동일한 가중치를 주는 단순 대조군도 함께 평가하려 합니다. 이를 통해 여러 연결의 효과와 가중치 학습의 효과를 분리합니다.
+            <strong>가중치 \(\mathbf W\)를 별도로 학습하는 이유</strong>
+            permutation matrix는 좌표를 한 번씩 옮기므로 별도의 크기 조정이 필요하지 않습니다. 그러나 여러 연결을 허용하면 한 feature의 activation을 각 연결에 어느 정도 반영할지 정할 필요가 생깁니다. 현재 후보에서는 이 역할을 \(\mathbf W\)에 맡기려 합니다. 주된 비교에서는 모든 대응 구조에 같은 가중치 학습 절차를 적용하고, 선택된 연결에 동일한 가중치를 주는 단순 대조군도 함께 평가하려 합니다. 이를 통해 여러 연결의 효과와 가중치 학습의 효과를 분리할 수 있을 것으로 예상합니다.
           </div>
 
           <h3>Hungarian, Sinkhorn, Procrustes, 부분 \(b\)-매칭의 차이</h3>
@@ -1184,8 +1185,8 @@
           <p>Hungarian permutation은 Sinkhorn이 사용하는 doubly stochastic matrix와 Procrustes가 사용하는 orthogonal matrix의 허용 집합에 모두 포함됩니다. 부분 \(b\)-매칭도 차수 상한이 1 이상이면 모든 permutation을 허용합니다. 그러나 세 확장은 서로 다른 조건을 풀기 때문에 Sinkhorn, Procrustes와 부분 \(b\)-매칭의 허용 집합은 일반적으로 서로를 포함하지 않습니다.</p>
 
           <div class="callout">
-            <strong>부분 \(b\)-매칭을 선택하는 이유</strong>
-            연구의 목표는 어떤 image feature와 어떤 text feature가 연결되는지를 작은 이진 그래프로 나타내고, 그 연결 안에서만 alignment weight를 학습하는 것입니다. 부분 \(b\)-매칭은 \(N{:}M\) 대응과 대응 없음만 추가로 허용하므로, 연속적인 질량 분배를 허용하는 Sinkhorn이나 전체 회전을 허용하는 Procrustes보다 현재 가설에 직접 대응합니다.
+            <strong>부분 \(b\)-매칭을 우선 후보로 두는 이유</strong>
+            이 연구는 어떤 image feature와 어떤 text feature가 연결되는지를 해석할 수 있는 작은 구조를 유지하면서 \(N{:}M\) 대응과 대응 없음을 표현하려 합니다. 부분 \(b\)-매칭은 Hungarian matching의 이진 연결을 유지하면서 이 두 가능성을 추가할 수 있으므로 현재 가설에 비교적 직접 대응할 것으로 예상합니다. 다만 RQ2에서 연속적인 연결 가중치나 전체 latent space의 회전이 더 적합하다는 결과가 나오면 Sinkhorn이나 Procrustes를 주된 방법 후보로 다시 검토해야 합니다.
           </div>
         </section>
 
