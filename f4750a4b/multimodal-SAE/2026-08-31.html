@@ -615,8 +615,8 @@
           <li><a href="#summary"><strong>0. 연구 구조</strong><small>기존 연구에서 두 가지 검증 질문이 나오는 과정을 먼저 제시합니다.</small></a></li>
           <li><a href="#previous"><strong>1. 기존 연구</strong><small>cross-modal feature heterogeneity와 기존 \(\mathbf C\), \(\mathbf P\)를 정의합니다.</small></a></li>
           <li><a href="#limits"><strong>2. 두 가정의 한계</strong><small>서로 다른 정보를 나타내지만 자주 함께 등장하는 feature pair와 1:1 대응 가정이 만드는 오류를 구분합니다.</small></a></li>
-          <li><a href="#rq1"><strong>3. RQ1과 대응 점수 실험</strong><small>correlation이 실제로 같은 의미를 나타내는 feature pair를 얼마나 정확히 찾는지 검증합니다.</small></a></li>
-          <li><a href="#rq2"><strong>4. RQ2와 대응 구조 실험</strong><small>각 개념을 설명하는 feature 수와 모달리티 간 연결 수를 측정합니다.</small></a></li>
+          <li><a href="#rq1"><strong>3. RQ1과 대응 점수 실험</strong><small>coactivation correlation이 실제 semantic correspondence를 얼마나 정확히 반영하는지 분석합니다.</small></a></li>
+          <li><a href="#rq2"><strong>4. RQ2와 대응 구조 실험</strong><small>feature splitting과 feature merging이 1:1 대응 가정에 미치는 영향을 분석합니다.</small></a></li>
           <li><a href="#expected"><strong>5. 기대 결과</strong><small>두 기존 가정에서 모두 문제가 나타날 것으로 예상합니다.</small></a></li>
           <li><a href="#method-c"><strong>6. 방법론 후보</strong><small>대응 점수행렬 \(\mathbf C\)의 확장</small></a></li>
           <li><a href="#method-p"><strong>7. 방법론 후보</strong><small>대응 행렬 \(\mathbf P\)의 확장</small></a></li>
@@ -630,14 +630,16 @@
             <div class="section-no">0</div>
             <div>
               <h2>연구 구조</h2>
-              <p>후속 연구의 첫 단계에서는 기존 방법을 바꾸지 않습니다. 먼저 두 가정이 실제 embedding에서 실패하는지 확인합니다.</p>
+              <p>기존 연구에서는 image embedding과 text embedding에서 같은 의미를 나타내는 feature direction이 서로 다를 수 있다는 cross-modal feature heterogeneity를 분석했습니다. 이를 보존하기 위해 각 모달리티에 별도의 SAE를 학습한 뒤 두 SAE의 feature를 사후적으로 대응시키는 post-hoc feature alignment를 제안했으며, 이 방법이 feature recovery 측면에서 효과적임을 보였습니다.</p>
+              <p>그러나 기존 연구에서는 post-hoc feature alignment에 사용할 수 있는 여러 대응 방법의 특성과 장단점을 충분히 비교하지 못했습니다. 특히 기존 방법이 사용하는 coactivation correlation과 1:1 대응 가정이 실제 embedding에서 언제 성립하고 언제 실패하는지 분석하지 못했습니다.</p>
+              <p>따라서 후속 연구의 첫 단계에서는 기존 방법을 바로 바꾸기보다 두 가정의 실패 조건을 실제 embedding에서 분석하려 합니다. 그 결과를 바탕으로 대응 점수행렬 \(\mathbf C\)와 대응 행렬 \(\mathbf P\)를 어떻게 확장할지 검토하려 합니다.</p>
             </div>
           </div>
 
           <div class="flow" aria-label="연구 진행 순서">
             <div><span class="tag m">기존 연구</span><b>feature direction의 차이를 보존합니다</b><p>이미지와 텍스트에 별도의 sparse autoencoder를 학습하여 모달리티마다 다른 feature direction을 유지했습니다.</p></div>
-            <div><span class="tag c">RQ1</span><b>대응 점수가 무엇을 측정하는지 확인합니다</b><p>높은 coactivation correlation을 얻은 image feature와 text feature가 실제로 같은 의미의 정보를 나타내는지, 아니면 의미적으로 공통된 정보가 없지만 데이터에서 자주 함께 나타나서 높은 correlation을 얻었는지 구분하려 합니다.</p></div>
-            <div><span class="tag p">RQ2</span><b>1:1보다 많은 feature가 필요한지 확인합니다</b><p>각 모달리티에서 같은 category를 예측하는 데 충분한 feature 수를 측정합니다. 이어서 상대 모달리티의 activation을 설명하는 데 feature 하나면 충분한지 확인하려 합니다.</p></div>
+            <div><span class="tag c">RQ1</span><b>coactivation correlation과 실제 의미 대응의 관계를 분석합니다</b><p>높은 coactivation correlation을 얻은 image feature와 text feature가 실제로 같은 의미의 정보를 나타내는지, 아니면 의미적으로 공통된 정보가 없지만 데이터에서 자주 함께 나타나서 높은 correlation을 얻었는지 구분하려 합니다.</p></div>
+            <div><span class="tag p">RQ2</span><b>feature splitting과 feature merging이 만드는 대응 구조를 분석합니다</b><p>각 모달리티에서 같은 개념을 표현하는 데 필요한 feature 수를 측정합니다. 이어서 상대 모달리티의 activation을 설명하는 데 feature 하나면 충분한지 확인하여 실제 대응이 1:1에서 어떻게 벗어나는지 분석하려 합니다.</p></div>
           </div>
 
           <div class="two-col">
@@ -653,6 +655,7 @@
               <span class="tag p">Hungarian 1:1 대응행렬 \(\mathbf P\)의 문제</span>
               <h3>같은 개념을 두 모달리티가 같은 수의 feature로 표현한다고 가정할 수 없습니다</h3>
               <p>하나의 의미에 대응되는 SAE feature가 각 모달리티에 하나씩만 존재한다고 가정할 수 없습니다.</p>
+              <p>하나의 의미가 여러 feature에 나뉘어 표현되는 현상을 feature splitting이라고 합니다. 반대로 하나의 feature가 여러 의미를 함께 나타내는 현상을 feature merging이라고 합니다. 두 현상이 이미지와 텍스트에서 서로 다르게 나타나면 두 모달리티의 feature를 1:1로 연결하기 어렵습니다.</p>
               <p>강아지를 예로 들면, 이미지 SAE에서는 강아지의 얼굴, 털과 몸의 형태를 나타내는 여러 feature가 함께 강아지 정보를 구성할 수 있습니다. 텍스트 SAE에서도 <code>dog</code>, <code>puppy</code>와 <code>canine</code>처럼 범위와 세부 의미가 다른 여러 feature가 강아지와 관련된 정보를 구성할 수 있습니다.</p>
               <p>따라서 이미지와 텍스트의 feature는 1:1이 아니라 서로 다른 수와 구성의 feature set이 연결되는 \(N{:}M\) 관계일 수 있습니다. 일부 feature는 한쪽 모달리티에만 필요한 정보를 나타내어 상대 모달리티에서 대응되는 feature가 없을 수도 있습니다.</p>
               <p>후속 연구의 첫 단계에서는 같은 category를 설명하는 데 각 모달리티에서 몇 개의 feature가 필요한지 측정하고, 상대 모달리티의 feature를 하나보다 많이 사용해야 activation을 설명할 수 있는지 확인하려 합니다.</p>
@@ -700,6 +703,8 @@
             \]
           </div>
           <p>여기서 \(\mathcal P_m\)은 \(m\times m\) permutation matrix의 집합입니다. Hungarian algorithm은 전체 correlation의 합이 가장 커지도록 image feature와 text feature를 1:1로 연결합니다. 이 permutation은 텍스트 SAE의 latent coordinate만 다시 배치하므로 두 모달리티의 decoder direction은 바꾸지 않습니다.</p>
+
+          <p>기존 연구에서는 이 post-hoc alignment가 feature recovery 측면에서 효과적임을 보였지만, 이 결과만으로 coactivation correlation이 실제 의미 대응을 정확히 반영하거나 1:1 대응이 실제 embedding 구조에 적합하다고 결론 내릴 수는 없습니다. 후속 연구에서는 이 두 가정을 각각 RQ1과 RQ2로 나누어 분석하려 합니다.</p>
         </section>
 
         <section id="limits">
@@ -740,9 +745,15 @@
           <div class="section-head">
             <div class="section-no">3</div>
             <div>
-              <h2>RQ1. coactivation correlation은 의미적으로 공통점이 없는 feature pair에도 두 개념이 자주 함께 등장한다는 이유만으로 높은 점수를 주는가?</h2>
-              <p>COCO 2017로 학습한 SAE와 이미지의 객체 및 배경 영역을 pixel 단위로 표시한 annotation을 사용하여, 개별 feature pair의 점수 오류와 최종 matching의 오류를 차례로 확인하려 합니다. 이어서 다른 개념의 영향을 통제하면 두 오류가 줄어드는지 검증하려 합니다.</p>
+              <h2>RQ1. coactivation correlation은 실제 semantic correspondence를 얼마나 정확히 반영하며, 어떤 경우에 잘못된 대응 점수를 만드는가?</h2>
+              <p>기존 방법은 image feature와 text feature의 coactivation correlation이 높을수록 두 feature가 같은 의미의 정보를 나타낼 가능성이 높다고 봅니다. 그러나 의미적으로 공통된 정보가 없는 feature도 두 개념이 데이터에서 자주 함께 등장하면 높은 점수를 얻을 수 있습니다.</p>
+              <p>COCO 2017로 학습한 SAE와 이미지의 객체 및 배경 영역을 pixel 단위로 표시한 annotation을 사용하여 이러한 오류가 실제 embedding에서 발생하는지 분석하려 합니다. 개별 feature pair의 점수 오류와 최종 matching의 오류를 차례로 확인하고, 다른 개념의 영향을 통제했을 때 두 오류가 줄어드는지 검증하려 합니다.</p>
             </div>
+          </div>
+
+          <div class="definition">
+            <strong>이 문서에서 semantic correspondence가 뜻하는 것</strong>
+            <p>Image feature와 text feature가 같은 입력 개념의 정보를 나타내는 관계를 semantic correspondence라고 합니다. 두 feature가 단순히 같은 표본에서 자주 활성화된다는 사실만으로 semantic correspondence가 성립한다고 보지는 않습니다.</p>
           </div>
 
           <div class="definition">
@@ -826,14 +837,16 @@
           <div class="section-head">
             <div class="section-no">4</div>
             <div>
-              <h2>RQ2. 같은 개념을 나타내는 image SAE feature와 text SAE feature는 1:1로 대응하는가, 아니면 \(N{:}M\)으로 대응하는가?</h2>
-              <p>먼저 각 모달리티가 같은 개념을 몇 개의 feature로 표현하는지 측정하려 합니다. 다음으로 상대 모달리티의 feature 하나만으로 해당 개념의 activation을 설명할 수 있는지, 아니면 여러 feature를 함께 사용해야 하는지 확인하려 합니다. 두 실험을 통해 1:1 대응 가정이 실제 embedding에서 충분한지 검증합니다.</p>
+              <h2>RQ2. feature splitting과 feature merging으로 인해 실제 cross-modal correspondence는 1:1 관계에서 어떻게 벗어나는가?</h2>
+              <p>실제 SAE에서는 하나의 개념이 여러 feature로 나뉘거나 하나의 feature가 여러 개념을 함께 나타낼 수 있습니다. 이러한 구조가 모달리티마다 다르면 같은 개념에 관한 image feature와 text feature의 대응은 1:1이 아닐 수 있습니다.</p>
+              <p>먼저 각 모달리티가 같은 개념을 몇 개의 feature로 표현하는지 측정하려 합니다. 다음으로 상대 모달리티의 feature 하나만으로 해당 개념의 activation을 설명할 수 있는지, 아니면 여러 feature를 함께 사용해야 하는지 확인하려 합니다. 두 실험을 통해 실제 대응이 1:1에서 어떻게 벗어나는지 분석하고, 그 결과에 맞는 post-hoc feature alignment의 조건을 정리하려 합니다.</p>
             </div>
           </div>
 
           <div class="definition">
-            <strong>RQ2의 가설</strong>
-            같은 개념을 예측하는 데 충분한 image SAE feature 수와 text SAE feature 수는 다를 수 있습니다. 또한 한 image feature가 여러 text feature와 연결되는 1:N, 여러 image feature가 한 text feature와 연결되는 N:1, 양쪽 모두 여러 feature가 연결되는 N:M 관계가 있을 수 있습니다. 상대 모달리티의 어떤 작은 feature set으로도 목표 activation을 무작위 대조군보다 잘 예측하지 못하는 feature는 대응 없음의 후보로 보려 합니다.
+            <strong>feature splitting과 feature merging</strong>
+            <p>Feature splitting은 하나의 개념 정보가 여러 SAE feature에 나뉘어 표현되는 현상입니다. Feature merging은 하나의 SAE feature가 여러 개념 정보를 함께 나타내는 현상입니다.</p>
+            <p>두 현상이 모달리티마다 다르게 나타나면 같은 개념을 예측하는 데 충분한 image SAE feature 수와 text SAE feature 수가 다를 수 있습니다. 또한 한 image feature가 여러 text feature와 연결되는 1:N, 여러 image feature가 한 text feature와 연결되는 N:1, 양쪽 모두 여러 feature가 연결되는 N:M 관계가 있을 수 있습니다. 상대 모달리티의 어떤 작은 feature set으로도 목표 activation을 무작위 대조군보다 잘 예측하지 못하는 feature는 대응 없음의 후보로 보려 합니다.</p>
           </div>
 
           <h3>공통 실험 설정</h3>
