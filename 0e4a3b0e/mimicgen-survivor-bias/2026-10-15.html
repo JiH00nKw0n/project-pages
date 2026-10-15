@@ -286,13 +286,7 @@ table.low th:first-child{width:16%}table.low th:nth-child(n+2){width:42%}table.l
   <p><strong>원본 시연 조합 <em>d</em>: 데이터 생성 성공률이 높은 원본 시연 조합으로 학습하면 성공률이 낮은 조합으로 학습할 때보다 정책 성능이 개선된다.</strong><br>4장에서 어떤 짝으로 붙이는지가 생성 결과에 영향을 준다는 것을 확인했으므로, 그 조합의 영향이 정책 성능까지 이어지는지 확인함.</p>
 <figure><img src="assets/2026-10-07/figure12-reordered.svg" alt="두 원본을 어떤 짝으로 붙이는지에 따른 정책 성공률"><figcaption><strong>그림 12.</strong> 세로축은 시험 장면 전체의 정책 성공률입니다. 원본 열 개면 짝은 100칸입니다. Compatible pairs 와 Incompatible pairs 는 조합의 효과가 가장 좋은 칸 열 개와 가장 나쁜 칸 열 개만 쓴 조건입니다. Single-demo pairs 는 두 하위작업을 항상 같은 시연에서 가져온 것이고, Even pairs 는 여러 칸에 고르게 나눈 것입니다. Square 의 Incompatible pairs 는 만들 수 없어 자리에 not feasible 이라고 적었습니다.<br><button class="tbl-btn" data-tbl="t12">표로 보기</button></figcaption></figure>
 <ul><li><strong>잘 맞지 않는 조합을 고르면 정책 성능이 크게 낮아지고, 잘 맞는 조합을 고르면 그보다 높은 성능을 보였음.</strong></li></ul>
-<section id="followup-question-4">
-<h3>이번 주 후속 질문 4. 원본 시연의 강건함과 하위작업 조합은 정책 성능에 각각 어떤 영향을 주는가?</h3>
-<p>High DGR과 Low DGR의 원본 5개짜리 집합을 각각 구성하고, 같은 원본 시연과 원본별 사용 비중을 유지한 채 잘 맞는 조합과 안 맞는 조합으로 학습한 정책을 비교함. 그림 12는 원본 10개에서 고른 조합을 비교한 실험이므로 서로 다른 학습자료와 정책의 결과임.</p>
-<figure><img src="assets/2026-10-07/figure14-combination-summary.png" alt="High DGR과 Low DGR 원본 집합에서 Compatible과 Incompatible의 정책 성공률 비교"><figcaption><strong>그림 13.</strong> 원본 집합의 강건함과 하위작업 조합에 따른 정책 성공률. High DGR과 Low DGR은 생성 성공률이 높은 원본 집합과 낮은 원본 집합임. 파란색 Compatible은 잘 맞는 조합, 빨간색 Incompatible은 안 맞는 조합임. 동일한 평가 환경에서 재평가한 기존 정책 104개를 사용했으며, 각 정책은 같은 600장면에서 평가함. 같은 원본을 연결한 비중이 0%와 30%인 조건을 함께 평균냄.</figcaption></figure>
 
-<ul><li><strong>잘 맞는 조합으로 학습한 정책의 평균 성공률이 더 높았지만, 개선 폭은 조건마다 달랐음.</strong></li><li><strong>Threading에서는 High DGR 원본 집합에서 조합 선택의 이득이 더 컸고, Coffee에서는 그런 차이가 뚜렷하지 않았음.</strong></li></ul>
-</section>
 
 
   <h2 id="directions">4. Section 6 미리 보기: 방법론 초기 검증</h2>
