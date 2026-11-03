@@ -1,0 +1,22 @@
+[
+  {
+    "group": "landbird_on_land",
+    "source": "https://huggingface.co/datasets/arubique/waterbirds/resolve/main/landbird_on_land/0/004.Groove_billed_Ani_Groove_Billed_Ani_0005_1750.jpg.jpg",
+    "local": "waterbirds-landbird_on_land.jpg"
+  },
+  {
+    "group": "landbird_on_water",
+    "source": "https://huggingface.co/datasets/arubique/waterbirds/resolve/main/landbird_on_water/0/004.Groove_billed_Ani_Groove_Billed_Ani_0010_1704.jpg.jpg",
+    "local": "waterbirds-landbird_on_water.jpg"
+  },
+  {
+    "group": "waterbird_on_land",
+    "source": "https://huggingface.co/datasets/arubique/waterbirds/resolve/main/waterbird_on_land/1/001.Black_footed_Albatross_Black_Footed_Albatross_0001_796111.jpg.jpg",
+    "local": "waterbirds-waterbird_on_land.jpg"
+  },
+  {
+    "group": "waterbird_on_water",
+    "source": "https://huggingface.co/datasets/arubique/waterbirds/resolve/main/waterbird_on_water/1/001.Black_footed_Albatross_Black_Footed_Albatross_0003_796136.jpg.jpg",
+    "local": "waterbirds-waterbird_on_water.jpg"
+  }
+]

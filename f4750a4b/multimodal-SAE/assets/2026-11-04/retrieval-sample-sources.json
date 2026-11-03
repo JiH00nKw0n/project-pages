@@ -1,0 +1,49 @@
+[
+  {
+    "dataset": "DOCCI",
+    "sample_id": "test_00001",
+    "split": "test",
+    "caption_excerpt": "An outdoor front view of a turtle that is sitting on a",
+    "caption_word_count": 92,
+    "caption_source": "https://storage.googleapis.com/docci/data/docci_descriptions.jsonlines",
+    "image_source": "https://storage.googleapis.com/docci/thumbnails/test_00001.jpg",
+    "image": "assets/docci-test_00001.png",
+    "sha256": "b32b747805618c0396905f0d896ec27811df7f34e8c2fa1d18ddec76e6c65a8d"
+  },
+  {
+    "dataset": "IIW-400",
+    "sample_id": "aar_test_04601",
+    "split": "test",
+    "caption_excerpt": "In a low-angle shot, a wall decorated with a pattern of square tiles stands below a wide blue sky with thick, fluffy",
+    "caption_word_count": 139,
+    "caption_source": "https://raw.githubusercontent.com/google/imageinwords/main/datasets/IIW-400/data.jsonl",
+    "objects": [
+      "Wall",
+      "Sky"
+    ],
+    "image_source": "https://storage.googleapis.com/docci/data/images_aar/aar_test_04601.jpg",
+    "image": "assets/iiw-aar_test_04601.jpg",
+    "sha256": "15a85fd0e952e19db68fbe685c5110ffeeaeaf545965ae9f646ab4e10c0609b7"
+  },
+  {
+    "dataset": "COCO2017",
+    "sample_id": "000000094271",
+    "split": "train2017",
+    "caption": "A man sleeping next to a dachshund puppy.",
+    "caption_id": 1050,
+    "caption_local_source": "/Users/jihoonkwon/Desktop/projects/research/MM-SAE/mm-sae/annotations/coco_captions/pilot16/inputs.jsonl",
+    "image": "assets/coco-train2017-000000094271.jpg",
+    "image_source": "http://images.cocodataset.org/train2017/000000094271.jpg",
+    "sha256": "c8e6ab0a00a29840839c456db4924ecacf90e3ef63aa9a6c466a5568458e7a4a"
+  },
+  {
+    "dataset": "Flickr30k",
+    "sample_id": "3131519555",
+    "caption": "A happy looking , long-haired man , wearing goggles over his eyes and very colorful clothing and a hat , is standing in front of a stairway .",
+    "caption_source": "https://raw.githubusercontent.com/BryanPlummer/flickr30k_entities/master/annotations.zip",
+    "caption_file_in_zip": "Sentences/3131519555.txt",
+    "image_source": "https://bryanplummer.com/Flickr30kEntities/database/images/3131519555.jpg",
+    "image": "assets/flickr30k-3131519555.jpg",
+    "sha256": "012ebad5410fac7c009178431ffeddd978425d0dfb008683b505d1a060328a99"
+  }
+]

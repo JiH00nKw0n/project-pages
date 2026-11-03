@@ -1,0 +1,1008 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>2026-11-04 진행 상황 공유</title>
+  <style>
+    :root { --accent:#750014; --ink:#1a1d21; --muted:#4f5660; --line:#d9dde2; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",Arial,sans-serif; background:#eef0f2; color:var(--ink); overflow:hidden; letter-spacing:-.02em; }
+    .deck { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
+    .stage { width:1280px; height:720px; position:relative; flex-shrink:0; }
+    .slide { position:absolute; inset:0; padding:50px 60px; background:linear-gradient(145deg,#fff,#f5f7f9); border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 40px #0001; visibility:hidden; opacity:0; overflow:hidden; }
+    .slide.active { visibility:visible; opacity:1; }
+    .slide::before { content:""; position:absolute; left:60px; right:60px; top:26px; height:3px; background:linear-gradient(90deg,var(--accent),transparent 70%); }
+    .title-slide { display:flex; align-items:center; justify-content:center; }
+    .title-slide::before { display:none; }
+    .title-hero { text-align:center; transform:translateY(-10px); }
+    .title-hero h1 { font-size:67px; line-height:1.3; letter-spacing:-.035em; font-weight:700; margin:0; }
+    .eyebrow { color:var(--accent); font-size:13px; font-weight:600; letter-spacing:.1em; margin-bottom:12px; }
+    h2 { font-size:33px; line-height:1.3; margin-bottom:26px; font-weight:720; letter-spacing:-.035em; }
+    .content { height:492px; }
+    h3 { font-size:23px; color:var(--accent); margin-bottom:14px; line-height:1.4; }
+    p { font-size:22px; line-height:1.6; word-break:keep-all; }
+    .agenda-slide h2 { margin-bottom:16px; }
+    .agenda-lead { font-size:23px; line-height:1.55; margin-bottom:28px; }
+    .agenda-list { list-style:none; }
+    .agenda-list li { display:grid; grid-template-columns:44px 1fr; column-gap:18px; padding:19px 0; border-top:1px solid var(--line); }
+    .agenda-number { font-size:25px; line-height:1.4; font-weight:700; color:var(--accent); }
+    .agenda-list h3 { font-size:24px; line-height:1.4; margin-bottom:6px; }
+    .agenda-list p { font-size:20px; line-height:1.5; color:var(--muted); }
+
+    .research-slide h2 { font-size:35px; margin-bottom:22px; }
+    .research-lead { font-size:25px; line-height:1.55; margin-bottom:30px; }
+    .research-block { padding:22px 0; border-top:1px solid var(--line); }
+    .research-block h3 { font-size:25px; margin-bottom:12px; }
+    .research-block p { font-size:23px; line-height:1.6; }
+    .research-block p + p { margin-top:10px; }
+    .research-columns { display:grid; grid-template-columns:1fr 1fr; gap:36px; margin-top:28px; }
+    .research-columns > div + div { border-left:1px solid var(--line); padding-left:36px; }
+    .research-columns h3 { font-size:25px; margin-bottom:16px; }
+    .research-columns p { font-size:23px; line-height:1.65; }
+    .research-example { margin-top:20px; font-size:20px!important; color:var(--muted); }
+    .research-message { position:absolute; left:60px; right:60px; bottom:72px; border-top:2px solid var(--line); padding-top:20px; font-size:25px; line-height:1.5; font-weight:650; }
+    .research-message strong { color:var(--accent); }
+    .research-source { position:absolute; left:60px; right:60px; bottom:30px; font-size:13px; line-height:1.4; color:var(--muted); }
+    .research-source a { color:inherit; text-underline-offset:3px; }
+    .research-note { font-size:18px!important; line-height:1.5!important; color:var(--muted); margin-top:20px; }
+    .nav { position:fixed; bottom:12px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:15px; font-size:14px; color:var(--muted); }
+    button { font:inherit; border:1px solid #ccd1d6; background:white; border-radius:6px; padding:5px 12px; cursor:pointer; }
+    button:disabled { opacity:.4; cursor:default; }
+    .counter { min-width:54px; text-align:center; }
+    .hint { position:fixed; bottom:17px; right:22px; font-size:12px; color:var(--muted); }
+    @media (max-width:600px) { .hint { display:none; } }
+    @media print {
+      body { overflow:visible; background:white; }
+      .deck { position:static; display:block; }
+      .stage { width:auto; height:auto; transform:none!important; }
+      .slide { position:relative; visibility:visible; opacity:1; width:1280px; height:720px; break-after:page; border:0; box-shadow:none; border-radius:0; }
+      .nav,.hint { display:none; }
+      @page { size:1280px 720px; margin:0; }
+    }
+
+    /* Reused from the 2026-09-16 presentation, slide 4. */
+#s4{position:absolute;inset:0;padding:52px 60px;background:linear-gradient(145deg,rgba(255,255,255,.99),rgba(244,246,248,.97));border:1px solid var(--line);border-radius:22px;box-shadow:0 18px 40px rgba(0,0,0,.07);visibility:hidden;opacity:0;pointer-events:none;display:flex;flex-direction:column;overflow:hidden}
+#s4::before{content:"";position:absolute;left:60px;right:60px;top:26px;height:3px;background:linear-gradient(90deg,var(--accent),transparent 70%);opacity:.85}
+#s4 .eyebrow{font-family:"SF Mono",ui-monospace,Menlo,monospace;color:var(--accent);font-size:13px;letter-spacing:.14em;font-weight:600;margin-bottom:12px}
+#s4 h2{font-size:37px;line-height:1.22;letter-spacing:-.035em;font-weight:720;margin-bottom:24px}
+#s4 .content{flex:1;min-height:0;position:relative}
+#s4 footer{position:absolute;left:60px;right:60px;bottom:33px;font-size:14px;color:#69727c;letter-spacing:-.01em;line-height:1.4}
+#s4 footer a{border-bottom:1px solid #b9bec5}
+#s4 .figma-figure{display:block;object-fit:contain;width:100%;mix-blend-mode:multiply}
+#s4 .method{height:274px;margin:30px 0 20px}
+#s4 .method-steps{display:flex;gap:50px;margin-top:7px}
+#s4 .method-steps p{flex:1;display:flex;flex-direction:column;gap:10px;font-size:24px}
+#s4 .method-steps b{color:var(--accent);font-size:20px}
+#s4 .small-definition{font-size:21px;color:var(--muted);line-height:1.5}
+#s4 .speaker-notes{display:none}
+#s4{transition:opacity .18s ease}
+#s4 .content{height:auto}
+#s4.active{visibility:visible;opacity:1;pointer-events:auto}
+#s4 .method-steps p{line-height:1.4}
+#s4 a{color:inherit;text-decoration:none}
+
+    /* Original related-work slide from 2026-10-06, page 3. */
+#s4 .literature{margin-top:-2px}
+#s4 .literature a{display:grid;grid-template-columns:282px 1fr;column-gap:24px;row-gap:7px;padding:18px 0;border-bottom:1px solid var(--line);text-decoration:none}
+#s4 .literature a:first-child{padding-top:11px}
+#s4 .literature .citation{grid-row:1/3;color:var(--accent);font-size:20px;align-self:center;font-weight:600;letter-spacing:-.015em}
+#s4 .literature strong{font-size:23px;font-weight:580}
+#s4 .literature-focus{font-size:23px;color:var(--accent);font-weight:600;margin-top:27px;line-height:1.5}
+#s4 .literature small{font-size:16px;color:var(--muted);letter-spacing:0}
+#s4 .literature a:hover strong{text-decoration:underline}
+#s4 .literature a{display:grid;grid-template-columns:270px 1fr;gap:22px;padding:17px 0;align-items:center}
+#s4 .literature .citation{grid-row:auto;font-size:19px}
+#s4 .literature strong{font-size:21px;line-height:1.4}
+#s4 .literature-focus{margin-top:22px;font-size:23px;line-height:1.5}
+#s4 .review-label{display:block;font-size:17px;color:var(--muted);margin-bottom:8px;font-weight:500}
+#s4 .limitation-questions{padding-left:30px;font-size:21px;line-height:1.45;font-weight:600}
+#s4 .limitation-questions li+li{margin-top:13px}
+
+    /* Research questions reused from 2026-10-06, page 4. */
+#s5 .content{padding-top:20px}
+#s5 .rq-item{padding:20px 0 34px}
+#s5 .rq-item+.rq-item{border-top:1px solid var(--line);padding-top:34px}
+#s5 .rq-item h3{font-size:26px;color:var(--accent);margin-bottom:18px;font-weight:650}
+#s5 .rq-item p{font-size:28px;line-height:1.65;word-break:keep-all}
+#s5 .rq-item .rq-footnote{font-size:19px;line-height:1.5;color:var(--muted);margin-top:18px}
+#s5 .rq-item sup{font-size:18px;color:var(--accent)}
+#s5{padding:52px 60px}
+#s5 h2{font-size:37px;line-height:1.22;margin-bottom:24px}
+#s5 .eyebrow{font-family:"SF Mono",ui-monospace,Menlo,monospace;letter-spacing:.14em}
+#s5 .content{height:auto}
+#s5 .speaker-notes{display:none}
+
+    .discussion-slide h2 { font-size:37px; margin-bottom:32px; }
+    .discussion-section { padding:24px 0 28px; }
+    .discussion-section + .discussion-section { border-top:1px solid var(--line); padding-top:28px; }
+    .discussion-section h3 { font-size:28px; font-weight:700; margin-bottom:18px; }
+    .discussion-section ul { padding-left:27px; }
+    .discussion-section li { padding-left:4px; font-size:22px; line-height:1.6; word-break:keep-all; }
+    .discussion-section li + li { margin-top:13px; }
+
+    .evaluation-overview h2 { font-size:35px; margin-bottom:14px; }
+    .evaluation-overview .eval-lead { font-size:23px; margin-bottom:22px; }
+    .evaluation-overview .eval-layout { display:grid; grid-template-columns:760px 1fr; gap:30px; align-items:start; }
+    .evaluation-overview svg { width:760px; height:430px; }
+    .evaluation-overview .axis-note { padding:18px 0; border-top:2px solid var(--line); }
+    .evaluation-overview .axis-note h3 { font-size:23px; margin-bottom:10px; }
+    .evaluation-overview .axis-note p { font-size:21px; line-height:1.55; }
+    .evaluation-overview .plot-note { font-size:17px; color:var(--muted); margin-top:6px; }
+    .evaluation-overview .source-note { font-size:14px; color:var(--muted); margin-top:14px; }
+    .evaluation-overview .source-note a { color:inherit; }
+
+
+    .dci-evaluation h2 { font-size:32px; margin-bottom:28px; }
+    .dci-table { width:100%; border-collapse:collapse; table-layout:fixed; font-size:20px; line-height:1.55; word-break:keep-all; }
+    .dci-table th { background:#f1e7e9; color:var(--accent); font-size:20px; text-align:left; padding:15px 17px; border-bottom:2px solid var(--accent); }
+    .dci-table td { padding:20px 17px; border-bottom:1px solid var(--line); vertical-align:middle; }
+    .dci-table td:nth-child(2) { font-size:19px; }
+    .dci-table a { color:inherit; }
+    .dci-reference { font-size:15px; line-height:1.5; margin-top:24px; color:var(--muted); }
+    .dci-reference a { color:inherit; text-underline-offset:3px; }
+
+
+    .dci-evaluation { padding:36px 44px 30px; }
+    .dci-evaluation .eyebrow { margin-bottom:8px; }
+    .dci-evaluation h2 { font-size:31px; margin-bottom:10px; }
+    .dci-original-figure { display:flex; align-items:center; gap:30px; margin:0 0 14px; padding:5px 14px; background:#fff; }
+    .dci-original-figure img { width:590px; height:181px; object-fit:contain; flex-shrink:0; }
+    .dci-original-figure figcaption { font-size:19px; line-height:1.5; }
+    .dci-original-figure figcaption strong { color:var(--accent); }
+    .dci-original-figure figcaption p { font-size:19px; line-height:1.5; margin-top:8px; }
+    .dci-table { font-size:19px; line-height:1.48; }
+    .dci-table th { font-size:19px; padding:10px 14px; }
+    .dci-table td { padding:13px 14px; }
+    .dci-table td:nth-child(2) { font-size:18px; }
+    .dci-reference { margin-top:15px; font-size:14px; }
+
+
+    .dci-original-figure { gap:22px; }
+    .dci-original-figure img { width:500px; height:181px; }
+    .dci-figure-bullets { padding-left:21px; font-size:17px; line-height:1.42; }
+    .dci-figure-bullets li + li { margin-top:6px; }
+    .dci-figure-bullets strong { color:var(--ink) !important; }
+
+    @font-face { font-family:'SlideKaTeXMath'; src:url('assets/2026-11-04/KaTeX_Math-Italic.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; }
+    .dci-evaluation .latex-symbol { font-family:'SlideKaTeXMath',serif; font-style:normal; font-weight:400; font-size:1.12em; margin:0 .06em; }
+
+    .dci-table td:last-child div + div { margin-top:7px; }
+
+    .dci-evaluation .dci-reference-second { margin-top:4px; }
+
+    .probe-evaluation { padding:38px 44px 28px; }
+    .probe-evaluation .eyebrow { margin-bottom:8px; }
+    .probe-evaluation h2 { font-size:34px; margin-bottom:14px; }
+    .probe-intro { font-size:22px; line-height:1.5; margin-bottom:20px; }
+    .probe-columns { display:grid; grid-template-columns:1.05fr 1fr; gap:34px; }
+    .probe-columns h3 { font-size:23px; margin-bottom:12px; }
+    .probe-protocol ol { padding-left:25px; font-size:20px; line-height:1.4; }
+    .probe-protocol li { padding-left:2px; margin-bottom:12px; }
+    .probe-protocol li p { font-size:18px; line-height:1.45; margin-top:4px; }
+    .probe-formula { text-align:center; font-size:24px; margin:8px 0 6px; }
+    .probe-protocol li .probe-symbols { font-size:16px; color:var(--muted); }
+    .probe-limit { padding:13px 16px; background:#f3edef; border-left:3px solid var(--accent); margin-bottom:13px; }
+    .probe-limit h4 { font-size:20px; line-height:1.4; margin-bottom:7px; }
+    .probe-limit p { font-size:18px; line-height:1.45; }
+    .probe-limit .probe-follow { margin-top:8px; color:var(--accent); }
+    .probe-conclusion { font-size:20px; line-height:1.45; border-top:1px solid var(--line); padding-top:12px; margin-top:8px; }
+    .probe-source { font-size:14px; line-height:1.4; margin-top:12px; color:var(--muted); }
+    .probe-source a { color:inherit; }
+    .probe-evaluation .katex { font-size:1em; }
+
+
+    .probe-columns { grid-template-columns:1.05fr 1fr; gap:28px; }
+    .probe-intro { margin-bottom:16px; }
+    .probe-protocol li { margin-bottom:10px; }
+    .probe-protocol li p { font-size:17px; line-height:1.42; }
+    .probe-diagram h3 { font-size:22px; margin-bottom:6px; }
+    .probe-diagram svg { display:block; width:100%; height:274px; }
+    .probe-diagram-result { font-size:18px; line-height:1.45; padding:5px 12px 0; }
+    .probe-bottom-limits { border-top:1px solid var(--line); padding-top:11px; margin-top:9px; }
+    .probe-bottom-limits h3 { font-size:21px; margin-bottom:7px; }
+    .probe-bottom-limits ol { display:grid; grid-template-columns:1fr 1.25fr; column-gap:30px; row-gap:4px; padding-left:23px; font-size:18px; line-height:1.45; }
+    .probe-bottom-limits li:last-child { grid-column:1 / -1; }
+    .probe-bottom-limits li:first-child { flex:0 0 40%; }
+    .probe-source { margin-top:12px; }
+
+
+    .probe-evaluation .probe-intro { font-size:21px; margin-bottom:12px; }
+    .probe-evaluation .probe-columns { grid-template-columns:1.15fr 1fr; gap:24px; }
+    .probe-evaluation .probe-protocol li { margin-bottom:8px; }
+    .probe-evaluation .probe-protocol li .probe-loss-key { font-size:15px; line-height:1.4; margin-top:6px; }
+    .probe-loss-formula { font-size:18px; margin-top:9px; text-align:center; }
+    .probe-evaluation .probe-bottom-limits { margin-top:5px; padding-top:9px; }
+    .probe-evaluation .probe-source { margin-top:9px; }
+    .dci-evaluation .katex { font-size:1em; }
+
+      .dci-evaluation [data-tex] { white-space:nowrap; }
+
+    .metric-detail-button { background:none; border:0; color:var(--ink); padding:0; font:inherit; font-weight:700; text-align:left; cursor:pointer; line-height:1.45; }
+    .metric-detail-button:hover { color:var(--accent); }
+    .metric-detail-button:focus-visible { outline:2px solid var(--accent); outline-offset:5px; }
+    .metric-detail-hint { display:block; font-size:13px; font-weight:500; color:var(--accent); text-decoration:underline; text-underline-offset:3px; margin-top:4px; }
+    .metric-dialog { position:fixed; margin:auto; width:min(940px,calc(100vw - 40px)); max-height:calc(100vh - 64px); padding:28px 34px; border:1px solid #d9dde2; border-radius:16px; background:#fff; color:var(--ink); overflow-y:auto; box-shadow:0 20px 80px #0004; }
+    .metric-dialog::backdrop { background:rgba(19,24,32,.55); }
+    .metric-modal-head { display:flex; align-items:center; justify-content:space-between; gap:20px; }
+    .metric-modal-head h2 { font-size:28px; margin:0; }
+    .metric-close { background:#f1e7e9; color:var(--accent); border:0; border-radius:8px; min-width:40px; height:40px; font-size:28px; cursor:pointer; }
+    .metric-dialog p { font-size:17px; line-height:1.55; }
+    .metric-dialog h3 { font-size:20px; margin:0 0 8px; }
+    .metric-dialog .metric-lead { font-size:19px; margin:14px 0 20px; }
+    .metric-input,.metric-step { margin:18px 0; }
+    .metric-equation { font-size:24px; text-align:center; background:#f6f7f9; border-radius:8px; padding:18px 10px; margin:12px 0; overflow-x:auto; }
+    .metric-dialog .katex { font-size:1em; }
+    .metric-dialog [data-tex] { white-space:nowrap; }
+    .metric-example { border-left:3px solid var(--accent); padding:12px 18px; background:#f6eff1; font-size:17px; }
+    .metric-example p { margin-top:8px; display:flex; gap:22px; align-items:center; }
+    .metric-status { border-top:1px solid var(--line); padding-top:16px; margin-top:20px; font-size:17px; }
+    .metric-status p { margin-top:5px; }
+    .metric-dialog .metric-ref { font-size:14px; color:var(--muted); margin-top:14px; }
+    .metric-ref a { color:inherit; }
+
+
+    .probe-evaluation .probe-formula { font-size:21px; margin:7px 0 5px; }
+    .probe-evaluation .probe-protocol li .probe-symbols { font-size:15px; line-height:1.4; }
+    .probe-evaluation .probe-protocol li .probe-symbols strong { color:var(--accent); }
+
+    .probe-diagram-key { font-size:15px; line-height:1.4; padding:0 12px; margin-top:7px; }
+    .probe-evaluation .probe-diagram svg { height:220px; }
+
+    .probe-selection-formula { font-size:21px; text-align:center; margin:8px 0; }
+    .probe-evaluation .probe-protocol li:last-child > strong { font-size:19px; }
+
+    .benchmark-slide { padding:40px 44px 30px; }
+    .benchmark-slide h2 { font-size:33px; margin-bottom:16px; }
+    .benchmark-lead { font-size:22px; line-height:1.5; margin-bottom:22px; }
+    .benchmark-columns { display:grid; grid-template-columns:1fr 1fr; gap:34px; }
+    .benchmark-columns > div + div { border-left:1px solid var(--line); padding-left:34px; }
+    .benchmark-columns h3 { font-size:25px; margin-bottom:10px; }
+    .benchmark-columns p { font-size:20px; line-height:1.5; margin-bottom:12px; }
+    .benchmark-edit { border-top:1px solid var(--line); padding-top:14px; margin-top:17px; }
+    .benchmark-edit h4 { font-size:22px; color:var(--accent); margin-bottom:8px; }
+    .benchmark-edit p { font-size:19px; }
+    .benchmark-scope { margin-top:22px; padding-top:15px; border-top:1px solid var(--line); font-size:18px; line-height:1.5; }
+    .benchmark-source { margin-top:16px; font-size:14px; line-height:1.5; color:var(--muted); }
+    .benchmark-source a { color:inherit; }
+
+    .benchmark-visual .benchmark-lead { font-size:21px; margin-bottom:17px; }
+    .benchmark-visual .benchmark-columns { gap:28px; }
+    .benchmark-visual .benchmark-columns > div + div { padding-left:28px; }
+    .benchmark-visual .benchmark-columns h3 { font-size:24px; margin-bottom:9px; }
+    .benchmark-visual figure { margin:0; }
+    .benchmark-sample { width:100%; height:238px; display:block; object-fit:contain; background:#edf0f2; }
+    .benchmark-labels { display:flex; justify-content:space-between; gap:10px; padding:11px 0 9px; border-bottom:1px solid var(--line); font-size:18px; line-height:1.4; }
+    .benchmark-labels strong { color:var(--accent); }
+    .benchmark-visual .benchmark-columns .benchmark-explain { font-size:19px; line-height:1.45; margin:10px 0 0; }
+    .benchmark-visual .benchmark-scope { font-size:18px; margin-top:17px; padding-top:12px; }
+    .benchmark-visual .benchmark-source { font-size:13px; margin-top:12px; }
+    .benchmark-pair { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .benchmark-pair img { width:100%; height:195px; object-fit:contain; background:#edf0f2; display:block; }
+    .benchmark-pair figcaption { font-size:17px; line-height:1.4; padding:7px 0; }
+    .benchmark-edit-slide .benchmark-columns p { font-size:19px; line-height:1.5; margin:10px 0 0; }
+    .benchmark-edit-slide .benchmark-scope { font-size:18px; }
+
+    #s12 .benchmark-columns { grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; }
+    #s12 .benchmark-columns > div + div { padding-left:22px; }
+    #s12 .benchmark-columns h3 { margin-bottom:4px; }
+    #s12 .benchmark-kind { font-size:18px; color:var(--muted); margin:0 0 12px; }
+    #s12 .benchmark-sample { height:195px; }
+    #s12 .benchmark-labels { display:block; font-size:17px; min-height:62px; line-height:1.5; }
+    #s12 .benchmark-labels span { display:block; }
+    #s12 .benchmark-columns .benchmark-explain { font-size:18px; line-height:1.5; }
+    #s12 .stuff-images { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+    #s12 .stuff-images figure { position:relative; }
+    #s12 .stuff-image-label { position:absolute; bottom:0; left:0; right:0; background:#ffffffed; text-align:center; font-size:14px; line-height:1.5; }
+    #s12 .annotation-dot { display:inline-block; width:10px; height:10px; margin-right:5px; }
+    #s12 .benchmark-scope { margin-top:15px; }
+    #s12 .benchmark-source { font-size:12px; margin-top:10px; line-height:1.4; }
+
+    #s12 .benchmark-columns { grid-template-columns:1fr 1fr; gap:32px; }
+    #s12 .benchmark-columns > div + div { padding-left:32px; }
+    #s12 .benchmark-kind { font-size:17px; min-height:26px; margin-bottom:12px; }
+    #s12 .benchmark-sample { height:210px; }
+    #s12 .benchmark-labels { display:flex; justify-content:flex-start; gap:26px; min-height:0; padding:10px 0; }
+    #s12 .benchmark-explain { margin-top:12px; }
+    #s12 .vg-example { font-size:25px; line-height:1.45; color:var(--accent); border-left:3px solid var(--accent); padding:10px 0 10px 17px; margin:5px 0 8px; }
+    #s12 .vg-translation { font-size:17px; color:var(--muted); margin:0 0 15px 20px; }
+    #s12 .vg-concept-table { border-collapse:collapse; width:100%; font-size:17px; line-height:1.45; }
+    #s12 .vg-concept-table th { text-align:left; color:var(--muted); font-weight:600; border-bottom:1px solid var(--line); padding:7px 8px; }
+    #s12 .vg-concept-table td { padding:7px 8px; border-bottom:1px solid var(--line); }
+    #s12 .vg-concept-table td:first-child { width:100px; white-space:nowrap; }
+    #s12 .benchmark-scope { font-size:18px; margin-top:12px; }
+    #s12 .benchmark-source { font-size:12px; line-height:1.5; }
+    #s12 .benchmark-prior { font-size:17px; white-space:nowrap; }
+    #s12 .benchmark-prior a { color:inherit; text-decoration:underline; }
+
+    .retrieval-slide {padding:42px 44px 32px;}
+    .retrieval-slide::before {left:44px;right:44px;}
+    .retrieval-slide h2 {font-size:32px;margin-bottom:17px;}
+    .retrieval-slide .retrieval-lead {font-size:21px;line-height:1.5;margin-bottom:24px;}
+    .retrieval-slide strong {font-weight:730;}
+    .retrieval-method-columns {display:grid;grid-template-columns:1fr 1fr;gap:32px;}
+    .retrieval-method-columns>div+div {border-left:1px solid var(--line);padding-left:32px;}
+    .retrieval-method-columns h3 {font-size:24px;margin-bottom:13px;}
+    .retrieval-method-columns p {font-size:21px;line-height:1.55;}
+    .retrieval-equation {font-size:26px;margin:24px 0 18px;text-align:center;}
+    .retrieval-equation .katex {font-size:1em;}
+    .retrieval-measure {border-top:1px solid var(--line);margin-top:24px;padding-top:19px;}
+    .retrieval-measure h3 {margin-bottom:10px;}
+    .retrieval-measure .minor {font-size:18px;color:var(--muted);margin-top:9px;}
+    .retrieval-example {display:grid;grid-template-columns:220px 1fr;gap:19px;align-items:center;}
+    .retrieval-example img {width:220px;height:185px;object-fit:contain;background:#edf0f2;}
+    .retrieval-example blockquote {font-size:21px;line-height:1.45;color:var(--accent);}
+    .retrieval-example p {font-size:17px;margin-top:10px;line-height:1.4;}
+    .retrieval-rank-label {font-size:16px!important;color:var(--muted);margin:20px 0 9px;}
+    .retrieval-ranks {display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+    .retrieval-ranks div {border:1px solid var(--line);text-align:center;padding:12px 3px;font-size:16px;line-height:1.5;background:white;}
+    .retrieval-ranks .correct {border-color:var(--accent);background:#f7edef;color:var(--accent);font-weight:700;}
+    .retrieval-result {font-size:20px!important;margin-top:12px;}
+    .retrieval-takeaway {font-size:21px!important;margin-top:26px;border-top:2px solid var(--line);padding-top:15px;}
+    .retrieval-source {font-size:12px!important;line-height:1.5!important;color:var(--muted);margin-top:14px;}
+    .retrieval-source a {color:inherit;text-underline-offset:2px;}
+    .retrieval-sample-grid {display:grid;grid-template-columns:1fr 1fr;gap:12px 32px;}
+    .retrieval-sample {border-top:1px solid var(--line);padding-top:12px;}
+    .retrieval-sample h3 {font-size:23px;margin-bottom:9px;}
+    .retrieval-sample-body {display:grid;grid-template-columns:175px 1fr;gap:16px;}
+    .retrieval-sample figure {margin:0;}
+    .retrieval-sample img {width:175px;height:135px;object-fit:contain;background:#edf0f2;display:block;}
+    .retrieval-sample figcaption {font-size:11px;color:var(--muted);margin-top:4px;line-height:1.3;}
+    .retrieval-sample blockquote {font-size:17px;line-height:1.4;color:var(--accent);margin:0 0 8px;}
+    .retrieval-sample p {font-size:18px;line-height:1.4;}
+    .retrieval-sample .sample-setting {font-size:15px;color:var(--muted);margin-top:8px;}
+    #s16 .retrieval-lead {margin-bottom:12px;}
+    #s16 .retrieval-notes {font-size:16px;line-height:1.45;margin-top:10px;border-top:1px solid var(--line);padding-top:12px;}
+    #s16 .retrieval-source {margin-top:9px;font-size:11px!important;}
+
+
+    #s15 .retrieval-lead {margin-bottom:18px;}
+    #s15 .retrieval-equation {margin:18px 0 14px;}
+    #s15 .retrieval-measure {margin-top:18px;padding-top:14px;}
+    #s15 .retrieval-method-columns p {font-size:20px;line-height:1.5;}
+    #s15 .retrieval-method-columns .minor {font-size:18px;}
+    #s15 .retrieval-example p {font-size:17px;}
+
+    #s17 {padding:42px 44px 32px;}
+    #s17::before {left:44px;right:44px;}
+    #s17 h2 {font-size:33px;margin-bottom:17px;}
+    #s17 .utility-lead {font-size:22px;line-height:1.5;margin-bottom:22px;}
+    #s17 .utility-columns {display:grid;grid-template-columns:.9fr 1.1fr;gap:32px;}
+    #s17 .utility-columns>div+div {border-left:1px solid var(--line);padding-left:30px;}
+    #s17 h3 {font-size:24px;margin-bottom:12px;}
+    #s17 figure {margin:0;}
+    #s17 figure img {width:100%;height:210px;object-fit:contain;background:#edf0f2;display:block;}
+    #s17 figcaption {font-size:12px;color:var(--muted);margin-top:5px;}
+    #s17 .utility-targets {display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;}
+    #s17 .utility-targets div {border-top:2px solid var(--accent);padding:10px 7px;background:#f7edef;text-align:center;font-size:21px;color:var(--accent);font-weight:700;}
+    #s17 .utility-targets small {font-size:16px;display:block;color:var(--muted);font-weight:400;margin-top:3px;}
+    #s17 .utility-prior {font-size:17px;line-height:1.5;margin-top:13px;}
+    #s17 .utility-steps {list-style:none;counter-reset:utility;}
+    #s17 .utility-steps li {position:relative;padding:0 0 10px 34px;counter-increment:utility;}
+    #s17 .utility-steps li::before {content:counter(utility)'.';position:absolute;left:0;top:0;color:var(--accent);font-size:23px;font-weight:700;}
+    #s17 .utility-steps h4 {font-size:22px;line-height:1.4;margin-bottom:5px;}
+    #s17 .utility-steps p {font-size:20px;line-height:1.5;}
+    #s17 .utility-score {border-top:2px solid var(--line);padding-top:15px;margin-top:1px;}
+    #s17 .utility-score h3 {font-size:23px;margin-bottom:8px;}
+    #s17 .utility-score p {font-size:20px;line-height:1.5;}
+    #s17 .utility-conclusion {border-top:1px solid var(--line);margin-top:14px;padding-top:13px;font-size:21px;line-height:1.5;}
+    #s17 .utility-source {font-size:12px;line-height:1.45;color:var(--muted);margin-top:14px;}
+    #s17 .utility-source a {color:inherit;text-underline-offset:2px;}
+    #s17 .speaker-notes {display:none;}
+
+
+    .method-summary {padding:42px 44px 30px;}
+    .method-summary::before {left:44px;right:44px;}
+    .method-summary .eyebrow {font-size:13px;line-height:1.6;}
+    .method-summary h2 {font-size:32px;margin-bottom:17px;}
+    .method-summary .method-lead {font-size:22px;line-height:1.5;margin-bottom:20px;}
+    .method-summary h3 {font-size:23px;margin-bottom:10px;}
+    .method-summary p {font-size:21px;line-height:1.5;}
+    .method-summary .method-foot {font-size:12px;line-height:1.45;color:var(--muted);margin-top:14px;}
+    .method-summary .method-foot a {color:inherit;text-underline-offset:2px;}
+    .method-summary .speaker-notes {display:none;}
+    .method-summary .katex {font-size:1.08em;}
+    .method-recap-figure {width:100%;height:245px;object-fit:contain;margin:12px 0 22px;display:block;}
+    .method-recap-steps {display:grid;grid-template-columns:1fr 1fr 1fr;gap:26px;}
+    .method-recap-steps>div {border-top:2px solid var(--line);padding-top:14px;}
+    .method-recap-steps p {font-size:20px;}
+    .method-recap-message {border-top:1px solid var(--line);margin-top:22px;padding-top:14px;}
+    .method-equation {font-size:29px;text-align:center;padding:15px 10px;background:#f6edf0;border:1px solid #e2c9d0;margin-bottom:17px;}
+    .method-equation .katex {font-size:1em;}
+    .method-factors {display:grid;grid-template-columns:1fr .9fr 1fr;gap:26px;}
+    .method-factors>div {border-top:2px solid var(--line);padding-top:12px;}
+    .method-factors .factor-math {font-size:25px;text-align:center;margin:12px 0;}
+    .method-factors p {font-size:19px;}
+    .method-cases {display:grid;grid-template-columns:1fr 1fr 1fr;gap:26px;margin-top:20px;}
+    .method-cases>div {border-top:1px solid var(--line);padding-top:13px;}
+    .method-cases p {font-size:19px;}
+    .method-cases .case-math {font-size:23px;margin-bottom:9px;}
+    .method-summary .method-note {font-size:16px;line-height:1.45;color:var(--muted);margin-top:17px;}
+    .method-family-table {width:100%;border-collapse:collapse;table-layout:fixed;font-size:18px;line-height:1.4;}
+    .method-family-table th {text-align:left;background:#edf0f3;padding:10px 12px;border-bottom:2px solid var(--line);font-weight:700;}
+    .method-family-table td {padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle;}
+    .method-family-table th:first-child {width:23%;}
+    .method-family-table th:nth-child(2) {width:28%;}
+    .method-family-table .ours td {background:#f7edef;}
+    .method-family-table small {display:block;font-size:15px;color:var(--muted);margin-top:3px;}
+    .method-invariance {display:grid;grid-template-columns:1.05fr 1fr;gap:25px;align-items:center;margin-top:16px;}
+    .method-invariance .invariance-math {font-size:25px;line-height:1.65;}
+    .method-invariance p {font-size:19px;}
+
+
+    #s9.mapping-recall .method-lead {margin-bottom:20px;}
+    .mapping-recall-grid {display:grid;grid-template-columns: 0.86fr 1.3fr;gap:32px;align-items:center;}
+    .mapping-recall-copy h3 {font-size:23px;margin:0 0 10px;}
+    .mapping-recall-copy h3:not(:first-child) {margin-top:24px;}
+    .mapping-recall-copy p {font-size:21px;line-height:1.55;margin:0;}
+    .mapping-recall-visual {background:#faf8f9;border:1px solid #e7dce0;border-radius:12px;padding:18px 16px;}
+    .mapping-recall-diagram {display:block;width:100%;height:340px;}
+    .mapping-recall-diagram text {font-family:Arial,"Apple SD Gothic Neo",sans-serif;font-size:10px;fill:#4b4650;}
+    .mapping-recall-diagram .diagram-head {font-size:11px;font-weight:700;fill:#750014;}
+    .mapping-recall-diagram .diagram-note {font-size:9px;fill:#776d74;}
+    .mapping-recall-score {display:flex;gap:30px;align-items:center;margin-top:22px;padding:17px 22px;background:#f6edf0;border-left:4px solid #750014;}
+    .mapping-recall-score > div {font-size:31px;flex-shrink:0;}
+    .mapping-recall-score p {font-size:20px;line-height:1.5;margin:0;}
+
+
+    #s19.next-week-plan {padding:44px;}
+    #s19.next-week-plan h2 {font-size:32px;margin-bottom:22px;}
+    #s19 .plan-lead {font-size:23px;line-height:1.6;margin:0 0 30px;}
+    #s19 .plan-columns {display:grid;grid-template-columns:1fr 1fr;gap:28px;}
+    #s19 .plan-step {padding:24px;background:#faf8f9;border-top:4px solid #750014;}
+    #s19 .plan-number {font-size:17px;font-weight:700;color:#750014;margin:0 0 14px;}
+    #s19 .plan-step h3 {font-size:25px;line-height:1.4;margin:0 0 18px;}
+    #s19 .plan-step p:not(.plan-number) {font-size:22px;line-height:1.6;margin:0;}
+    #s19 .plan-step p.plan-detail {font-size:20px;color:#635b62;margin-top:20px;}
+    #s19 .plan-math {font-size:24px;margin:0 0 20px;}
+    #s19 .katex {font-size:1em;}
+    #s19 .plan-conclusion {font-size:23px;line-height:1.55;border-top:1px solid #dccbd1;margin-top:28px;padding-top:20px;}
+
+
+    #s19 .next-plan-list {font-size:29px;line-height:1.7;margin:46px 0 0;padding-left:34px;}
+    #s19 .next-plan-list > li {margin-bottom:28px;}
+    #s19 .next-plan-list ol {font-size:27px;line-height:1.8;margin-top:18px;padding-left:36px;}
+    #s19 .next-plan-list ol li {margin-bottom:12px;}
+
+    #s18.splice-utility {padding:42px 44px 30px;}
+    #s18.splice-utility h2 {font-size:32px;margin-bottom:20px;}
+    #s18 .splice-lead {font-size:23px;line-height:1.5;margin:0 0 25px;}
+    #s18 .splice-grid {display:grid;grid-template-columns:1fr 1fr;gap:32px;}
+    #s18 .splice-grid>div+div {border-left:1px solid #dfd4d8;padding-left:30px;}
+    #s18 .splice-grid h3 {font-size:23px;line-height:1.4;margin:0 0 14px;}
+    #s18 .splice-grid p {font-size:21px;line-height:1.55;margin:0;}
+    #s18 .splice-intervention {font-size:19px;line-height:1.6;background:#f6edf0;padding:12px 16px;margin:18px 0;}
+    #s18 .splice-results {width:100%;border-collapse:collapse;font-size:19px;}
+    #s18 .splice-results th,#s18 .splice-results td {padding:12px 8px;border-bottom:1px solid #dfd4d8;text-align:center;}
+    #s18 .splice-results th:first-child,#s18 .splice-results td:first-child {text-align:left;}
+    #s18 .splice-results th {font-size:17px;background:#f4f1f2;}
+    #s18 .splice-results strong {color:#920025;}
+    #s18 .splice-grid p.splice-note {font-size:13px;color:#706971;margin-top:10px;}
+    #s18 .splice-steps {font-size:22px;line-height:1.6;padding-left:26px;margin:0;}
+    #s18 .splice-steps li {margin-bottom:20px;padding-left:3px;}
+    #s18 .splice-takeaway {font-size:22px;line-height:1.5;border-top:1px solid #dfd4d8;margin:21px 0 0;padding-top:16px;}
+    #s18 .splice-ref {font-size:12px;line-height:1.5;color:#706971;margin-top:12px;}
+    #s18 .splice-ref a {color:inherit;}
+
+
+    #s18 .waterbird-examples {display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px;}
+    #s18 .waterbird-examples figure {margin:0;}
+    #s18 .waterbird-examples img {display:block;width:100%;height:125px;object-fit:contain;background:#f2f0ed;border-radius:5px;}
+    #s18 .waterbird-examples figcaption {font-size:18px;line-height:1.5;text-align:center;margin-top:6px;}
+    #s18 .splice-grid p.waterbird-description {font-size:20px;line-height:1.5;margin-top:16px;}
+</style>
+  <link rel="stylesheet" href="assets/katex/katex.min.css">
+</head>
+<body>
+  <main class="deck">
+    <div class="stage">
+      <section class="slide title-slide active" id="s1" aria-label="2026-11-04 진행 상황 공유">
+        <div class="title-hero">
+          <h1>2026-11-04<br>진행 상황 공유</h1>
+        </div>
+      </section>
+      <section class="slide agenda-slide" id="s2" aria-label="오늘 공유하고 논의할 내용">
+        <h2>오늘 공유하고 논의할 내용</h2>
+        <p class="agenda-lead"><strong>방법론 계열과 평가 방식의 정리안</strong>을 공유하고,<br>이를 바탕으로 비교 실험의 기준과 다음 연구 방향을 논의합니다.</p>
+        <ol class="agenda-list">
+          <li>
+            <span class="agenda-number" aria-hidden="true">01</span>
+            <div>
+              <h3>연구 목표 및 지난 미팅 논의</h3>
+              <p>논의 내용: 방법론의 전체 구조와 평가 기준을 정리하기</p>
+            </div>
+          </li>
+          <li>
+            <span class="agenda-number" aria-hidden="true">02</span>
+            <div>
+              <h3>방법론 계열의 정리</h3>
+              <p>기준 방법과 탐구한 후보들을 모달리티 간 매핑의 구조, 목적함수, 제약에 따라 분류합니다.</p>
+            </div>
+          </li>
+          <li>
+            <span class="agenda-number" aria-hidden="true">03</span>
+            <div>
+              <h3>평가 방식의 정리</h3>
+              <p>(1) 모달리티별 개념 대응 정확도 (2) 모달리티 간의 개념 대응 정확도 (3) SAE 활용 과제의 성능으로 구분하여 평가</p>
+            </div>
+          </li>
+          <li>
+            <span class="agenda-number" aria-hidden="true">04</span>
+            <div>
+              <h3>차주 실험 계획</h3>
+              <p>비교할 방법과 평가 조건을 정하고, 정렬 성능과 해석 성능을 함께 보여줄 비교표와 2차원 그림을 계획합니다.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="slide research-slide" id="s3" aria-label="연구 목표">
+        <p class="eyebrow">연구 목표</p>
+        <h2>SAE를 통해 멀티모달 임베딩의 표현을 이해하고 해석하기</h2>
+        <p class="research-lead">SAE는 임베딩을 여러 특징의 활성값으로 표현합니다. 이 활성값으로 멀티모달 임베딩을 해석하려면, 다음 두 관계를 정확히 이해해야 합니다.</p>
+        <div class="research-block">
+          <h3>각 모달리티의 SAE latent의 활성값과 개념의 관계</h3>
+          <p><strong>모달리티 내의 대응:</strong> 각 모달리티에서 <strong>어떤 활성값 (집합)이 어떤 개념을 나타내는지</strong> 찾고, 그 집합이 해당 개념을 다른 개념과 정확히 구별하는지 확인</p>
+        </div>
+        <div class="research-block">
+          <h3>모달리티 간의 개념 및 SAE latent 활성값의 대응</h3>
+          <p><strong>모달리티 간의 대응:</strong> 한 모달리티에서 찾은 개념 집합과 <strong>같은 의미를 나타내는 다른 모달리티의 집합</strong>을 대응시켜, 두 모달리티가 같은 개념을 어떻게 표현하는지 이해</p>
+        </div>
+      </section>
+      <section class="slide imported-related-work" id="s4"><p class="eyebrow">RELATED WORK</p><h2>멀티모달 SAE의 특징 해석과 대응 관련 연구의 한계점</h2><div class="content">
+<div class="literature">
+<a href="https://arxiv.org/abs/2504.11695" target="_blank" rel="noopener"><span class="citation">Papadimitriou et al., 2025</span><strong>Interpreting the Linear Structure of Vision-language Model Embedding Spaces</strong></a>
+<a href="https://arxiv.org/abs/2601.20028" target="_blank" rel="noopener"><span class="citation">Kaushik et al., 2026</span><strong>Decomposing Multimodal Embedding Spaces with Group-Sparse Autoencoders</strong></a>
+<a href="https://arxiv.org/abs/2602.06218" target="_blank" rel="noopener"><span class="citation">Dhimoïla et al., 2026</span><strong>Cross-Modal Redundancy and the Geometry of Vision–Language Embeddings</strong></a>
+<a href="https://arxiv.org/abs/2606.29888" target="_blank" rel="noopener"><span class="citation">우리의 지난 연구, 2026</span><strong>Same Concept, Different Directions</strong></a>
+</div><div class="literature-focus"><span class="review-label">선행 연구와 지난 연구를 바탕으로 검토할 한계</span><ol class="limitation-questions"><li>활성값의 상관관계(coactivation correlation)가 높은 두 특징을 같은 개념을 나타내는 특징으로 볼 수 있는가?</li><li>한 개념이 여러 특징에 나뉘거나 여러 개념이 한 특징을 공유해도, 이미지·텍스트 특징을 하나씩 짝짓는 방식 (1 to 1)이 적절한가?</li></ol></div></div><aside class="speaker-notes"><p>논문 제목의 원문 링크 제공. Papadimitriou et al.의 BridgeScore는 공동 활성화와 기하학적 정렬의 결합. 본문 그림 5에서 다대다 개념 관계의 명시적 분석. Kaushik et al.은 모달리티 가림과 그룹 희소성을 통한 공통 사전 학습. Dhimoïla et al.은 Iso-Energy 등 활성 에너지 일관성 기반 학습.</p><p>모든 선행 연구의 공통 방법을 coactivation correlation·개념당 한 특징·헝가리안 1대1 대응으로 일반화하는 주장 제외. 이번 검토의 직접 대상은 우리의 기존 대응 방식과 진단 실험의 대표 특징 선택 방식.</p></aside></section>
+      <section class="slide research-questions" id="s5">
+<p class="eyebrow">RESEARCH QUESTIONS</p><h2>이번 연구의 연구 질문</h2>
+<div class="content">
+<div class="rq-item"><h3>RQ1. coactivation correlation의 한계와 개선</h3><p>활성값의 상관관계(coactivation correlation)가 실제 의미 대응을 정확히 반영하지 못하는 경우는 언제이며, 이를 어떻게 개선할 수 있을까?</p></div>
+<div class="rq-item"><h3>RQ2. 일대일 대응의 한계와 대안</h3><p>같은 개념을 나타내는 이미지·텍스트 특징의 관계를 1 대 1로 표현하기 어려운 경우<sup>*</sup>는 언제이며, 이를 어떤 대응 방식으로 해결할 수 있을까?</p><p class="rq-footnote">* 한 개념이 여러 특징에 나뉘거나(feature splitting), 여러 개념이 한 특징을 공유하는(feature merging) 경우</p></div>
+</div><aside class="speaker-notes"><p>RQ1은 coactivation correlation이 의미 대응을 잘못 나타내는 조건과 점수의 개선 방법을 검토한다. RQ2는 같은 개념을 나타내는 모달리티별 특징의 관계를 일대일로 표현하기 어려운 조건과 대안적 대응 방식을 검토한다. 별표는 검토할 경우의 예시이며 해결 여부를 단정하지 않는다.</p></aside></section>
+
+      <section class="slide discussion-slide" id="s6" aria-label="지난 논의 내용">
+        <p class="eyebrow">연구 진행 방향</p>
+        <h2>지난 논의 내용</h2>
+        <div class="discussion-section">
+          <h3>1. 방법론 실험을 먼저 진행</h3>
+          <ul>
+            <li>상관점수와 일대일 대응의 한계 분석을 모두 마치기보다, <strong>여러 활성값을 조합하는 대응 방법을 먼저 개발</strong>하기로 했습니다.</li>
+            <li><strong>SVD·CCA를 출발점으로 회전과 희소화를 실험</strong>하고, 실제 개선 효과를 바탕으로 <strong>어떤 문제를 해결하는지</strong> 설명하기로 했습니다.</li>
+          </ul>
+        </div>
+        <div class="discussion-section">
+          <h3>2. 방법론과 평가 방식을 정리</h3>
+          <ul>
+            <li>모달리티 간 매핑을 구하는 여러 방법을 <strong>하나의 틀로 설명</strong>하고, <strong>각 방법의 차이와 다음 탐구 방향</strong>을 정리하기로 했습니다.</li>
+            <li><strong>개념 대응을 얼마나 정확히 찾았는지</strong>와 <strong>실제 활용에 어떤 이점이 있는지</strong>를 구분해, 평가 지표와 과제를 정리하기로 했습니다.</li>
+            <li>기준 방법과 후보들을 <strong>같은 조건에서 비교</strong>하고, <strong>개념 대응 정확도와 검색 성능의 관계</strong>를 <strong>2차원 그림</strong>으로 살펴보기로 했습니다.</li>
+          </ul>
+        </div>
+      </section>
+      <section class="slide evaluation-overview" id="s7" aria-label="Main Figure">
+        <p class="eyebrow">Main Figure</p>
+        <h2>Figure 1: 모달리티 내 대응과 모달리티 간 대응 성능을 비교</h2>
+        <p class="eval-lead">각 방법을 <strong>점 하나</strong>로 나타내어, 두 대응을 얼마나 잘 찾는지 함께 살펴보려 합니다.</p>
+        <div class="eval-layout">
+          <div>
+            <svg viewBox="0 0 760 430" role="img" aria-label="가로축은 오른쪽으로 갈수록 좋은 모달리티 내 개념 대응 점수, 세로축은 모달리티 간 개념 대응 점수인 비교 구도. 방법별 점의 위치는 측정값이 아닌 예시입니다.">
+              <rect x="92" y="28" width="638" height="322" rx="8" fill="#fff" stroke="#e0e4e8"/>
+              <g stroke="#edf0f3" stroke-width="1"><path d="M92 108H730 M92 188H730 M92 268H730 M252 28V350 M412 28V350 M572 28V350"/></g>
+              <path d="M92 28V350H730" fill="none" stroke="#555d67" stroke-width="2"/>
+              <g font-family="inherit" font-size="22" fill="#1a1d21" font-weight="650">
+                <text x="411" y="410" text-anchor="middle">모달리티 내 개념 대응 점수</text>
+                <text transform="translate(29 190) rotate(-90)" text-anchor="middle">모달리티 간 개념 대응 점수</text>
+              </g>
+              <g font-family="inherit" font-size="15" fill="#69717b"><text x="92" y="376">나쁨</text><text x="730" y="376" text-anchor="end">좋음</text><text x="78" y="42" text-anchor="end">좋음</text><text x="78" y="347" text-anchor="end">나쁨</text></g>
+              <g font-family="inherit" font-size="20" fill="#4f5660"><text x="192" y="122">비교 방법 1</text><text x="462" y="284">비교 방법 2</text><text x="549" y="128">비교 방법 3</text></g>
+              <circle cx="225" cy="149" r="9" fill="#69859b"/><circle cx="497" cy="251" r="9" fill="#9d8b70"/><circle cx="585" cy="155" r="9" fill="#750014"/>
+              <text x="710" y="60" text-anchor="end" font-family="inherit" font-size="18" fill="#750014">두 대응 성능이 모두 좋은 방향</text>
+            </svg>
+          </div>
+          <div>
+            <div class="axis-note"><h3>가로축 · 모달리티 내 대응</h3><p>이미지와 텍스트 각각에서 <strong>활성값 집합이 해당 개념을 정확히 나타내는지</strong> 평가합니다.</p></div>
+            <div class="axis-note"><h3>세로축 · 모달리티 간 대응</h3><p>서로 대응시킨 이미지·텍스트 활성값 집합이 <strong>같은 개념을 나타내는지</strong> 평가합니다.</p></div>
+          </div>
+        </div>
+        <p class="source-note">가로축은 선행 연구 [1]의 단일 좌표 예측 평가를 적용합니다. <a href="https://arxiv.org/html/2406.04093v1#S4.SS2" target="_blank" rel="noopener">Scaling and evaluating sparse autoencoders (2024)</a></p>
+      </section>
+      <section class="slide method-summary method-recap" id="s8">
+        <p class="eyebrow">Recall · 지난 연구에서 출발</p>
+        <h2>모달리티별 SAE를 학습하고, 활성값을 학습 후 대응</h2>
+        <p class="method-lead">지난 연구 [2]에서는 <strong>이미지와 텍스트 SAE를 각각 학습</strong>한 뒤, 짝지어진 표본의 활성값으로 <strong>특징을 일대일로 대응</strong>시켰습니다.</p>
+        <img class="method-recap-figure" src="assets/2026-09-16/posthoc-method.png" alt="기존 발표의 그림. 이미지와 텍스트 SAE를 각각 학습하고 활성값 상관행렬로 헝가리안 일대일 대응을 구하는 과정">
+        <div class="method-recap-steps">
+          <div><h3>1. 각 모달리티의 특징을 학습</h3><p>이미지 SAE와 텍스트 SAE가 각 임베딩을 복원하도록 독립적으로 학습합니다.</p></div>
+          <div><h3>2. 특징 사이의 상관을 계산</h3><p>정답 이미지·캡션 쌍에서 특징별 활성값의 상관계수 행렬 <span data-tex="C"></span>를 구합니다.</p></div>
+          <div><h3>3. 특징을 하나씩 짝지음</h3><p>헝가리안 알고리즘으로 선택한 특징 쌍들의 상관계수 합이 최대가 되도록 대응합니다.</p></div>
+        </div>
+        <p class="method-recap-message"><strong>이번에 바꾸려는 부분은 학습 후 대응입니다.</strong> 특징 하나씩의 대응에서, 여러 특징을 조합한 집합 사이의 대응으로 확장합니다.</p>
+        <p class="method-foot">[2] <a href="https://arxiv.org/abs/2606.29888" target="_blank" rel="noopener">Same Concept, Different Directions: Cross-Modal Feature Heterogeneity in Sparse Autoencoders</a>, NeurIPS 2026. 그림은 기존 발표 자료에서 재사용했습니다.</p>
+        <aside class="speaker-notes">2026-10-06의 2쪽 그림과 설명을 재사용했다. 이 그림 안의 V와 W는 기존 논문의 SAE 디코더 표기이다. 다음 장의 M은 학습 후 활성값 사이의 대응 점수 행렬이며 디코더와 구분된다. 그림의 표기를 바꾸거나 원본 도식을 새로 만들지 않았다.</aside>
+      </section>
+      <section class="slide method-summary mapping-recall" id="s9">
+        <p class="eyebrow">방법론의 정리 · 공통 구조</p>
+        <h2>왜 활성값 사이에 대응 행렬이 필요할까?</h2>
+        <p class="method-lead">각 모달리티의 SAE를 따로 학습하면, <strong>같은 의미를 나타내더라도 활성화되는 좌표 번호가 다를 수 있습니다.</strong></p>
+        <div class="mapping-recall-grid">
+          <div class="mapping-recall-copy">
+            <h3>같은 번호끼리 비교해도 될까?</h3>
+            <p>그림에서는 이미지의 두 번째·여섯 번째 좌표와 텍스트의 네 번째·여덟 번째 좌표가 크게 반응합니다. 같은 번호끼리 비교하면 이 대응을 반영하지 못합니다.</p>
+            <h3>대응 행렬 <span data-tex="M"></span>을 둡니다</h3>
+            <p><strong>이미지의 어떤 활성값을 텍스트의 어떤 활성값과 연결할지</strong> 정합니다. 그림은 이미지 활성값을 텍스트 좌표로 변환하여 비교하는 경우입니다.</p>
+          </div>
+          <div class="mapping-recall-visual"><svg class="mapping-recall-diagram" viewBox="0 0 296 174" role="img" aria-label="서로 다른 이미지와 텍스트 활성 좌표를 대응 행렬 M으로 연결하는 정렬 목표 예시">
+<text x="2" y="14" class="diagram-head">변환 전</text>
+<text x="192" y="14" class="diagram-head">텍스트 좌표</text>
+<text x="2" y="39">이미지 활성값</text><text x="194" y="39">변환한 이미지</text>
+<rect x="3" y="60" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="14" y="60" width="9" height="9" rx="1" fill="#750014"/><rect x="25" y="60" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="36" y="60" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="47" y="60" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="58" y="60" width="9" height="9" rx="1" fill="#963e4d"/><rect x="69" y="60" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="80" y="60" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="195" y="60" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="206" y="60" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="217" y="60" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="228" y="60" width="9" height="9" rx="1" fill="#82192b"/><rect x="239" y="60" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="250" y="60" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="261" y="60" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="272" y="60" width="9" height="9" rx="1" fill="#a15361"/>
+<text x="2" y="106">텍스트 활성값</text><text x="194" y="106">텍스트 활성값</text>
+<rect x="3" y="127" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="14" y="127" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="25" y="127" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="36" y="127" width="9" height="9" rx="1" fill="#750014"/><rect x="47" y="127" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="58" y="127" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="69" y="127" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="80" y="127" width="9" height="9" rx="1" fill="#963e4d"/><rect x="195" y="127" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="206" y="127" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="217" y="127" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="228" y="127" width="9" height="9" rx="1" fill="#750014"/><rect x="239" y="127" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="250" y="127" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="261" y="127" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="272" y="127" width="9" height="9" rx="1" fill="#963e4d"/>
+<path d="M103 62 H182 M103 129 H182" stroke="#77818d" stroke-width="1.3"/>
+<path d="M177 59 L183 62 L177 65 M177 126 L183 129 L177 132" fill="none" stroke="#77818d" stroke-width="1.3"/>
+<text x="140" y="53" text-anchor="middle"><tspan font-family="KaTeX_Math, Times New Roman, serif" font-style="italic">M</tspan> 적용</text>
+<text x="140" y="120" text-anchor="middle">그대로 사용</text>
+<text x="2" y="170" class="diagram-note">좌표 번호가 다름</text><text x="187" y="170" class="diagram-note">정렬 목표 예시</text>
+</svg></div>
+        </div>
+        <div class="mapping-recall-score">
+          <div data-tex="s=\tilde z_{\mathrm{img}}M\tilde z_{\mathrm{txt}}^\top"></div>
+          <p><strong>대응 행렬을 통해 연결된 활성값끼리 비교합니다.</strong> 이 식은 벡터의 길이로 정규화하기 전의 점수입니다.</p>
+        </div>
+        <aside class="speaker-notes">2026-10-06 자료의 한쪽 활성값 변환 그림을 재사용했다. 그림은 실제 측정값이 아니라 정렬 목표의 예시다. M이 같은 개념을 연결하는지는 뒤의 개념 대응 평가로 확인한다. 표준화한 활성값은 음수도 가능하다. 다음 슬라이드에서 M의 구조와 각 방법의 제약을 비교한다.</aside>
+      </section>
+      <section class="slide method-summary" id="s10">
+        <p class="eyebrow">방법론의 정리 · 구조와 제약의 차이</p>
+        <h2>같은 대응 구조에서, 제약과 희소화 절차를 비교</h2>
+        <table class="method-family-table">
+          <thead><tr><th>방법</th><th>어떤 대응을 허용하는가?</th><th>어떻게 대응을 구하는가?</th></tr></thead>
+          <tbody>
+            <tr><td><strong>헝가리안</strong></td><td><span data-tex="M=P"></span><small>원래 특징의 일대일 연결</small></td><td>선택한 특징 쌍의 상관계수 합을 최대화하며, 각 특징의 연결 상대를 하나로 제한합니다.</td></tr>
+            <tr><td><strong>PLS-SVD</strong></td><td><span data-tex="M=AB^\top"></span><small>여러 특징을 사용하는 조합</small></td><td>조합 사이 공분산 합을 최대화합니다. 계수 열의 길이를 1로 하고, 열끼리 직교하도록 제한합니다.</td></tr>
+            <tr><td><strong>CCA</strong></td><td><span data-tex="M=AB^\top"></span><small>여러 특징을 사용하는 조합</small></td><td>같은 공분산 목적에서, 각 모달리티 안의 조합 분산을 1로 하고 서로 다른 조합의 공분산을 0으로 제한합니다.</td></tr>
+            <tr><td><strong>희소 PLS [3]·CCA [4]</strong></td><td><span data-tex="A,B"></span>의 계수에 희소성 부여</td><td>해를 구하는 과정에 희소성 제약이나 벌점을 넣어, 조합에 쓰는 특징을 선택합니다.</td></tr>
+            <tr><td><strong>단순한 후처리 희소화</strong></td><td><span data-tex="M=A_{\mathrm{s}}B_{\mathrm{s}}^\top"></span></td><td>PLS-SVD·CCA 해를 구한 뒤, 작은 계수를 바로 0으로 만듭니다.</td></tr>
+            <tr class="ours"><td><strong>우리 접근 (Ours)</strong><small>대응 학습 후 회전·희소화</small></td><td><span data-tex="A=A_0R,\ B=B_0R"></span><small><span data-tex="A_0,B_0"></span>는 회전 전 해</small></td><td>PLS-SVD·CCA 해에서 출발해, 특징 관계 또는 표본 반응을 기준으로 <strong>같은 직교회전</strong>을 적용한 뒤 희소화합니다.</td></tr>
+          </tbody>
+        </table>
+        <div class="method-invariance">
+          <div class="invariance-math" data-tex="R^\top R=I_r\quad\Longrightarrow\quad (A_0R)(B_0R)^\top=A_0B_0^\top"></div>
+          <p><strong>회전까지는 대응 행렬과 코사인 검색 점수를 유지</strong>합니다. 계수를 0으로 만드는 단계부터 대응과 검색 성능이 달라질 수 있습니다.</p>
+        </div>
+        <p class="method-foot">CCA 행은 규제 없는 기본형입니다. 실험의 규제 CCA는 내부 공분산에 <span data-tex="\lambda I"></span>를 더한 제약을 사용합니다. 희소 CCA의 공분산 제약은 알고리즘마다 다릅니다.<br>
+[3] <a href="https://pubmed.ncbi.nlm.nih.gov/19049491/" target="_blank" rel="noopener">A sparse PLS for variable selection when integrating omics data</a>, 2008.<br>
+[4] <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2697346/" target="_blank" rel="noopener">A penalized matrix decomposition, with applications to sparse principal components and canonical correlation analysis</a>, 2009.</p>
+        <aside class="speaker-notes">C=E[z_img^T z_txt]についてPLS-SVDと基本CCAはtr(A^T C B)を目的にする。PLS-SVDはA^T A=B^T B=I。CCAはA^T Sxx A=B^T Syy B=I。規制CCAではSxx,SyyをSxx+lambda I,Syy+lambda Iに置換する。계수を希薄にするridgeと계수を0にするL1等の希少性制約を区別する。ここでの文献は系統の例であり、過去に実行した계수切り捨てをその論文のアルゴリズムの再現とはしない。WittenのPMD sparse CCAは内部共分散を単位行列とする変形であり、元のCCA制約を保った単なる追加制約ではない。回転不変性はP=Iかつ正方直交Rで成立し、二乗ノルムも保たれるためコサイン検索も維持される。ただし内部の各軸対応や各軸の共分散は変わり得る。一般のPを固定してAR,BRにするとMが不変になるとは限らない。</aside>
+      </section>
+
+      <section class="slide probe-evaluation" id="s11">
+        <p class="eyebrow">평가 방식의 정리 · 모달리티 내 개념 대응</p>
+        <h2>Main Metric: 활성값 집합 하나의 개념 예측 손실로 평가</h2>
+        <p class="probe-intro"><strong>선행 연구 [1]</strong>의 단일 좌표 예측 평가를 적용하여, <strong>조합 점수 하나로 개념을 예측한 분류 손실</strong>을 측정합니다. 낮을수록 좋습니다.</p>
+        <div class="probe-columns">
+          <div class="probe-protocol">
+            <h3>어떻게 계산하는가?</h3>
+            <ol>
+              <li><strong>이미지·텍스트에서 학습한 조합과 가중치를 고정</strong></li>
+              <li><strong>모든 조합·개념에 개념 유무를 예측하는 분류기 학습</strong>
+                <div class="probe-formula" data-tex="\displaystyle \min_{w_{jk},\,b_{jk}}\mathcal L_{\mathrm{train}}^{(j,k)},\qquad \hat p_{nk}^{(j)}=\sigma(w_{jk}u_{nj}+b_{jk})"></div>
+                <p class="probe-symbols"><strong>학습하는 값은 가중치 <span data-tex="w_{jk}"></span>와 절편 <span data-tex="b_{jk}"></span></strong>이며, 조합 점수 <span data-tex="u_{nj}"></span>는 고정합니다. <span data-tex="\mathcal L_{\mathrm{train}}^{(j,k)}"></span>는 학습 자료의 평균 교차엔트로피 손실입니다.</p></li>
+              <li><strong>개념마다 최우수 조합을 선택하고, 평가 손실을 평균</strong><p>검증 손실이 가장 작은 조합을 개념마다 고릅니다. 선택한 조합의 별도 평가 손실을 <span data-tex="K"></span>개 개념에 대해 평균합니다.</p>
+                <div class="probe-selection-formula" data-tex="\displaystyle j_k^*=\arg\min_j L_{\mathrm{val}}(j,k),\quad \boxed{L_{\mathrm{eval}}=\frac1K\sum_{k=1}^{K}L_{\mathrm{test}}(j_k^*,k)}"></div>
+              </li>
+            </ol>
+          </div>
+          <div class="probe-diagram">
+            <h3>조합 점수는 여러 활성값을 가중합한 값</h3>
+            <svg viewBox="0 0 550 274" role="img" aria-label="한 이미지의 SAE 활성값 0.8, 0.2, 0.6에 고정한 가중치 0.5, -0.5, 1을 곱해 합하면 조합 점수 0.9가 됩니다. 이 점수 하나를 분류기에 넣어 자동차 존재 확률을 예측합니다. 숫자는 계산 예시입니다.">
+              <text x="12" y="24" font-size="17" fill="#626974">한 이미지의 SAE 활성값 · 계산 예시</text>
+              <g font-family="inherit" font-size="19" text-anchor="middle">
+                <rect x="12" y="43" width="112" height="39" rx="6" fill="#edf1f5"/><text x="68" y="69">특징 1 · 0.8</text>
+                <rect x="12" y="96" width="112" height="39" rx="6" fill="#edf1f5"/><text x="68" y="122">특징 2 · 0.2</text>
+                <rect x="12" y="149" width="112" height="39" rx="6" fill="#edf1f5"/><text x="68" y="175">특징 3 · 0.6</text>
+                <text x="176" y="69">× 0.5</text><text x="176" y="122">× (−0.5)</text><text x="176" y="175">× 1.0</text>
+              </g>
+              <g fill="none" stroke="#9199a2" stroke-width="2"><path d="M125 63H137 M125 116H137 M125 169H137 M220 63L268 116 M220 116H268 M220 169L268 116 M289 116H317"/></g>
+              <circle cx="277" cy="116" r="16" fill="#fff" stroke="#9199a2" stroke-width="2"/><text x="277" y="123" font-size="23" text-anchor="middle">+</text>
+              <rect x="318" y="76" width="215" height="79" rx="8" fill="#f2e8eb" stroke="#750014"/>
+              <text x="426" y="104" text-anchor="middle" font-size="20" font-weight="650" fill="#750014">조합 하나의 점수</text>
+              <text x="426" y="137" text-anchor="middle" font-size="27" fill="#750014">0.9</text>
+              <text x="175" y="211" font-size="16" text-anchor="middle" fill="#626974">조합 가중치는 고정</text>
+              <path d="M426 155V224" fill="none" stroke="#750014" stroke-width="2"/>
+              <rect x="302" y="224" width="247" height="42" rx="6" fill="#fff" stroke="#750014"/><text x="425" y="251" font-size="19" text-anchor="middle">단일 좌표 분류기에 입력</text>
+            </svg>
+            <p class="probe-diagram-result">이 점수 하나로 <strong>자동차가 있을 확률</strong>을 예측합니다. 같은 절차를 모든 조합·개념에 적용합니다.</p><p class="probe-diagram-key"><span data-tex="n"></span>은 표본, <span data-tex="j"></span>는 조합, <span data-tex="k"></span>는 개념입니다. <span data-tex="u_{nj}"></span>는 조합 점수입니다.</p><p class="probe-diagram-key"><span data-tex="L_{\mathrm{val}}(j,k)"></span>와 <span data-tex="L_{\mathrm{test}}(j,k)"></span>는 각각 검증·평가 자료에서 조합 <span data-tex="j"></span>로 개념 <span data-tex="k"></span>를 예측한 표본 평균 교차엔트로피 손실입니다.</p>
+          </div>
+        </div>
+        <div class="probe-bottom-limits">
+          <h3>단일 좌표 예측 평가의 한계점</h3>
+          <ol><li>한 조합이 여러 개념을 잘 예측해도 감점하지 않음</li><li>같은 개념을 나타내는 여러 조합의 중복·분산을 직접 측정하지 않음</li><li>해당 개념 자체에 반응하는지, 함께 등장하는 다른 개념에 반응하는지 구별하기 어려움</li></ol>
+        </div>
+        <p class="probe-source">[1] <a href="https://arxiv.org/html/2406.04093v1#S4.SS2" target="_blank" rel="noopener">Scaling and evaluating sparse autoencoders</a>, 2024.</p>
+      </section>
+      <section class="slide benchmark-slide benchmark-visual" id="s12">
+        <p class="eyebrow">평가 방식의 정리 · 모달리티 내 개념 대응</p>
+        <h2>Benchmark: 이미지와 텍스트의 개념 대응 평가</h2>
+        <p class="benchmark-lead"><strong>이미지는 COCO·COCO-Stuff의 시각 주석</strong>으로, <strong>텍스트는 Visual Genome의 문장별 개념 주석</strong>으로 평가합니다. <span class="benchmark-prior">(선행연구 <a href="https://arxiv.org/html/2606.24716#S4" target="_blank" rel="noopener">[5]</a> 참고)</span></p>
+        <div class="benchmark-columns">
+          <div>
+            <h3>이미지 · COCO / COCO-Stuff [6]</h3>
+            <p class="benchmark-kind">COCO의 물체 80개 · COCO-Stuff의 물체 80개와 배경·재질 91개</p>
+            <div class="stuff-images">
+              <figure><img class="benchmark-sample" src="assets/2026-11-04/000000000872.jpg" alt="잔디와 나무 앞에서 야구하는 두 사람의 COCO 이미지"><figcaption class="stuff-image-label">원본 이미지</figcaption></figure>
+              <figure><img class="benchmark-sample" src="assets/2026-11-04/000000000872-annotation.png" alt="사람, 잔디, 나무 등을 구분한 COCO-Stuff의 실제 영역 주석"><figcaption class="stuff-image-label">영역별 정답 주석</figcaption></figure>
+            </div>
+            <div class="benchmark-labels"><span><i class="annotation-dot" style="background:#cb5479"></i>사람 <strong>있음 (1)</strong></span><span><i class="annotation-dot" style="background:#779b49"></i>잔디 · <i class="annotation-dot" style="background:#255d50"></i>나무 <strong>있음 (1)</strong></span></div>
+            <p class="benchmark-explain">물체·영역 주석에서 개념의 존재 여부를 구하고, <strong>이미지 조합 점수로 개념 유무를 예측</strong>합니다.</p>
+          </div>
+          <div>
+            <h3>텍스트 · Visual Genome [7]</h3>
+            <p class="benchmark-kind">설명 문장마다 물체·속성·관계를 연결한 기존 주석 사용</p>
+            <blockquote class="vg-example">“a white cat with a tan tail and face markings”</blockquote>
+            <p class="vg-translation">황갈색 꼬리와 얼굴 무늬가 있는 흰 고양이</p>
+            <table class="vg-concept-table">
+              <thead><tr><th>주석 종류</th><th>이 문장에 연결된 주석 예시</th></tr></thead>
+              <tbody>
+                <tr><td>물체·부위</td><td><strong>고양이, 꼬리, 얼굴, 무늬</strong></td></tr>
+                <tr><td>속성</td><td><strong>고양이의 흰색, 꼬리의 황갈색</strong></td></tr>
+                <tr><td>관계</td><td>고양이가 꼬리를 가짐, 얼굴에 무늬가 있음</td></tr>
+              </tbody>
+            </table>
+            <p class="benchmark-explain">입력은 Visual Genome의 설명 문장입니다. <strong>문장에 연결된 개념 주석을 정답</strong>으로 텍스트 조합 점수의 예측 성능을 평가합니다.</p>
+          </div>
+        </div>
+        <p class="benchmark-scope"><strong>공통 이미지는 COCO 이미지 ID로 연결</strong>합니다. 사용할 이미지·개념 목록을 확인한 뒤, 양쪽에서 각각 개념별 예측 손실을 평균합니다.</p>
+        <p class="benchmark-source">[5] <a href="https://arxiv.org/html/2606.24716#S4" target="_blank" rel="noopener">Evaluating the Interpretability of Sparse Autoencoders with Concept Annotations</a>, ECCV 2026. 개념 주석을 활용한 이미지 평가를 참고했습니다.<br>[6] <a href="https://openaccess.thecvf.com/content_cvpr_2018/papers/Caesar_COCO-Stuff_Thing_and_CVPR_2018_paper.pdf" target="_blank" rel="noopener">COCO-Stuff: Thing and Stuff Classes in Context</a>, CVPR 2018. 이미지 예시 000000000872.<br>[7] <a href="https://arxiv.org/html/1602.07332" target="_blank" rel="noopener">Visual Genome: Connecting Language and Vision Using Crowdsourced Dense Image Annotations</a>, IJCV 2017. <a href="https://visualgenome.org/api/v0/api_endpoint_reference" target="_blank" rel="noopener">문장·주석의 공식 예시</a>는 VG 이미지 2407890에 속하며, 왼쪽 이미지와는 별개입니다.</p>
+      </section>
+      <section class="slide dci-evaluation" id="s13" aria-label="활성값 집합이 해당 개념을 정확히 나타내는지 평가 및 측정">
+        <p class="eyebrow">평가 방식의 정리 · 개념 혼합도와 표현 분산도의 보조 평가</p>
+        <h2>(필요시) Sub Metric: 개념 혼합도와 표현의 분산도를 평가</h2>
+        <figure class="dci-original-figure">
+          <img src="assets/2026-11-04/dci-figure-1.png" alt="DCI 원 논문의 Figure 1. 생성 요인 z와 학습한 좌표 c의 연결을 통해 분리성과 완전성을 설명합니다.">
+          <figcaption><ul class="dci-figure-bullets">
+            <li>단일 조합 예측 평가의 첫 두 한계를 보완하기 위해 <strong>DCI의 분리성(<span class="latex-symbol">D</span>)과 완전성(<span class="latex-symbol">C</span>) 관점</strong>을 차용합니다.</li>
+            <li><span class="latex-symbol">z</span>는 실제 생성 요인이고, <span class="latex-symbol">c</span>는 학습한 표현의 좌표입니다.</li>
+            <li><strong>한 좌표가 여러 요인과 연결되는지(<span class="latex-symbol">D</span>)</strong>, <strong>한 요인이 여러 좌표와 연결되는지(<span class="latex-symbol">C</span>)</strong>를 구분합니다.</li>
+            <li>우리 연구에서는 <strong>개념을 생성 요인에, 조합을 좌표에 대응</strong>시킵니다.</li>
+          </ul></figcaption>
+        </figure>
+        <table class="dci-table">
+          <colgroup><col style="width:18%"><col style="width:24%"><col style="width:58%"></colgroup>
+          <thead><tr><th>SAE latent의 성질</th><th>DCI에서 대응하는 성질 <a href="https://www.research.ed.ac.uk/files/57345826/iclr_final.pdf" target="_blank" rel="noopener">[8]</a></th><th>정의 및 원 논문과의 차이</th></tr></thead>
+          <tbody>
+            <tr><td><button type="button" class="metric-detail-button" data-dialog="dci-mix-dialog" aria-haspopup="dialog">집합의 개념 혼합도 (↓)<span class="metric-detail-hint">계산 방법 보기</span></button></td><td><strong>Disentanglement, 분리성</strong></td><td><div><strong>DCI:</strong> 한 좌표의 예측 기여가 소수 생성 요인에 집중되는 정도</div><div><strong>우리 세팅:</strong> <span data-tex="1-D"></span>에 대응되는, 조합 하나가 여러 개념의 예측에 관련된 정도</div></td></tr>
+            <tr><td><button type="button" class="metric-detail-button" data-dialog="dci-spread-dialog" aria-haspopup="dialog">개념 표현의 분산도 (↓)<span class="metric-detail-hint">계산 방법 보기</span></button></td><td><strong>Completeness, 완전성</strong></td><td><div><strong>DCI:</strong> 한 생성 요인의 예측 기여가 소수 좌표에 집중되는 정도</div><div><strong>우리 세팅:</strong> <span data-tex="1-C"></span>에 대응되는, 한 개념의 예측이 여러 조합에 나뉜 정도</div></td></tr>
+          </tbody>
+        </table>
+        <p class="dci-reference" id="dci-reference">[8] Eastwood &amp; Williams, ICLR 2018. <a href="https://www.research.ed.ac.uk/files/57345826/iclr_final.pdf" target="_blank" rel="noopener">A Framework for the Quantitative Evaluation of Disentangled Representations</a></p>
+      </section>
+      <section class="slide benchmark-slide benchmark-edit-slide" id="s14">
+        <p class="eyebrow">평가 방식의 정리 · 함께 등장하는 개념에 대한 의존성</p>
+        <h2>(필요시) 후속 확인: 함께 등장하는 다른 개념에 반응하는지 구별</h2>
+        <p class="benchmark-lead">원본에서 선택한 <strong>조합과 분류기를 고정</strong>하고 편집 전후를 비교합니다. 해당 개념의 변화에 반응하는지, 유지한 다른 개념의 반응은 안정적인지 확인합니다.</p>
+        <div class="benchmark-columns">
+          <div>
+            <h3>synCOCO · 물체를 제거한 이미지 쌍</h3>
+            <div class="benchmark-pair">
+              <figure><img src="assets/2026-11-04/syncoco-000044_orig.png" alt="자동차와 주차 미터기가 있는 원본"><figcaption>원본 · 자동차와 주차 미터기</figcaption></figure>
+              <figure><img src="assets/2026-11-04/syncoco-000044_syn.png" alt="자동차를 제거하고 주차 미터기를 유지한 편집본"><figcaption>편집본 · 자동차 제거</figcaption></figure>
+            </div>
+            <p><strong>자동차의 예측 확률은 낮아지고, 주차 미터기의 예측 확률은 유지되는지</strong> 확인합니다. 각 개념에 선택한 조합으로 각각 계산합니다.</p>
+          </div>
+          <div>
+            <h3>synCUB · 속성을 바꾼 이미지 쌍</h3>
+            <div class="benchmark-pair">
+              <figure><img src="assets/2026-11-04/syncub-000000_orig.png" alt="단색 가슴 무늬의 원본 새"><figcaption>원본 · 단색 가슴 무늬</figcaption></figure>
+              <figure><img src="assets/2026-11-04/syncub-000000_syn.png" alt="반점 가슴 무늬로 편집한 새"><figcaption>편집본 · 반점 무늬로 변경</figcaption></figure>
+            </div>
+            <p><strong>단색 무늬의 예측 확률은 낮아지고, 반점 무늬의 예측 확률은 높아지는지</strong> 확인합니다. 바꾸지 않은 속성도 따로 확인합니다.</p>
+          </div>
+        </div>
+
+        <p class="benchmark-source">[5] <a href="https://arxiv.org/html/2606.24716#S3.SS3" target="_blank" rel="noopener">Evaluating the Interpretability of Sparse Autoencoders with Concept Annotations</a>, 2026. 공개 편집 쌍 <a href="https://huggingface.co/datasets/jokl/syncoco/tree/v1.0" target="_blank" rel="noopener">synCOCO 000044</a> · <a href="https://huggingface.co/datasets/jokl/syncub/tree/v1.0" target="_blank" rel="noopener">synCUB 000000</a>. 예측 확률 비교는 우리 조합에 적용할 평가안입니다.</p>
+      </section>
+      <section class="slide retrieval-slide" id="s15">
+        <p class="eyebrow">평가 방식의 정리 · 모달리티 간 대응</p>
+        <h2>Main Metric: 정답 이미지·캡션 검색 성능으로 평가</h2>
+        <p class="retrieval-lead">선행 연구 [9][10][2]의 검색 평가를 참고해, <strong>학습한 대응으로 정답 이미지·캡션을 찾을 수 있는지</strong> 평가합니다.</p>
+        <div class="retrieval-method-columns">
+          <div>
+            <h3>조합 점수의 유사도로 검색 순위를 계산</h3>
+            <p><strong>SAE와 조합 행렬 <span data-tex="A,B"></span>를 고정 (또는 <span data-tex="W"></span>)</strong>한 뒤, 이미지·캡션의 활성값을 조합 점수로 변환합니다.</p>
+            <div class="retrieval-equation" data-tex="s=\cos\!\left(\tilde z_{\mathrm{img}}A,\,\tilde z_{\mathrm{txt}}B\right)"></div>
+            <p>코사인 유사도는 두 점수 벡터의 방향이 얼마나 같은지 나타냅니다. 유사도가 큰 후보부터 순위를 매깁니다.</p>
+            <div class="retrieval-measure">
+              <h3>R@1/5/10 · 정답이 상위 1/5/10개에 포함된 비율</h3>
+              <p><strong>이미지로 캡션 찾기</strong>와 <strong>캡션으로 이미지 찾기</strong>를 각각 평가합니다. 정답 캡션이 여러 개라면 하나라도 해당 순위 안에 있으면 성공입니다.</p>
+            </div>
+          </div>
+          <div>
+            <h3>이미지로 캡션을 검색하는 예</h3>
+            <div class="retrieval-example">
+              <img src="assets/2026-11-04/coco-train2017-000000094271.jpg" alt="닥스훈트 강아지 옆에 누운 사람의 COCO 실제 사진">
+              <div><blockquote>“A man sleeping next to a dachshund puppy.”</blockquote><p>이 사진에 연결된 실제 정답 캡션입니다. <span style="white-space:nowrap">COCO [11]</span></p></div>
+            </div>
+            <p class="retrieval-rank-label">순위 예시 · 정답 캡션이 3위인 경우</p>
+            <div class="retrieval-ranks"><div>1위<br>다른 캡션</div><div>2위<br>다른 캡션</div><div class="correct">3위<br>정답 캡션</div><div>4위<br>다른 캡션</div><div>5위<br>다른 캡션</div></div>
+            <p class="retrieval-result">이 질의는 R@1에서는 실패, <strong>R@5에서는 성공</strong>입니다.</p>
+          </div>
+        </div>
+        <p class="retrieval-source retrieval-paper-refs">[9] <a href="https://proceedings.neurips.cc/paper_files/paper/2024/hash/996bef37d8a638f37bdfcac2789e835d-Abstract.html" target="_blank" rel="noopener">Interpreting CLIP with Sparse Linear Concept Embeddings (SpLiCE)</a>, NeurIPS 2024. 이미지·텍스트 검색.<br>
+[10] <a href="https://proceedings.iclr.cc/paper_files/paper/2026/hash/32d51148004068b38d9f70c457541880-Abstract-Conference.html" target="_blank" rel="noopener">Learning multimodal dictionary decompositions with group-sparse autoencoders</a>, ICLR 2026. 텍스트·음악 검색(MRR).<br>
+[2] <a href="https://arxiv.org/abs/2606.29888" target="_blank" rel="noopener">Same Concept, Different Directions: Cross-Modal Feature Heterogeneity in Sparse Autoencoders</a>, NeurIPS 2026. 이미지·텍스트 검색(R@1/5/10).<br>
+[11] <a href="https://cocodataset.org/#captions" target="_blank" rel="noopener">Microsoft COCO: Common Objects in Context</a>. 예시 이미지 train2017 000000094271, 캡션 1050. 검색 평가는 val2017 사용.</p>
+      </section>
+      <section class="slide retrieval-slide" id="s16">
+        <p class="eyebrow">평가 방식의 정리 · 모달리티 간 대응</p>
+        <h2>Benchmark: 네 이미지·캡션 자료로 검색 평가를 확장</h2>
+        <p class="retrieval-lead"><strong>COCO·Flickr30k의 짧은 설명</strong>과 <strong>DOCCI·IIW의 상세한 설명</strong>에서 양방향 R@1·5·10을 측정합니다.</p>
+        <div class="retrieval-sample-grid">
+          <div class="retrieval-sample">
+            <h3>COCO [11] · 일상 장면의 짧은 설명</h3>
+            <div class="retrieval-sample-body"><figure><img src="assets/2026-11-04/coco-train2017-000000094271.jpg" alt="닥스훈트 옆에서 자는 사람"><figcaption>실제 샘플 · train2017 000000094271</figcaption></figure><div><blockquote>“A man sleeping next to a dachshund puppy.”</blockquote><p>사람과 강아지가 있는 장면을 짧게 설명합니다. 기존 검색 평가와 이어서 비교합니다.</p><p class="sample-setting">평가 자료는 COCO val2017을 사용합니다.</p></div></div>
+          </div>
+          <div class="retrieval-sample">
+            <h3>Flickr30k [12] · 인물·복장·행동의 설명</h3>
+            <div class="retrieval-sample-body"><figure><img src="assets/2026-11-04/flickr30k-3131519555.jpg" alt="고글과 화려한 옷을 입고 모자를 쓴 남성"><figcaption>실제 샘플 · 3131519555</figcaption></figure><div><blockquote>“A happy looking, long-haired man, wearing goggles over his eyes and very colorful clothing and a hat…”</blockquote><p>고글과 화려한 옷을 착용한 인물의 외형·행동을 구별하는지 봅니다.</p><p class="sample-setting">공개 검색 평가 분할을 사용합니다.</p></div></div>
+          </div>
+          <div class="retrieval-sample">
+            <h3>DOCCI [13] · 외형과 공간 관계의 상세 설명</h3>
+            <div class="retrieval-sample-body"><figure><img src="assets/2026-11-04/docci-test_00001.png" alt="물 위 이끼 낀 통나무에 앉은 거북"><figcaption>실제 샘플 · test_00001</figcaption></figure><div><blockquote>“An outdoor front view of a turtle that is sitting on a…”</blockquote><p>거북의 자세와 등껍질, 통나무·물·주변 풀까지 설명합니다.</p><p class="sample-setting">공개 test 분할의 이미지·설명을 사용합니다.</p></div></div>
+          </div>
+          <div class="retrieval-sample">
+            <h3>IIW [14] · 무늬와 배치의 상세 설명</h3>
+            <div class="retrieval-sample-body"><figure><img src="assets/2026-11-04/iiw-aar_test_04601.jpg" alt="십자 무늬가 있는 타일 벽과 구름 낀 하늘"><figcaption>실제 샘플 · aar_test_04601</figcaption></figure><div><blockquote>“In a low-angle shot, a wall decorated with a pattern of square tiles stands below a wide blue sky…”</blockquote><p>벽의 타일 무늬와 하늘·구름의 배치를 자세히 구별하는지 봅니다.</p><p class="sample-setting">IIW-400의 이미지 400장과 사람의 설명을 사용합니다.</p></div></div>
+          </div>
+        </div>
+        <p class="retrieval-notes">긴 설명은 모든 방법에 같은 텍스트 입력 길이를 적용하고, 잘린 비율을 기록합니다. IIW-400은 DOCCI-AAR 사진에 별도로 상세 설명을 붙인 자료입니다.</p>
+        <p class="retrieval-source">[11] <a href="https://cocodataset.org/#captions" target="_blank" rel="noopener">COCO Captions</a> · [12] <a href="https://bryanplummer.com/Flickr30kEntities/" target="_blank" rel="noopener">Flickr30k Entities</a><br>[13] <a href="https://google.github.io/docci/" target="_blank" rel="noopener">DOCCI: Descriptions of Connected and Contrasting Images</a> · [14] <a href="https://github.com/google/imageinwords/tree/main/datasets" target="_blank" rel="noopener">ImageInWords (IIW), 공개 평가 자료</a></p>
+      </section>
+      <section class="slide" id="s17">
+        <p class="eyebrow">평가 방식의 정리 · SAE 활용 과제</p>
+        <h2>SAE 활용 과제의 성능 평가 (아직 고민 중)</h2>
+        <p class="utility-lead">TEVI [15]의 평가를 차용해, <strong>텍스트로 지정한 개념을 이미지 표현에서 선택할 수 있는지</strong> 확인합니다.</p>
+        <div class="utility-columns">
+          <div>
+            <h3>한 사진에서 두 물체를 번갈아 지정</h3>
+            <figure><img src="assets/2026-11-04/docci-test_00003.png" alt="시계와 멧돼지 박제가 함께 있는 실내 사진"><figcaption>DOCCI test_00003 · 평가 절차를 설명하기 위한 실제 사진</figcaption></figure>
+            <div class="utility-targets"><div>“시계”<small>시계를 선택하도록 지정</small></div><div>“멧돼지”<small>멧돼지를 선택하도록 지정</small></div></div>
+            <p class="utility-prior">원 논문은 DOCCI 이미지 1,061장에 등장한 물체 1,528쌍에서 이 선택 능력을 평가했습니다.</p>
+          </div>
+          <div>
+            <ol class="utility-steps">
+              <li><h4>두 물체를 언급한 캡션과 이미지를 선택</h4><p>DOCCI에서 함께 등장한 두 물체를 각각 지정합니다.</p></li>
+              <li><h4>지정한 개념에 따라 이미지 표현을 조절</h4><p>텍스트에서 찾은 개념과 <strong>대응하는 이미지 활성값 집합</strong>을 선택해 이미지 표현을 복원합니다.</p></li>
+              <li><h4>지정한 물체와 다른 물체의 유사도를 비교</h4><p>복원한 이미지 표현이 <strong>다른 물체보다 지정한 물체의 텍스트에 더 가까운지</strong> 평가합니다.</p></li>
+            </ol>
+            <div class="utility-score"><h3>지표 · 목표 물체 선택 성공률 (%)</h3><p>지정한 물체의 유사도가 더 높은 평가 건수의 비율입니다. <strong>표현을 조절하기 전과 후</strong>의 성공률을 비교합니다.</p></div>
+          </div>
+        </div>
+        <p class="utility-conclusion"><strong>평가 절차는 선행 연구를 따르고, 특징을 선택하는 방법을 우리 대응으로 바꿉니다.</strong> 사진의 픽셀은 바꾸지 않고 내부 표현만 조절합니다.</p>
+        <p class="utility-source">[15] <a href="https://arxiv.org/html/2606.07451v2#S5.SS2" target="_blank" rel="noopener">TEVI: Text-Conditioned Editing of Visual Representations via Sparse Autoencoders for Improved Vision-Language Alignment</a>, Findings of EMNLP 2026, §5.2.</p>
+        <aside class="speaker-notes">평가안이며 결과가 아닙니다. TEVI의 Selectivity of Conditioning 절차를 따른다. 해당 절은 DOCCI 1,061개 이미지와 1,528개 물체 쌍에서 각 물체로 번갈아 조건을 주고 해당 물체에 더 가까운지를 평가했다. 이 슬라이드의 test_00003은 설명용으로 고른 실제 샘플이며 원 논문의 해당 평가 목록에 포함되었는지는 확인하지 않았다. TEVI는 텍스트 조건의 특징 선택 모듈을 학습하지만 우리 방법은 학습한 모달리티 간 대응을 사용한다. 정확한 공통 물체 쌍, 텍스트 구성과 유사도 집계는 공개 실험 코드를 확보해 맞춘다. 확인한 공식 저장소는 합성 MAD 실험 코드를 제공하며 자연 이미지 실험 코드는 추후 공개 예정이라고 명시한다. 그러므로 지금 단계에서 원 논문과 동일한 평가 표본을 확보했다고 주장하지 않는다. TEVI에서 다른 물체 정보의 보존은 이 선택 성공률 자체가 보장하는 성질이 아니므로 이 슬라이드에서 주장하지 않는다.</aside>
+      </section>
+
+      <section class="slide splice-utility" id="s18">
+        <p class="eyebrow">평가 방식의 정리 · SAE 활용 과제</p>
+        <h2>SAE 활용 과제의 성능 평가 (아직 고민 중)</h2>
+        <p class="splice-lead">SpLiCE [9]의 실험을 참고해, <strong>배경에 해당하는 개념을 제거했을 때 새의 분류 정확도가 높아지는지</strong> 평가합니다.</p>
+        <div class="splice-grid">
+          <div>
+            <h3>선행 연구 · Waterbirds에서 배경 개념 제거</h3>
+            <p>새 종류와 배경이 자주 함께 나타나면, 분류기가 <strong>새 대신 배경에 의존</strong>할 수 있습니다. SpLiCE는 학습한 새 분류기에서 <strong>대나무·숲 등 배경 개념에 연결된 계수를 0으로 바꾸고</strong>, 분류 정확도의 변화를 확인했습니다.</p>
+            <div class="splice-intervention">제거한 개념의 예<br><strong>bamboo · forest · hiking · rainforest</strong></div>
+            <table class="splice-results"><thead><tr><th>선행 연구의 분류 정확도</th><th>육지 배경의<br>육지 새</th><th>육지 배경의<br>물새</th></tr></thead><tbody><tr><td>배경 개념 제거 전</td><td>98%</td><td>48%</td></tr><tr><td>배경 개념 제거 후</td><td>97%</td><td><strong>60% (+12%p)</strong></td></tr></tbody></table>
+            <p class="splice-note">SpLiCE 원 논문 부록 B.7, Table 7의 결과입니다.</p>
+          </div>
+          <div>
+            <h3>Waterbirds · 새 종류와 배경을 나누어 평가</h3>
+            <div class="waterbird-examples">
+<figure><img src="assets/2026-11-04/waterbirds-landbird_on_land.jpg" alt="육지 새 · 육지 배경"><figcaption>육지 새 · 육지 배경</figcaption></figure>
+<figure><img src="assets/2026-11-04/waterbirds-landbird_on_water.jpg" alt="육지 새 · 물 배경"><figcaption>육지 새 · 물 배경</figcaption></figure>
+<figure><img src="assets/2026-11-04/waterbirds-waterbird_on_land.jpg" alt="물새 · 육지 배경"><figcaption>물새 · 육지 배경</figcaption></figure>
+<figure><img src="assets/2026-11-04/waterbirds-waterbird_on_water.jpg" alt="물새 · 물 배경"><figcaption>물새 · 물 배경</figcaption></figure>
+            </div>
+            <p class="waterbird-description">물새가 육지에 있어도 <strong>배경이 아니라 새의 종류를 정확히 분류</strong>할 수 있는지 확인합니다.</p>
+          </div>
+        </div>
+        <p class="splice-ref">[9] <a href="https://papers.neurips.cc/paper_files/paper/2024/file/996bef37d8a638f37bdfcac2789e835d-Paper-Conference.pdf#page=20" target="_blank" rel="noopener">Interpreting CLIP with Sparse Linear Concept Embeddings</a>, NeurIPS 2024, 부록 B.7. SpLiCE는 단어 기반의 희소 분해를 사용합니다. <a href="https://huggingface.co/datasets/arubique/waterbirds" target="_blank" rel="noopener">Waterbirds 예시 이미지</a>. <a href="https://github.com/AI4LIFE-GROUP/SpLiCE/blob/main/experiments/intervention.py" target="_blank" rel="noopener">실험 코드 공개</a>.</p>
+      </section>
+
+      <section class="slide next-week-plan" id="s19">
+        <p class="eyebrow">차주 계획</p>
+        <h2>차주 계획</h2>
+        <ul class="next-plan-list">
+          <li>이 평가를 구현하고 baseline 성능 확인하기</li>
+          <li>아래 내용을 실험해보기
+            <ol>
+              <li>어떤 목적함수와 제약으로 대응 조합 <span data-tex="A,B"></span>를 구할지</li>
+              <li>어떤 목적함수로 회전행렬 <span data-tex="R"></span>을 구하고 희소화할지</li>
+            </ol>
+          </li>
+        </ul>
+      </section>
+
+
+    </div>
+  </main>
+  <nav class="nav" aria-label="슬라이드 이동">
+    <button id="prev" aria-label="이전 슬라이드" disabled>‹</button>
+    <span class="counter" aria-live="polite">1 / 19</span>
+    <button id="next" aria-label="다음 슬라이드" disabled>›</button>
+  </nav>
+  <div class="hint">방향키로 이동 · F 전체 화면</div>
+<dialog class="metric-dialog" id="dci-mix-dialog" aria-labelledby="dci-mix-title">
+<div class="metric-modal-head"><h2 id="dci-mix-title">집합의 개념 혼합도 <span data-tex="1-D"></span></h2><button class="metric-close" type="button" aria-label="닫기">×</button></div>
+<p class="metric-lead">조합 하나가 여러 개념의 예측에 고르게 관련될수록 높아집니다. <strong>0에 가까울수록 한 개념에 집중됩니다.</strong></p>
+<div class="metric-input"><h3>계산에 필요한 값</h3><p><span data-tex="G_{jk}\ge0"></span>는 <strong>개념 <span data-tex="k"></span>를 예측하는 데 조합 <span data-tex="j"></span>가 유용한 정도</strong>입니다. 행은 조합, 열은 개념입니다. <span data-tex="r"></span>은 조합 수, <span data-tex="K"></span>는 개념 수입니다.</p></div>
+<div class="metric-step"><h3>1. 조합 하나의 중요도를 개념들 사이에서 정규화</h3><div class="metric-equation" data-tex="\displaystyle p_{jk}=\frac{G_{jk}}{\sum_{\ell=1}^{K}G_{j\ell}},\qquad h_j=-\frac{\sum_{k=1}^{K}p_{jk}\log p_{jk}}{\log K}"></div><p><span data-tex="p_{jk}"></span>는 조합 <span data-tex="j"></span>의 중요도 중 개념 <span data-tex="k"></span>가 차지하는 비율입니다. <span data-tex="h_j"></span>는 이 비율의 퍼진 정도를 0–1로 나타낸 정규화 엔트로피입니다.</p></div>
+<div class="metric-example"><strong>조합 하나로 자동차·도로·사람을 예측하는 중요도 비율</strong><p><span data-tex="(1,0,0)\;\Rightarrow\;h_j=0"></span> <span>자동차에만 집중</span></p><p><span data-tex="(1/3,1/3,1/3)\;\Rightarrow\;h_j=1"></span> <span>세 개념에 고르게 분산</span></p></div>
+<div class="metric-step"><h3>2. 조합별 혼합도를 예측 중요도로 가중 평균</h3><div class="metric-equation" data-tex="\displaystyle 1-D=\sum_{j=1}^{r}\rho_j h_j,\qquad\rho_j=\frac{\sum_k G_{jk}}{\sum_i\sum_k G_{ik}}"></div><p>어떤 개념에도 유용하지 않은 조합은 가중치가 0이므로 평균에서 제외됩니다. 모든 중요도가 0이면 값은 계산 불가로 보고합니다.</p></div>
+<div class="metric-status"><strong>우리 세팅에서 아직 정할 부분</strong><p>원 DCI는 전체 좌표 예측기에서 얻은 중요도를 <span data-tex="G"></span>로 사용합니다. 우리는 단일 좌표 예측 성능으로 <span data-tex="G"></span>를 만드는 방식을 검토 중입니다. <strong>낮을수록 좋은 분류 손실을 그대로 중요도에 넣지는 않습니다.</strong> 아래 계산은 비음수 중요도 행렬이 주어졌을 때의 정의입니다.</p></div><p class="metric-ref">원 DCI의 정규화 엔트로피 계산을 반대 방향으로 표시한 값입니다. <a href="https://homepages.inf.ed.ac.uk/ckiw/postscript/iclr_final.pdf" target="_blank" rel="noopener">DCI 원 논문 §2 [8]</a></p></dialog>
+<dialog class="metric-dialog" id="dci-spread-dialog" aria-labelledby="dci-spread-title">
+<div class="metric-modal-head"><h2 id="dci-spread-title">개념 표현의 분산도 <span data-tex="1-C"></span></h2><button class="metric-close" type="button" aria-label="닫기">×</button></div>
+<p class="metric-lead">개념 하나의 예측에 여러 조합이 고르게 관련될수록 높아집니다. <strong>0에 가까울수록 한 조합에 집중됩니다.</strong></p>
+<div class="metric-input"><h3>계산에 필요한 값</h3><p><span data-tex="G_{jk}\ge0"></span>는 <strong>개념 <span data-tex="k"></span>를 예측하는 데 조합 <span data-tex="j"></span>가 유용한 정도</strong>입니다. 행은 조합, 열은 개념입니다. <span data-tex="r"></span>은 조합 수, <span data-tex="K"></span>는 개념 수입니다.</p></div>
+<div class="metric-step"><h3>1. 개념 하나의 중요도를 조합들 사이에서 정규화</h3><div class="metric-equation" data-tex="\displaystyle q_{jk}=\frac{G_{jk}}{\sum_{i=1}^{r}G_{ik}},\qquad h_k=-\frac{\sum_{j=1}^{r}q_{jk}\log q_{jk}}{\log r}"></div><p><span data-tex="q_{jk}"></span>는 개념 <span data-tex="k"></span>의 예측 중요도 중 조합 <span data-tex="j"></span>가 차지하는 비율입니다. <span data-tex="h_k"></span>는 이 비율이 조합들에 퍼진 정도를 0–1로 나타냅니다.</p></div>
+<div class="metric-example"><strong>조합이 세 개일 때, 자동차 예측의 중요도 비율</strong><p><span data-tex="(1,0,0)\;\Rightarrow\;h_k=0"></span> <span>한 조합에만 집중</span></p><p><span data-tex="(1/3,1/3,1/3)\;\Rightarrow\;h_k=1"></span> <span>세 조합에 고르게 분산</span></p></div>
+<div class="metric-step"><h3>2. 개념별 분산도를 평균</h3><div class="metric-equation" data-tex="\displaystyle 1-C=\frac{1}{K}\sum_{k=1}^{K}h_k"></div><p>위 식은 모든 개념의 중요도 합이 양수일 때 적용합니다. 중요도 합이 0인 개념은 집중된 것으로 취급하지 않고, 계산 불가 개념 수와 평균에 포함한 개념 수를 별도로 보고합니다.</p></div>
+<div class="metric-status"><strong>우리 세팅에서 아직 정할 부분</strong><p>원 DCI는 전체 좌표 예측기에서 얻은 중요도를 <span data-tex="G"></span>로 사용합니다. 우리는 단일 좌표 예측 성능으로 <span data-tex="G"></span>를 만드는 방식을 검토 중입니다. <strong>낮을수록 좋은 분류 손실을 그대로 중요도에 넣지는 않습니다.</strong> 아래 계산은 비음수 중요도 행렬이 주어졌을 때의 정의입니다.</p></div><p class="metric-ref">원 DCI의 정규화 엔트로피 계산을 반대 방향으로 표시한 값입니다. <a href="https://homepages.inf.ed.ac.uk/ckiw/postscript/iclr_final.pdf" target="_blank" rel="noopener">DCI 원 논문 §2 [8]</a></p></dialog>
+  <script src="assets/katex/katex.min.js"></script>
+  <script>
+    document.querySelectorAll('[data-tex]').forEach(el => katex.render(el.dataset.tex, el, {throwOnError:false}));
+    document.querySelectorAll('[data-dialog]').forEach(button => {
+      button.addEventListener('click', () => {
+        const dialog = document.getElementById(button.dataset.dialog);
+        dialog.showModal();
+        dialog.scrollTop = 0;
+      });
+    });
+    document.querySelectorAll('.metric-dialog').forEach(dialog => {
+      dialog.querySelector('.metric-close').addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', event => {
+        const box = dialog.getBoundingClientRect();
+        if (event.target === dialog && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom)) dialog.close();
+      });
+    });
+    const slides = [...document.querySelectorAll('.slide')];
+    let current = 0;
+    function fit() {
+      const scale = Math.max(.05, Math.min((innerWidth - 32) / 1280, (innerHeight - 66) / 720));
+      document.querySelector('.stage').style.transform = `scale(${scale})`;
+    }
+    function show(index) {
+      current = Math.max(0, Math.min(slides.length - 1, index));
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === current));
+      document.querySelector('.counter').textContent = `${current + 1} / ${slides.length}`;
+      document.getElementById('prev').disabled = current === 0;
+      document.getElementById('next').disabled = current === slides.length - 1;
+      history.replaceState(null, '', '#' + (current + 1));
+    }
+    document.getElementById('prev').onclick = () => show(current - 1);
+    document.getElementById('next').onclick = () => show(current + 1);
+    addEventListener('resize', fit);
+    addEventListener('hashchange', () => show((parseInt(location.hash.slice(1), 10) || 1) - 1));
+    addEventListener('keydown', async event => {
+      if (document.querySelector('.metric-dialog[open]')) return;
+      if (event.target.closest('button,a,input,select,textarea')) return;
+      if (event.ctrlKey || event.metaKey || event.altKey || event.target.isContentEditable) return;
+      if (['ArrowRight','ArrowDown','PageDown',' '].includes(event.key)) { event.preventDefault(); show(current + 1); }
+      if (['ArrowLeft','ArrowUp','PageUp'].includes(event.key)) { event.preventDefault(); show(current - 1); }
+      if (event.key === 'Home') show(0);
+      if (event.key === 'End') show(slides.length - 1);
+      if (event.key.toLowerCase() === 'f') {
+        try {
+          if (document.fullscreenElement) await document.exitFullscreen();
+          else await document.documentElement.requestFullscreen();
+        } catch (_) {}
+      }
+    });
+    fit();
+    show((parseInt(location.hash.slice(1), 10) || 1) - 1);
+  </script>
+</body>
+</html>
