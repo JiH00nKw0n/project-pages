@@ -1,0 +1,2272 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>2026-11-11 진행 상황 공유</title>
+  <style>
+    :root { --accent:#750014; --ink:#1a1d21; --muted:#4f5660; --line:#d9dde2; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",Arial,sans-serif; background:#eef0f2; color:var(--ink); overflow:hidden; letter-spacing:-.02em; }
+    .deck { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
+    .stage { width:1280px; height:720px; position:relative; flex-shrink:0; }
+    .slide { position:absolute; inset:0; padding:50px 60px; background:linear-gradient(145deg,#fff,#f5f7f9); border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 40px #0001; visibility:hidden; opacity:0; overflow:hidden; }
+    .slide.active { visibility:visible; opacity:1; }
+    .slide::before { content:""; position:absolute; left:60px; right:60px; top:26px; height:3px; background:linear-gradient(90deg,var(--accent),transparent 70%); }
+    .title-slide { display:flex; align-items:center; justify-content:center; }
+    .title-slide::before { display:none; }
+    .title-hero { text-align:center; transform:translateY(-10px); }
+    .title-hero h1 { font-size:67px; line-height:1.3; letter-spacing:-.035em; font-weight:700; margin:0; }
+    .nav { position:fixed; bottom:12px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:15px; font-size:14px; color:var(--muted); }
+    button { font:inherit; border:1px solid #ccd1d6; background:white; border-radius:6px; padding:5px 12px; cursor:pointer; }
+    button:disabled { opacity:.4; cursor:default; }
+    .counter { min-width:54px; text-align:center; }
+    .hint { position:fixed; bottom:17px; right:22px; font-size:12px; color:var(--muted); }
+    @media (max-width:600px) { .hint { display:none; } }
+    @media print {
+      body { overflow:visible; background:white; }
+      .deck { position:static; display:block; }
+      .stage { width:auto; height:auto; transform:none!important; }
+      .slide { position:relative; visibility:visible; opacity:1; width:1280px; height:720px; break-after:page; border:0; box-shadow:none; border-radius:0; }
+      .nav,.hint { display:none; }
+      @page { size:1280px 720px; margin:0; }
+    }
+
+    .eyebrow { color:var(--accent); font-size:13px; font-weight:600; letter-spacing:.1em; margin-bottom:12px; }
+    h2 { font-size:33px; line-height:1.3; margin-bottom:26px; font-weight:720; letter-spacing:-.035em; }
+    .content { height:492px; }
+    h3 { font-size:23px; color:var(--accent); margin-bottom:14px; line-height:1.4; }
+    p { font-size:22px; line-height:1.6; word-break:keep-all; }
+    .research-slide h2 { font-size:35px; margin-bottom:22px; }
+    .research-lead { font-size:25px; line-height:1.55; margin-bottom:30px; }
+    .research-block { padding:22px 0; border-top:1px solid var(--line); }
+    .research-block h3 { font-size:25px; margin-bottom:12px; }
+    .research-block p { font-size:23px; line-height:1.6; }
+    .research-block p + p { margin-top:10px; }
+    /* Reused from the 2026-09-16 presentation, slide 4. */
+.imported-related-work{position:absolute;inset:0;padding:52px 60px;background:linear-gradient(145deg,rgba(255,255,255,.99),rgba(244,246,248,.97));border:1px solid var(--line);border-radius:22px;box-shadow:0 18px 40px rgba(0,0,0,.07);visibility:hidden;opacity:0;pointer-events:none;display:flex;flex-direction:column;overflow:hidden}
+.imported-related-work::before{content:"";position:absolute;left:60px;right:60px;top:26px;height:3px;background:linear-gradient(90deg,var(--accent),transparent 70%);opacity:.85}
+.imported-related-work .eyebrow{font-family:"SF Mono",ui-monospace,Menlo,monospace;color:var(--accent);font-size:13px;letter-spacing:.14em;font-weight:600;margin-bottom:12px}
+.imported-related-work h2{font-size:37px;line-height:1.22;letter-spacing:-.035em;font-weight:720;margin-bottom:24px}
+.imported-related-work .content{flex:1;min-height:0;position:relative}
+.imported-related-work footer{position:absolute;left:60px;right:60px;bottom:33px;font-size:14px;color:#69727c;letter-spacing:-.01em;line-height:1.4}
+.imported-related-work footer a{border-bottom:1px solid #b9bec5}
+.imported-related-work .figma-figure{display:block;object-fit:contain;width:100%;mix-blend-mode:multiply}
+.imported-related-work .method{height:274px;margin:30px 0 20px}
+.imported-related-work .method-steps{display:flex;gap:50px;margin-top:7px}
+.imported-related-work .method-steps p{flex:1;display:flex;flex-direction:column;gap:10px;font-size:24px}
+.imported-related-work .method-steps b{color:var(--accent);font-size:20px}
+.imported-related-work .small-definition{font-size:21px;color:var(--muted);line-height:1.5}
+.imported-related-work .speaker-notes{display:none}
+.imported-related-work{transition:opacity .18s ease}
+.imported-related-work .content{height:auto}
+.imported-related-work.active{visibility:visible;opacity:1;pointer-events:auto}
+.imported-related-work .method-steps p{line-height:1.4}
+.imported-related-work a{color:inherit;text-decoration:none}
+
+    /* Original related-work slide from 2026-10-06, page 3. */
+.imported-related-work .literature{margin-top:-2px}
+.imported-related-work .literature a{display:grid;grid-template-columns:282px 1fr;column-gap:24px;row-gap:7px;padding:18px 0;border-bottom:1px solid var(--line);text-decoration:none}
+.imported-related-work .literature a:first-child{padding-top:11px}
+.imported-related-work .literature .citation{grid-row:1/3;color:var(--accent);font-size:20px;align-self:center;font-weight:600;letter-spacing:-.015em}
+.imported-related-work .literature strong{font-size:23px;font-weight:580}
+.imported-related-work .literature-focus{font-size:23px;color:var(--accent);font-weight:600;margin-top:27px;line-height:1.5}
+.imported-related-work .literature small{font-size:16px;color:var(--muted);letter-spacing:0}
+.imported-related-work .literature a:hover strong{text-decoration:underline}
+.imported-related-work .literature a{display:grid;grid-template-columns:270px 1fr;gap:22px;padding:17px 0;align-items:center}
+.imported-related-work .literature .citation{grid-row:auto;font-size:19px}
+.imported-related-work .literature strong{font-size:21px;line-height:1.4}
+.imported-related-work .literature-focus{margin-top:22px;font-size:23px;line-height:1.5}
+.imported-related-work .review-label{display:block;font-size:17px;color:var(--muted);margin-bottom:8px;font-weight:500}
+.imported-related-work .limitation-questions{padding-left:30px;font-size:21px;line-height:1.45;font-weight:600}
+.imported-related-work .limitation-questions li+li{margin-top:13px}
+
+    /* Research questions reused from 2026-10-06, page 4. */
+.research-questions .content{padding-top:20px}
+.research-questions .rq-item{padding:20px 0 34px}
+.research-questions .rq-item+.rq-item{border-top:1px solid var(--line);padding-top:34px}
+.research-questions .rq-item h3{font-size:26px;color:var(--accent);margin-bottom:18px;font-weight:650}
+.research-questions .rq-item p{font-size:28px;line-height:1.65;word-break:keep-all}
+.research-questions .rq-item .rq-footnote{font-size:19px;line-height:1.5;color:var(--muted);margin-top:18px}
+.research-questions .rq-item sup{font-size:18px;color:var(--accent)}
+.research-questions{padding:52px 60px}
+.research-questions h2{font-size:37px;line-height:1.22;margin-bottom:24px}
+.research-questions .eyebrow{font-family:"SF Mono",ui-monospace,Menlo,monospace;letter-spacing:.14em}
+.research-questions .content{height:auto}
+.research-questions .speaker-notes{display:none}
+
+    .discussion-slide h2 { font-size:37px; margin-bottom:32px; }
+    .discussion-section { padding:24px 0 28px; }
+    .discussion-section + .discussion-section { border-top:1px solid var(--line); padding-top:28px; }
+    .discussion-section h3 { font-size:28px; font-weight:700; margin-bottom:18px; }
+    .discussion-section ul { padding-left:27px; }
+    .discussion-section li { padding-left:4px; font-size:22px; line-height:1.6; word-break:keep-all; }
+    .discussion-section li + li { margin-top:13px; }
+
+    .evaluation-overview h2 { font-size:35px; margin-bottom:14px; }
+    .evaluation-overview .eval-lead { font-size:23px; margin-bottom:22px; }
+    .evaluation-overview .eval-layout { display:grid; grid-template-columns:760px 1fr; gap:30px; align-items:start; }
+    .evaluation-overview svg { width:760px; height:430px; }
+    .evaluation-overview .axis-note { padding:18px 0; border-top:2px solid var(--line); }
+    .evaluation-overview .axis-note h3 { font-size:23px; margin-bottom:10px; }
+    .evaluation-overview .axis-note p { font-size:21px; line-height:1.55; }
+    .evaluation-overview .plot-note { font-size:17px; color:var(--muted); margin-top:6px; }
+    .evaluation-overview .source-note { font-size:14px; color:var(--muted); margin-top:8px; }
+    .evaluation-overview .source-note a { color:inherit; }
+
+
+    .method-summary {padding:42px 44px 30px;}
+    .method-summary::before {left:44px;right:44px;}
+    .method-summary .eyebrow {font-size:13px;line-height:1.6;}
+    .method-summary h2 {font-size:32px;margin-bottom:17px;}
+    .method-summary .method-lead {font-size:22px;line-height:1.5;margin-bottom:20px;}
+    .method-summary h3 {font-size:23px;margin-bottom:10px;}
+    .method-summary p {font-size:21px;line-height:1.5;}
+    .method-summary .method-foot {font-size:12px;line-height:1.45;color:var(--muted);margin-top:14px;}
+    .method-summary .method-foot a {color:inherit;text-underline-offset:2px;}
+    .method-summary .speaker-notes {display:none;}
+    .method-summary .katex {font-size:1.08em;}
+    .method-family-table {width:100%;border-collapse:collapse;table-layout:fixed;font-size:18px;line-height:1.4;}
+    .method-family-table th {text-align:left;background:#edf0f3;padding:10px 12px;border-bottom:2px solid var(--line);font-weight:700;}
+    .method-family-table td {padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle;}
+    .method-family-table th:first-child {width:23%;}
+    .method-family-table th:nth-child(2) {width:28%;}
+    .method-family-table .ours td {background:#f7edef;}
+    .method-family-table small {display:block;font-size:15px;color:var(--muted);margin-top:3px;}
+    .method-invariance {display:grid;grid-template-columns:1.05fr 1fr;gap:25px;align-items:center;margin-top:16px;}
+    .method-invariance .invariance-math {font-size:25px;line-height:1.65;}
+    .method-invariance p {font-size:19px;}
+    .slide.mapping-recall .method-lead {margin-bottom:20px;}
+    .mapping-recall-grid {display:grid;grid-template-columns: 0.86fr 1.3fr;gap:32px;align-items:center;}
+    .mapping-recall-copy h3 {font-size:23px;margin:0 0 10px;}
+    .mapping-recall-copy h3:not(:first-child) {margin-top:24px;}
+    .mapping-recall-copy p {font-size:21px;line-height:1.55;margin:0;}
+    .mapping-recall-visual {background:#faf8f9;border:1px solid #e7dce0;border-radius:12px;padding:18px 16px;}
+    .mapping-recall-diagram {display:block;width:100%;height:340px;}
+    .mapping-recall-diagram text {font-family:Arial,"Apple SD Gothic Neo",sans-serif;font-size:10px;fill:#4b4650;}
+    .mapping-recall-diagram .diagram-head {font-size:11px;font-weight:700;fill:#750014;}
+    .mapping-recall-diagram .diagram-note {font-size:9px;fill:#776d74;}
+    .mapping-recall-score {display:flex;gap:30px;align-items:center;margin-top:22px;padding:17px 22px;background:#f6edf0;border-left:4px solid #750014;}
+    .mapping-recall-score > div {font-size:31px;flex-shrink:0;}
+    .mapping-recall-score p {font-size:20px;line-height:1.5;margin:0;}
+    .method-family-table td {padding-block:8px;}
+    .result-slide {padding:41px 50px 18px;}
+    .result-slide .eyebrow {margin-bottom:3px;}
+    .result-slide h2 {margin-bottom:7px;}
+    .results-notes ul {padding-left:21px;list-style:disc;}
+    .results-notes p, .results-notes li {font-size:16px;line-height:1.4;color:var(--muted);}
+    .results-notes .pool-note {padding-left:86px;}
+    .results-chart {display:block;width:100%;height:408px;margin:4px 0;}
+    #s10 .results-chart {height:400px;}
+    #s10:has(.takeaway-overlay:not([hidden])) .results-chart {height:335px;}
+    .results-notes .mapping-direction {font-size:15px;}
+    .result-slide .query-note {font-size:15px;color:var(--muted);margin-top:7px;}
+
+    .concept-results {padding:42px 50px 24px;}
+    .concept-results .eyebrow {margin-bottom:3px;}
+    .concept-results h2 {margin-bottom:7px;}
+    .concept-results .scope {font-size:19px;margin-bottom:15px;}
+    #s12 .scope {margin-bottom:4px;}
+    .metric-definitions {padding-left:24px;margin:0 0 10px;font-size:18px;line-height:1.45;}
+    #s12 .metric-definitions + table :is(th, td) {padding-block:3px;}
+    .concept-results table {border-collapse:collapse;width:100%;table-layout:fixed;font-size:18px;line-height:1.22;font-variant-numeric:tabular-nums;}
+    .concept-results th, .concept-results td {padding:5px 12px;border-bottom:1px solid var(--line);text-align:right;}
+    .concept-results thead th {background:#edf0f3;font-size:17px;font-weight:650;}
+    .concept-results th:first-child {text-align:left;width:31%;}
+    .concept-results .rule-below > * {border-bottom:3px solid #818991;}
+    .concept-results .rule-above > * {border-top:3px solid #818991;}
+    .concept-results tbody th {font-weight:450;}
+    .concept-results td {white-space:nowrap;}
+    .concept-results .relative {font-size:calc(1em - 3pt);font-weight:400;}
+    .concept-results .gain {color:#ae352c;}
+    .concept-results .drop {color:#245ca5;}
+    .concept-results .equal {color:var(--muted);}
+    .retrieval-results {padding:39px 44px 22px;}
+    .retrieval-results table colgroup:first-child col {width:24%;}
+    .retrieval-results tbody th {white-space:nowrap;}
+    .retrieval-results table :is(th,td) {padding:5px 4px;text-align:center;}
+    .retrieval-results tbody th, .retrieval-results thead th[rowspan] {text-align:left;padding-left:10px;}
+    .retrieval-results table th:first-child {width:auto;}
+    .retrieval-results thead tr:first-child th[rowspan] {width:24%;}
+    .retrieval-results thead tr:nth-child(2) th {text-align:center;padding-left:4px;}
+    .retrieval-results thead tr:nth-child(2) th {font-size:15px;}
+    .retrieval-results th[scope="colgroup"], .retrieval-results td:nth-child(2), .retrieval-results td:nth-child(7), .retrieval-results thead tr:nth-child(2) :is(:first-child,:nth-child(6)) {border-left:1px solid #b9c0c8;}
+    .retrieval-results tbody :is(:nth-child(6),:nth-child(11)) {background:#edf0f36b;}
+    .mixing-results {padding:36px 50px 16px;}
+    .mixing-results .metric-definitions {margin:0 0 12px;line-height:1.5;}
+    .mixing-results tbody :is(th,td) {padding-block:4px;}
+    .mixing-results table colgroup:first-child {width:29%;}
+    .mixing-results table :is(th,td):not([scope="row"]) {text-align:center;}
+    .mixing-results thead th {padding-block:4px;}
+    .mixing-results thead tr:first-child th:first-child {width:auto;text-align:left;}
+    .mixing-results thead tr:nth-child(2) th:first-child {width:auto;}
+    .mixing-results thead th[scope="colgroup"], .mixing-results thead tr:nth-child(2) th:nth-child(odd), .mixing-results td:nth-child(even) {border-left:1px solid var(--line);}
+    .concept-results .metric-note {margin-top:11px;color:var(--muted);font-size:16px;}
+    .benchmark-slide { padding:40px 44px 30px; }
+    .benchmark-slide h2 { font-size:33px; margin-bottom:16px; }
+    .benchmark-lead { font-size:22px; line-height:1.5; margin-bottom:22px; }
+    .benchmark-columns { display:grid; grid-template-columns:1fr 1fr; gap:34px; }
+    .benchmark-columns > div + div { border-left:1px solid var(--line); padding-left:34px; }
+    .benchmark-columns h3 { font-size:25px; margin-bottom:10px; }
+    .benchmark-columns p { font-size:20px; line-height:1.5; margin-bottom:12px; }
+    .benchmark-scope { margin-top:22px; padding-top:15px; border-top:1px solid var(--line); font-size:18px; line-height:1.5; }
+    .benchmark-source { margin-top:16px; font-size:14px; line-height:1.5; color:var(--muted); }
+    .benchmark-source a { color:inherit; }
+    .benchmark-visual .benchmark-lead { font-size:21px; margin-bottom:17px; }
+    .benchmark-visual .benchmark-columns { gap:28px; }
+    .benchmark-visual .benchmark-columns > div + div { padding-left:28px; }
+    .benchmark-visual .benchmark-columns h3 { font-size:24px; margin-bottom:9px; }
+    .benchmark-visual figure { margin:0; }
+    .benchmark-sample { width:100%; height:238px; display:block; object-fit:contain; background:#edf0f2; }
+    .benchmark-labels { display:flex; justify-content:space-between; gap:10px; padding:11px 0 9px; border-bottom:1px solid var(--line); font-size:18px; line-height:1.4; }
+    .benchmark-labels strong { color:var(--accent); }
+    .benchmark-visual .benchmark-columns .benchmark-explain { font-size:19px; line-height:1.45; margin:10px 0 0; }
+    .benchmark-visual .benchmark-scope { font-size:18px; margin-top:17px; padding-top:12px; }
+    .benchmark-visual .benchmark-source { font-size:13px; margin-top:12px; }
+    #s11 .benchmark-columns { grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; }
+    #s11 .benchmark-columns > div + div { padding-left:22px; }
+    #s11 .benchmark-columns h3 { margin-bottom:4px; }
+    #s11 .benchmark-kind { font-size:18px; color:var(--muted); margin:0 0 12px; }
+    #s11 .benchmark-sample { height:195px; }
+    #s11 .benchmark-labels { display:block; font-size:17px; min-height:62px; line-height:1.5; }
+    #s11 .benchmark-labels span { display:block; }
+    #s11 .benchmark-columns .benchmark-explain { font-size:18px; line-height:1.5; }
+    #s11 .stuff-images { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+    #s11 .stuff-images figure { position:relative; }
+    #s11 .stuff-image-label { position:absolute; bottom:0; left:0; right:0; background:#ffffffed; text-align:center; font-size:14px; line-height:1.5; }
+    #s11 .annotation-dot { display:inline-block; width:10px; height:10px; margin-right:5px; }
+    #s11 .benchmark-scope { margin-top:15px; }
+    #s11 .benchmark-source { font-size:12px; margin-top:10px; line-height:1.4; }
+    #s11 .benchmark-columns { grid-template-columns:1fr 1fr; gap:32px; }
+    #s11 .benchmark-columns > div + div { padding-left:32px; }
+    #s11 .benchmark-kind { font-size:17px; min-height:26px; margin-bottom:12px; }
+    #s11 .benchmark-sample { height:210px; }
+    #s11 .benchmark-labels { display:flex; justify-content:flex-start; gap:26px; min-height:0; padding:10px 0; }
+    #s11 .benchmark-explain { margin-top:12px; }
+    #s11 .vg-example { font-size:25px; line-height:1.45; color:var(--accent); border-left:3px solid var(--accent); padding:10px 0 10px 17px; margin:5px 0 8px; }
+    #s11 .vg-translation { font-size:17px; color:var(--muted); margin:0 0 15px 20px; }
+    #s11 .vg-concept-table { border-collapse:collapse; width:100%; font-size:17px; line-height:1.45; }
+    #s11 .vg-concept-table th { text-align:left; color:var(--muted); font-weight:600; border-bottom:1px solid var(--line); padding:7px 8px; }
+    #s11 .vg-concept-table td { padding:7px 8px; border-bottom:1px solid var(--line); }
+    #s11 .vg-concept-table td:first-child { width:100px; white-space:nowrap; }
+    #s11 .benchmark-scope { font-size:18px; margin-top:12px; }
+    #s11 .benchmark-source { font-size:12px; line-height:1.5; }
+    #s11 .benchmark-prior { font-size:17px; white-space:nowrap; }
+    #s11 .benchmark-prior a { color:inherit; text-decoration:underline; }
+    .retrieval-slide {padding:42px 44px 32px;}
+    .retrieval-slide::before {left:44px;right:44px;}
+    .retrieval-slide h2 {font-size:32px;margin-bottom:17px;}
+    .retrieval-slide .retrieval-lead {font-size:21px;line-height:1.5;margin-bottom:24px;}
+    .retrieval-slide strong {font-weight:730;}
+    .retrieval-source {font-size:12px!important;line-height:1.5!important;color:var(--muted);margin-top:14px;}
+    .retrieval-source a {color:inherit;text-underline-offset:2px;}
+    .retrieval-sample-grid {display:grid;grid-template-columns:1fr 1fr;gap:12px 32px;}
+    .retrieval-sample {border-top:1px solid var(--line);padding-top:12px;}
+    .retrieval-sample h3 {font-size:23px;margin-bottom:9px;}
+    .retrieval-sample-body {display:grid;grid-template-columns:175px 1fr;gap:16px;}
+    .retrieval-sample figure {margin:0;}
+    .retrieval-sample img {width:175px;height:135px;object-fit:contain;background:#edf0f2;display:block;}
+    .retrieval-sample figcaption {font-size:11px;color:var(--muted);margin-top:4px;line-height:1.3;}
+    .retrieval-sample blockquote {font-size:17px;line-height:1.4;color:var(--accent);margin:0 0 8px;}
+    .retrieval-sample p {font-size:18px;line-height:1.4;}
+    .retrieval-sample .sample-setting {font-size:15px;color:var(--muted);margin-top:8px;}
+    #s15 .retrieval-lead {margin-bottom:12px;}
+    #s15 .retrieval-notes {font-size:16px;line-height:1.45;margin-top:10px;border-top:1px solid var(--line);padding-top:12px;}
+    #s15 .retrieval-source {margin-top:9px;font-size:11px!important;}
+    #s11.benchmark-slide, #s15.retrieval-slide {padding-bottom:12px;}
+  
+    /* Slide 9: click-to-explain comparisons, positioned in chart coordinates. */
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-tabs {display:flex;gap:22px;align-items:center;height:28px;margin:0 0 2px;position:relative;z-index:12;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-tabs button {font-size:15px;color:#000;font-weight:700;border:0;border-radius:0;background:transparent;padding:2px 0;border-bottom:2px solid transparent;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-tabs button[aria-pressed="true"] {color:#000;border-bottom-color:#1365ba;font-weight:700;}
+    #s9 .results-chart {height:378px;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-overlay {position:absolute;inset:0;z-index:10;background:rgba(70,78,86,.24);border-radius:22px;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-overlay[hidden] {display:none;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-highlight {position:absolute;border:3px solid #1673cf;border-radius:4px;background:transparent;pointer-events:none;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-copy {position:absolute;left:70px;right:70px;bottom:16px;background:#e5e8eb;padding:16px 20px 12px;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-copy h3 {font-size:26px;color:#145b9f;margin:0 0 8px;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-copy ul {padding-left:25px;margin:0;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-copy li {font-size:23px;line-height:1.43;margin:5px 0;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-close {position:absolute;right:24px;top:20px;font-size:16px;padding:4px 10px;}
+    @media print {:is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-tabs,:is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-overlay {display:none!important;}}
+
+    .table-heading {display:flex;align-items:baseline;gap:32px;}
+    .table-heading h2 {flex-shrink:0;}
+    .concept-results:has(.takeaway-overlay:not([hidden])) :is(.scope,.metric-note,.metric-definitions) {display:none;}
+    .concept-results:has(.takeaway-overlay:not([hidden])) table :is(th,td) {padding-block:3px;}
+    #s17 .discussion-section {padding-block:16px;}
+    #s17 .discussion-section ul ul {list-style-type:circle;margin-top:3px;}
+    #s17 .discussion-section ul ul li {font-size:20px;}
+  </style>
+  <link rel="stylesheet" href="assets/katex/katex.min.css">
+</head>
+<body>
+  <main class="deck">
+    <div class="stage">
+      <section class="slide title-slide active" id="s1" aria-label="2026-11-11 진행 상황 공유">
+        <div class="title-hero">
+          <h1>2026-11-11<br>진행 상황 공유</h1>
+        </div>
+      </section>
+      <section class="slide research-slide" id="s2" aria-label="연구 목표">
+        <p class="eyebrow">연구 목표</p>
+        <h2>SAE를 통해 멀티모달 임베딩의 표현을 이해하고 해석하기</h2>
+        <ul class="research-lead" style="padding-left:1.3em">
+          <li>SAE는 임베딩을 여러 특징의 활성값으로 표현</li>
+          <li>이 활성값으로 멀티모달 임베딩을 해석하려면, 다음 두 관계를 정확히 이해해야 함</li>
+        </ul>
+        <div class="research-block">
+          <h3>각 모달리티의 SAE latent의 활성값과 개념의 관계</h3>
+          <p><strong>모달리티 내의 대응:</strong> 각 모달리티에서 <strong>어떤 활성값 (집합)이 어떤 개념을 나타내는지</strong> 찾고, 그 집합이 해당 개념을 다른 개념과 정확히 구별하는지 확인</p>
+        </div>
+        <div class="research-block">
+          <h3>모달리티 간의 개념 및 SAE latent 활성값의 대응</h3>
+          <p><strong>모달리티 간의 대응:</strong> 한 모달리티에서 찾은 개념 집합과 <strong>같은 의미를 나타내는 다른 모달리티의 집합</strong>을 대응시켜, 두 모달리티가 같은 개념을 어떻게 표현하는지 이해</p>
+        </div>
+      </section>
+      <section class="slide imported-related-work" id="s3"><p class="eyebrow">RELATED WORK</p><h2>멀티모달 SAE의 특징 해석과 대응 관련 연구의 한계점</h2><div class="content">
+<div class="literature">
+<a href="https://arxiv.org/abs/2504.11695" target="_blank" rel="noopener"><span class="citation">Papadimitriou et al., 2025</span><strong>Interpreting the Linear Structure of Vision-language Model Embedding Spaces</strong></a>
+<a href="https://arxiv.org/abs/2601.20028" target="_blank" rel="noopener"><span class="citation">Kaushik et al., 2026</span><strong>Decomposing Multimodal Embedding Spaces with Group-Sparse Autoencoders</strong></a>
+<a href="https://arxiv.org/abs/2602.06218" target="_blank" rel="noopener"><span class="citation">Dhimoïla et al., 2026</span><strong>Cross-Modal Redundancy and the Geometry of Vision–Language Embeddings</strong></a>
+<a href="https://arxiv.org/abs/2606.29888" target="_blank" rel="noopener"><span class="citation">우리의 지난 연구, 2026</span><strong>Same Concept, Different Directions</strong></a>
+</div><div class="literature-focus"><span class="review-label">선행 연구와 지난 연구를 바탕으로 검토할 한계</span><ol class="limitation-questions"><li>활성값의 상관관계(coactivation correlation)가 높은 두 특징을 같은 개념을 나타내는 특징으로 볼 수 있는가?</li><li>한 개념이 여러 특징에 나뉘거나 여러 개념이 한 특징을 공유해도, 이미지·텍스트 특징을 하나씩 짝짓는 방식 (1 to 1)이 적절한가?</li></ol></div></div><aside class="speaker-notes"><p>논문 제목의 원문 링크 제공. Papadimitriou et al.의 BridgeScore는 공동 활성화와 기하학적 정렬의 결합. 본문 그림 5에서 다대다 개념 관계의 명시적 분석. Kaushik et al.은 모달리티 가림과 그룹 희소성을 통한 공통 사전 학습. Dhimoïla et al.은 Iso-Energy 등 활성 에너지 일관성 기반 학습.</p><p>모든 선행 연구의 공통 방법을 coactivation correlation·개념당 한 특징·헝가리안 1대1 대응으로 일반화하는 주장 제외. 이번 검토의 직접 대상은 우리의 기존 대응 방식과 진단 실험의 대표 특징 선택 방식.</p></aside></section>
+      <section class="slide research-questions" id="s4">
+<p class="eyebrow">RESEARCH QUESTIONS</p><h2>이번 연구의 연구 질문</h2>
+<div class="content">
+<div class="rq-item"><h3>RQ1. coactivation correlation의 한계와 개선</h3><p>활성값의 상관관계(coactivation correlation)가 실제 의미 대응을 정확히 반영하지 못하는 경우는 언제이며, 이를 어떻게 개선할 수 있을까?</p></div>
+<div class="rq-item"><h3>RQ2. 일대일 대응의 한계와 대안</h3><p>같은 개념을 나타내는 이미지·텍스트 특징의 관계를 1 대 1로 표현하기 어려운 경우<sup>*</sup>는 언제이며, 이를 어떤 대응 방식으로 해결할 수 있을까?</p><p class="rq-footnote">* 한 개념이 여러 특징에 나뉘거나(feature splitting), 여러 개념이 한 특징을 공유하는(feature merging) 경우</p></div>
+</div><aside class="speaker-notes"><p>RQ1은 coactivation correlation이 의미 대응을 잘못 나타내는 조건과 점수의 개선 방법을 검토한다. RQ2는 같은 개념을 나타내는 모달리티별 특징의 관계를 일대일로 표현하기 어려운 조건과 대안적 대응 방식을 검토한다. 별표는 검토할 경우의 예시이며 해결 여부를 단정하지 않는다.</p></aside></section>
+      <section class="slide discussion-slide" id="s5" aria-label="지난 논의 내용">
+        <p class="eyebrow">연구 진행 방향</p>
+        <h2>지난 논의 내용</h2>
+        <div class="discussion-section">
+          <h3>1. 방법론 실험을 먼저 진행</h3>
+          <ul>
+            <li>상관점수와 일대일 대응의 한계 분석을 모두 마치기보다, <strong>여러 활성값을 조합하는 대응 방법을 먼저 개발</strong>하기로 했습니다.</li>
+            <li><strong>SVD·CCA를 출발점으로 회전과 희소화를 실험</strong>하고, 실제 개선 효과를 바탕으로 <strong>어떤 문제를 해결하는지</strong> 설명하기로 했습니다.</li>
+          </ul>
+        </div>
+        <div class="discussion-section">
+          <h3>2. 지난주에 정한 방법 분류와 평가 기준</h3>
+          <ul>
+            <li>방법을 <strong>대응 행렬이 어떤 특징을 연결하는지</strong>에 따라 정리했습니다. 헝가리안은 특징을 하나씩 짝짓고, PLS-SVD와 CCA는 여러 특징의 조합을 연결합니다.</li>
+            <li>평가는 <strong>각 모달리티에서의 개념 예측</strong>, <strong>이미지·텍스트 간 대응</strong>, <strong>SAE 활용 과제에서의 성능</strong>으로 나눴습니다.</li>
+            <li>같은 조건에서 평가한 <strong>방법 하나를 점 하나로</strong> 표시합니다. 가로축은 <strong>개념 예측 성능</strong>, 세로축은 <strong>이미지·캡션 검색 성능</strong>입니다.</li>
+          </ul>
+        </div>
+      </section>
+      <section class="slide evaluation-overview" id="s6" aria-label="Main Figure">
+        <p class="eyebrow">Main Figure</p>
+        <h2>Figure 1: 모달리티 내 대응과 모달리티 간 대응 성능을 비교</h2>
+        <p class="eval-lead">각 방법을 <strong>점 하나</strong>로 나타내어, 두 대응을 얼마나 잘 찾는지 함께 살펴보려 합니다.</p>
+        <div class="eval-layout">
+          <div>
+            <svg viewBox="0 0 760 430" role="img" aria-label="가로축은 오른쪽으로 갈수록 좋은 모달리티 내 개념 대응 점수, 세로축은 모달리티 간 개념 대응 점수인 비교 구도. 방법별 점의 위치는 측정값이 아닌 예시입니다.">
+              <rect x="92" y="28" width="638" height="322" rx="8" fill="#fff" stroke="#e0e4e8"/>
+              <g stroke="#edf0f3" stroke-width="1"><path d="M92 108H730 M92 188H730 M92 268H730 M252 28V350 M412 28V350 M572 28V350"/></g>
+              <path d="M92 28V350H730" fill="none" stroke="#555d67" stroke-width="2"/>
+              <g font-family="inherit" font-size="22" fill="#1a1d21" font-weight="650">
+                <text x="411" y="410" text-anchor="middle">모달리티 내 개념 대응 점수</text>
+                <text transform="translate(29 190) rotate(-90)" text-anchor="middle">모달리티 간 개념 대응 점수</text>
+              </g>
+              <g font-family="inherit" font-size="15" fill="#69717b"><text x="92" y="376">나쁨</text><text x="730" y="376" text-anchor="end">좋음</text><text x="78" y="42" text-anchor="end">좋음</text><text x="78" y="347" text-anchor="end">나쁨</text></g>
+              <g font-family="inherit" font-size="20" fill="#4f5660"><text x="192" y="122">비교 방법 1</text><text x="462" y="284">비교 방법 2</text><text x="549" y="128">비교 방법 3</text></g>
+              <circle cx="225" cy="149" r="9" fill="#69859b"/><circle cx="497" cy="251" r="9" fill="#9d8b70"/><circle cx="585" cy="155" r="9" fill="#750014"/>
+              <text x="710" y="60" text-anchor="end" font-family="inherit" font-size="18" fill="#750014">두 대응 성능이 모두 좋은 방향</text>
+            </svg>
+          </div>
+          <div>
+            <div class="axis-note"><h3>가로축 · 모달리티 내 대응</h3><p>이미지와 텍스트 각각에서 <strong>활성값 집합이 해당 개념을 정확히 나타내는지</strong> 평가합니다.</p></div>
+            <div class="axis-note"><h3>세로축 · 모달리티 간 대응</h3><p>서로 대응시킨 이미지·텍스트 활성값 집합이 <strong>같은 개념을 나타내는지</strong> 평가합니다.</p></div>
+          </div>
+        </div>
+        <p class="source-note">가로축은 선행 연구 [1]의 단일 좌표 예측 평가를 적용합니다. <a href="https://arxiv.org/html/2406.04093v1#S4.SS2" target="_blank" rel="noopener">Scaling and evaluating sparse autoencoders (2024)</a></p>
+      </section>
+      <section class="slide method-summary mapping-recall" id="s7">
+        <p class="eyebrow">방법론의 정리 · 공통 구조</p>
+        <h2>왜 활성값 사이에 대응 행렬이 필요할까?</h2>
+        <p class="method-lead">각 모달리티의 SAE를 따로 학습하면, <strong>같은 의미를 나타내더라도 활성화되는 좌표 번호가 다를 수 있습니다.</strong></p>
+        <div class="mapping-recall-grid">
+          <div class="mapping-recall-copy">
+            <h3>같은 번호끼리 비교해도 될까?</h3>
+            <p>그림에서는 이미지의 두 번째·여섯 번째 좌표와 텍스트의 네 번째·여덟 번째 좌표가 크게 반응합니다. 같은 번호끼리 비교하면 이 대응을 반영하지 못합니다.</p>
+            <h3>대응 행렬 <span data-tex="M"></span>을 둡니다</h3>
+            <p><strong>이미지의 어떤 활성값을 텍스트의 어떤 활성값과 연결할지</strong> 정합니다. 그림은 이미지 활성값을 텍스트 좌표로 변환하여 비교하는 경우입니다.</p>
+          </div>
+          <div class="mapping-recall-visual"><svg class="mapping-recall-diagram" viewBox="0 0 296 174" role="img" aria-label="서로 다른 이미지와 텍스트 활성 좌표를 대응 행렬 M으로 연결하는 정렬 목표 예시">
+<text x="2" y="14" class="diagram-head">변환 전</text>
+<text x="192" y="14" class="diagram-head">텍스트 좌표</text>
+<text x="2" y="39">이미지 활성값</text><text x="194" y="39">변환한 이미지</text>
+<rect x="3" y="60" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="14" y="60" width="9" height="9" rx="1" fill="#750014"/><rect x="25" y="60" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="36" y="60" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="47" y="60" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="58" y="60" width="9" height="9" rx="1" fill="#963e4d"/><rect x="69" y="60" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="80" y="60" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="195" y="60" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="206" y="60" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="217" y="60" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="228" y="60" width="9" height="9" rx="1" fill="#82192b"/><rect x="239" y="60" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="250" y="60" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="261" y="60" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="272" y="60" width="9" height="9" rx="1" fill="#a15361"/>
+<text x="2" y="106">텍스트 활성값</text><text x="194" y="106">텍스트 활성값</text>
+<rect x="3" y="127" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="14" y="127" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="25" y="127" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="36" y="127" width="9" height="9" rx="1" fill="#750014"/><rect x="47" y="127" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="58" y="127" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="69" y="127" width="9" height="9" rx="1" fill="#edf0f3"/><rect x="80" y="127" width="9" height="9" rx="1" fill="#963e4d"/><rect x="195" y="127" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="206" y="127" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="217" y="127" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="228" y="127" width="9" height="9" rx="1" fill="#750014"/><rect x="239" y="127" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="250" y="127" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="261" y="127" width="9" height="9" rx="1" fill="#d5dde4"/><rect x="272" y="127" width="9" height="9" rx="1" fill="#963e4d"/>
+<path d="M103 62 H182 M103 129 H182" stroke="#77818d" stroke-width="1.3"/>
+<path d="M177 59 L183 62 L177 65 M177 126 L183 129 L177 132" fill="none" stroke="#77818d" stroke-width="1.3"/>
+<text x="140" y="53" text-anchor="middle"><tspan font-family="KaTeX_Math, Times New Roman, serif" font-style="italic">M</tspan> 적용</text>
+<text x="140" y="120" text-anchor="middle">그대로 사용</text>
+<text x="2" y="170" class="diagram-note">좌표 번호가 다름</text><text x="187" y="170" class="diagram-note">정렬 목표 예시</text>
+</svg></div>
+        </div>
+        <div class="mapping-recall-score">
+          <div data-tex="s=\tilde z_{\mathrm{img}}M\tilde z_{\mathrm{txt}}^\top"></div>
+          <p><strong>대응 행렬을 통해 연결된 활성값끼리 비교합니다.</strong> 이 식은 벡터의 길이로 정규화하기 전의 점수입니다.</p>
+        </div>
+        <aside class="speaker-notes">2026-10-06 자료의 한쪽 활성값 변환 그림을 재사용했다. 그림은 실제 측정값이 아니라 정렬 목표의 예시다. M이 같은 개념을 연결하는지는 뒤의 개념 대응 평가로 확인한다. 표준화한 활성값은 음수도 가능하다. 다음 슬라이드에서 M의 구조와 각 방법의 제약을 비교한다.</aside>
+      </section>
+      <section class="slide method-summary" id="s8">
+        <p class="eyebrow">방법론의 정리 · 구조와 제약의 차이</p>
+        <h2>같은 대응 구조에서, 제약과 희소화 절차를 비교</h2>
+        <table class="method-family-table">
+          <thead><tr><th>방법</th><th>어떤 대응을 허용하는가?</th><th>어떻게 대응을 구하는가?</th></tr></thead>
+          <tbody>
+            <tr><td><strong>헝가리안</strong></td><td><span data-tex="M=P"></span><small>원래 특징의 일대일 연결</small></td><td>선택한 특징 쌍의 상관계수 합을 최대화하며, 각 특징의 연결 상대를 하나로 제한합니다.</td></tr>
+            <tr><td><strong>PLS-SVD</strong></td><td><span data-tex="M=AB^\top"></span><small>여러 특징을 사용하는 조합</small></td><td>조합 사이 공분산 합을 최대화합니다. 계수 열의 길이를 1로 하고, 열끼리 직교하도록 제한합니다.</td></tr>
+            <tr><td><strong>CCA</strong></td><td><span data-tex="M=AB^\top"></span><small>여러 특징을 사용하는 조합</small></td><td>같은 공분산 목적에서, 각 모달리티 안의 조합 분산을 1로 하고 서로 다른 조합의 공분산을 0으로 제한합니다.</td></tr>
+            <tr><td><strong>희소 PLS [3]·CCA [4]</strong></td><td><span data-tex="A,B"></span>의 계수에 희소성 부여</td><td>해를 구하는 과정에 희소성 제약이나 벌점을 넣어, 조합에 쓰는 특징을 선택합니다.</td></tr>
+            <tr><td><strong>단순한 후처리 희소화</strong></td><td><span data-tex="M=A_{\mathrm{s}}B_{\mathrm{s}}^\top"></span></td><td>PLS-SVD·CCA 해를 구한 뒤, 작은 계수를 바로 0으로 만듭니다.</td></tr>
+            <tr class="ours"><td><strong>우리 접근 (Ours)</strong><small>대응 학습 후 회전·희소화</small></td><td><span data-tex="A=A_0R,\ B=B_0R"></span><small><span data-tex="A_0,B_0"></span>는 회전 전 해</small></td><td>PLS-SVD·CCA 해에서 출발해, 특징 관계 또는 표본 반응을 기준으로 <strong>같은 직교회전</strong>을 적용한 뒤 희소화합니다.</td></tr>
+          </tbody>
+        </table>
+        <div class="method-invariance">
+          <div class="invariance-math" data-tex="R^\top R=I_r\quad\Longrightarrow\quad (A_0R)(B_0R)^\top=A_0B_0^\top"></div>
+          <p><strong>회전까지는 대응 행렬과 코사인 검색 점수를 유지</strong>합니다. 계수를 0으로 만드는 단계부터 대응과 검색 성능이 달라질 수 있습니다.</p>
+        </div>
+        <p class="method-foot">CCA 행은 규제 없는 기본형입니다. 실험의 규제 CCA는 내부 공분산에 <span data-tex="\lambda I"></span>를 더한 제약을 사용합니다. 희소 CCA의 공분산 제약은 알고리즘마다 다릅니다.<br>
+[3] <a href="https://pubmed.ncbi.nlm.nih.gov/19049491/" target="_blank" rel="noopener">A sparse PLS for variable selection when integrating omics data</a>, 2008.<br>
+[4] <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2697346/" target="_blank" rel="noopener">A penalized matrix decomposition, with applications to sparse principal components and canonical correlation analysis</a>, 2009.</p>
+        <aside class="speaker-notes">C=E[z_img^T z_txt]についてPLS-SVDと基本CCAはtr(A^T C B)を目的にする。PLS-SVDはA^T A=B^T B=I。CCAはA^T Sxx A=B^T Syy B=I。規制CCAではSxx,SyyをSxx+lambda I,Syy+lambda Iに置換する。계수を希薄にするridgeと계수を0にするL1等の希少性制約を区別する。ここでの文献は系統の例であり、過去に実行した계수切り捨てをその論文のアルゴリズムの再現とはしない。WittenのPMD sparse CCAは内部共分散を単位行列とする変形であり、元のCCA制約を保った単なる追加制約ではない。回転不変性はP=Iかつ正方直交Rで成立し、二乗ノルムも保たれるためコサイン検索も維持される。ただし内部の各軸対応や各軸の共分散は変わり得る。一般のPを固定してAR,BRにするとMが不変になるとは限らない。</aside>
+      </section>
+      <section class="slide result-slide" id="s9" aria-label="Figure 1: 개념 예측 손실과 이미지·텍스트 검색 성능">
+        <p class="eyebrow">Main Figure</p><h2>Figure 1: 개념 예측 손실과 이미지·텍스트 검색 성능</h2>
+        <div class="results-notes"><p><b>검색 성능</b>　COCO val2017, Flickr30K, DOCCI, IIW에서 양방향 R@5를 구한 뒤 네 자료에 같은 비중을 두어 평균</p><ul><li><b>이미지 예측 손실</b>　COCO-Stuff의 물체 80개와 배경 91개, 총 171개 개념의 예측 손실을 같은 비중으로 평균</li><li><b>텍스트 예측 손실</b>　Visual Genome 내의 COCO 이미지에 붙은 영역 캡션 문장에서 물체 170개의 개념별 예측 손실을 평균</li></ul><p class="mapping-direction">헝가리안·Sinkhorn·Procrustes는 각 입력을 상대 모달리티의 좌표로 옮긴 뒤 개념별로 좌표 하나를 선택</p><p class="pool-note">가로축은 학습된 조합의 계수를 모두 사용해 구한 이미지·텍스트 예측 손실의 평균</p></div>
+        <nav class="takeaway-tabs" aria-label="핵심 설명"><button type="button" data-takeaway="0" aria-pressed="false">takeaway #1</button><button type="button" data-takeaway="1" aria-pressed="false">takeaway #2</button><button type="button" data-takeaway="2" aria-pressed="false">takeaway #3</button></nav>
+        <svg class="results-chart" role="img" aria-label="11개 방법의 이미지·텍스트 평균 손실과 양방향 검색 R@5" xmlns:xlink="http://www.w3.org/1999/xlink" width="835.2pt" height="306pt" viewBox="0 0 835.2 306" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.1, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="pooled-figure_1">
+  <g id="pooled-patch_1">
+   <path d="M 0 306 
+L 835.2 306 
+L 835.2 0 
+L 0 0 
+L 0 306 
+z
+" style="fill: none; opacity: 0"/>
+  </g>
+  <g id="pooled-axes_1">
+   <g id="pooled-patch_2">
+    <path d="M 66.816 257.04 
+L 814.32 257.04 
+L 814.32 10.71 
+L 66.816 10.71 
+L 66.816 257.04 
+z
+" style="fill: none"/>
+   </g>
+   <g id="pooled-matplotlib.axis_1">
+    <g id="pooled-xtick_1">
+     <g id="pooled-line2d_1">
+      <path d="M 789.193815 257.04 
+L 789.193815 10.71 
+" clip-path="url(#pooled-p4f5ad99adb)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="pooled-line2d_2"/>
+     <g id="pooled-text_1">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="789.193815" y="269.04" transform="rotate(-0 789.193815 269.04)">0.070</text>
+     </g>
+    </g>
+    <g id="pooled-xtick_2">
+     <g id="pooled-line2d_3">
+      <path d="M 663.562891 257.04 
+L 663.562891 10.71 
+" clip-path="url(#pooled-p4f5ad99adb)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="pooled-line2d_4"/>
+     <g id="pooled-text_2">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="663.562891" y="269.04" transform="rotate(-0 663.562891 269.04)">0.072</text>
+     </g>
+    </g>
+    <g id="pooled-xtick_3">
+     <g id="pooled-line2d_5">
+      <path d="M 537.931966 257.04 
+L 537.931966 10.71 
+" clip-path="url(#pooled-p4f5ad99adb)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="pooled-line2d_6"/>
+     <g id="pooled-text_3">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="537.931966" y="269.04" transform="rotate(-0 537.931966 269.04)">0.074</text>
+     </g>
+    </g>
+    <g id="pooled-xtick_4">
+     <g id="pooled-line2d_7">
+      <path d="M 412.301042 257.04 
+L 412.301042 10.71 
+" clip-path="url(#pooled-p4f5ad99adb)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="pooled-line2d_8"/>
+     <g id="pooled-text_4">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="412.301042" y="269.04" transform="rotate(-0 412.301042 269.04)">0.076</text>
+     </g>
+    </g>
+    <g id="pooled-xtick_5">
+     <g id="pooled-line2d_9">
+      <path d="M 286.670118 257.04 
+L 286.670118 10.71 
+" clip-path="url(#pooled-p4f5ad99adb)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="pooled-line2d_10"/>
+     <g id="pooled-text_5">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="286.670118" y="269.04" transform="rotate(-0 286.670118 269.04)">0.078</text>
+     </g>
+    </g>
+    <g id="pooled-xtick_6">
+     <g id="pooled-line2d_11">
+      <path d="M 161.039193 257.04 
+L 161.039193 10.71 
+" clip-path="url(#pooled-p4f5ad99adb)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="pooled-line2d_12"/>
+     <g id="pooled-text_6">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="161.039193" y="269.04" transform="rotate(-0 161.039193 269.04)">0.080</text>
+     </g>
+    </g>
+    <g id="pooled-text_7">
+     <text style="font-size: 14px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle" x="440.568" y="288.64" transform="rotate(-0 440.568 288.64)">개념 예측 손실 (오른쪽일수록 낮음)</text>
+    </g>
+   </g>
+   <g id="pooled-matplotlib.axis_2">
+    <g id="pooled-ytick_1">
+     <g id="pooled-line2d_13">
+      <path d="M 66.816 250.002 
+L 814.32 250.002 
+" clip-path="url(#pooled-p4f5ad99adb)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="pooled-line2d_14"/>
+     <g id="pooled-text_8">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #535d64" x="63.816" y="254.502" transform="rotate(-0 63.816 254.502)">25</text>
+     </g>
+    </g>
+    <g id="pooled-ytick_2">
+     <g id="pooled-line2d_15">
+      <path d="M 66.816 214.812 
+L 814.32 214.812 
+" clip-path="url(#pooled-p4f5ad99adb)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="pooled-line2d_16"/>
+     <g id="pooled-text_9">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #535d64" x="63.816" y="219.312" transform="rotate(-0 63.816 219.312)">30</text>
+     </g>
+    </g>
+    <g id="pooled-ytick_3">
+     <g id="pooled-line2d_17">
+      <path d="M 66.816 179.622 
+L 814.32 179.622 
+" clip-path="url(#pooled-p4f5ad99adb)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="pooled-line2d_18"/>
+     <g id="pooled-text_10">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #535d64" x="63.816" y="184.122" transform="rotate(-0 63.816 184.122)">35</text>
+     </g>
+    </g>
+    <g id="pooled-ytick_4">
+     <g id="pooled-line2d_19">
+      <path d="M 66.816 144.432 
+L 814.32 144.432 
+" clip-path="url(#pooled-p4f5ad99adb)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="pooled-line2d_20"/>
+     <g id="pooled-text_11">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #535d64" x="63.816" y="148.932" transform="rotate(-0 63.816 148.932)">40</text>
+     </g>
+    </g>
+    <g id="pooled-ytick_5">
+     <g id="pooled-line2d_21">
+      <path d="M 66.816 109.242 
+L 814.32 109.242 
+" clip-path="url(#pooled-p4f5ad99adb)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="pooled-line2d_22"/>
+     <g id="pooled-text_12">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #535d64" x="63.816" y="113.742" transform="rotate(-0 63.816 113.742)">45</text>
+     </g>
+    </g>
+    <g id="pooled-ytick_6">
+     <g id="pooled-line2d_23">
+      <path d="M 66.816 74.052 
+L 814.32 74.052 
+" clip-path="url(#pooled-p4f5ad99adb)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="pooled-line2d_24"/>
+     <g id="pooled-text_13">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #535d64" x="63.816" y="78.552" transform="rotate(-0 63.816 78.552)">50</text>
+     </g>
+    </g>
+    <g id="pooled-ytick_7">
+     <g id="pooled-line2d_25">
+      <path d="M 66.816 38.862 
+L 814.32 38.862 
+" clip-path="url(#pooled-p4f5ad99adb)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="pooled-line2d_26"/>
+     <g id="pooled-text_14">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #535d64" x="63.816" y="43.362" transform="rotate(-0 63.816 43.362)">55</text>
+     </g>
+    </g>
+    <g id="pooled-text_15">
+     <text style="font-size: 14px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle" x="43.766" y="133.875" transform="rotate(-90 43.766 133.875)">양방향 평균 R@5 (%)</text>
+    </g>
+   </g>
+   <g id="pooled-patch_3">
+    <path d="M 154.485932 39.167345 
+Q 235.207144 61.137174 265.696606 137.477944 
+" style="fill: none; stroke-dasharray: 2.6,2.6; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 266.070355 133.021453 
+L 265.696606 137.477944 
+L 262.355663 134.50505 
+z
+" style="fill: #7c8187; stroke-dasharray: 2.6,2.6; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="pooled-patch_4">
+    <path d="M 218.718476 50.673623 
+Q 194.892657 90.232669 212.008674 131.554371 
+" style="fill: none; stroke-dasharray: 2.6,2.6; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 212.325699 127.093486 
+L 212.008674 131.554371 
+L 208.630181 128.624221 
+z
+" style="fill: #7c8187; stroke-dasharray: 2.6,2.6; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="pooled-patch_5">
+    <path d="M 229.452317 45.624461 
+Q 247.113259 47.398877 263.328038 45.769708 
+" style="fill: none; stroke-dasharray: 2.6,2.6; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 259.148135 44.179611 
+L 263.328038 45.769708 
+L 259.548019 48.159573 
+z
+" style="fill: #7c8187; stroke-dasharray: 2.6,2.6; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="pooled-patch_6">
+    <path d="M 277.628583 48.540692 
+Q 297.472344 61.88169 310.36263 80.271783 
+" style="fill: none; stroke-dasharray: 2.6,2.6; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 1.3; stroke-linecap: round"/>
+    <path d="M 309.704466 75.848344 
+L 310.36263 80.271783 
+L 306.42898 78.144251 
+z
+" style="fill: #7c8187; stroke-dasharray: 2.6,2.6; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 1.3; stroke-linecap: round"/>
+   </g>
+   <g id="pooled-patch_7">
+    <path d="M 66.816 257.04 
+L 66.816 10.71 
+" style="fill: none; stroke: #9ba2a8; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="pooled-patch_8">
+    <path d="M 66.816 257.04 
+L 814.32 257.04 
+" style="fill: none; stroke: #9ba2a8; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="pooled-text_16">
+    <g id="pooled-patch_9">
+     <path d="M 222.638257 93.005522 
+L 249.788257 93.005522 
+L 249.788257 79.805522 
+L 222.638257 79.805522 
+z
+" style="fill: #ffffff"/>
+    </g>
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="236.213257" y="89.405522" transform="rotate(-0 236.213257 89.405522)">희소화</text>
+   </g>
+   <g id="pooled-text_17">
+    <g id="pooled-patch_10">
+     <path d="M 180.393415 102.634829 
+L 207.543415 102.634829 
+L 207.543415 89.434829 
+L 180.393415 89.434829 
+z
+" style="fill: #ffffff"/>
+    </g>
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="193.968415" y="99.034829" transform="rotate(-0 193.968415 99.034829)">희소화</text>
+   </g>
+   <g id="pooled-text_18">
+    <g id="pooled-patch_11">
+     <path d="M 240.862985 43.389026 
+L 259.362985 43.389026 
+L 259.362985 30.189026 
+L 240.862985 30.189026 
+z
+" style="fill: #ffffff"/>
+    </g>
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="250.112985" y="39.789026" transform="rotate(-0 250.112985 39.789026)">회전</text>
+   </g>
+   <g id="pooled-text_19">
+    <g id="pooled-patch_12">
+     <path d="M 297.818544 72.643629 
+L 324.968544 72.643629 
+L 324.968544 59.443629 
+L 297.818544 59.443629 
+z
+" style="fill: #ffffff"/>
+    </g>
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="311.393544" y="69.043629" transform="rotate(-0 311.393544 69.043629)">희소화</text>
+   </g>
+   <g id="pooled-label-hungarian">
+    <text style="font-size: 11.3px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end" x="626.265291" y="165.692931" transform="rotate(-0 626.265291 165.692931)">Hungarian</text>
+   </g>
+   <g id="pooled-label-pls">
+    <text style="font-size: 11.3px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: start" x="151.701398" y="28.83003" transform="rotate(-0 151.701398 28.83003)">PLS-SVD (256)</text>
+   </g>
+   <g id="pooled-label-cca">
+    <text style="font-size: 11.3px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: start" x="228.504005" y="59.179026" transform="rotate(-0 228.504005 59.179026)">CCA (256)</text>
+   </g>
+   <g id="pooled-label-sparse_pls">
+    <text style="font-size: 11.3px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: start" x="281.725117" y="158.761013" transform="rotate(-0 281.725117 158.761013)">Sparse PLS-SVD</text>
+   </g>
+   <g id="pooled-label-sparse_cca">
+    <text style="font-size: 11.3px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end" x="205.432826" y="142.670631" transform="rotate(-0 205.432826 142.670631)">Sparse CCA</text>
+   </g>
+   <g id="pooled-label-cca_cov">
+    <text style="font-size: 11.3px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: start" x="275.721965" y="35.179026" transform="rotate(-0 275.721965 35.179026)">CCA + 공분산 회전</text>
+   </g>
+   <g id="pooled-label-cca_cov64">
+    <text style="font-size: 11.3px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: start" x="327.065123" y="92.688232" transform="rotate(-0 327.065123 92.688232)">CCA + 회전 + 희소화</text>
+   </g>
+   <g id="pooled-label-sinkhorn">
+    <text style="font-size: 11.3px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end" x="724.338447" y="117.700242" transform="rotate(-0 724.338447 117.700242)">Sinkhorn</text>
+   </g>
+   <g id="pooled-label-procrustes">
+    <text style="font-size: 11.3px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end" x="521.618396" y="59.141204" transform="rotate(-0 521.618396 59.141204)">Procrustes</text>
+   </g>
+   <g id="pooled-label-group_sparse">
+    <text style="font-size: 11.3px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end" x="380.448027" y="195.546692" transform="rotate(-0 380.448027 195.546692)">Group-Sparse</text>
+   </g>
+   <g id="pooled-text_20">
+    <a target="_blank" rel="noopener" xlink:href="https://arxiv.org/abs/2601.20028" target="_blank">
+     <text style="font-size: 9.4px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #48596b" x="380.448027" y="205.976692" transform="rotate(-0 380.448027 205.976692)">(Kaushik et al., 2026)</text>
+    </a>
+   </g>
+   <g id="pooled-label-iso_align">
+    <text style="font-size: 11.3px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end" x="626.821433" y="214.235375" transform="rotate(-0 626.821433 214.235375)">Iso-Energy</text>
+   </g>
+   <g id="pooled-text_21">
+    <a target="_blank" rel="noopener" xlink:href="https://arxiv.org/abs/2602.06218" target="_blank">
+     <text style="font-size: 9.4px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #48596b" x="626.821433" y="224.665375" transform="rotate(-0 626.821433 224.665375)">(Dhimoïla et al., 2026)</text>
+    </a>
+   </g>
+   <g id="pooled-point-hungarian">
+    <defs>
+     <path id="pooled-m17d5ec9ea1" d="M -6.123724 6.123724 
+L 6.123724 6.123724 
+L 6.123724 -6.123724 
+L -6.123724 -6.123724 
+z
+" style="stroke: #414b54; stroke-width: 0.85"/>
+    </defs>
+    <g clip-path="url(#pooled-p4f5ad99adb)">
+     <use xlink:href="#pooled-m17d5ec9ea1" x="635.265291" y="152.302931" style="fill: #9bf6ff; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="pooled-point-pls">
+    <defs>
+     <path id="pooled-mb48aa43e44" d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="stroke: #414b54; stroke-width: 0.85"/>
+    </defs>
+    <g clip-path="url(#pooled-p4f5ad99adb)">
+     <use xlink:href="#pooled-mb48aa43e44" x="147.701398" y="37.44003" style="fill: #ffadad; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="pooled-point-cca">
+    <defs>
+     <path id="pooled-mf6129336e1" d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="stroke: #414b54; stroke-width: 0.85"/>
+    </defs>
+    <g clip-path="url(#pooled-p4f5ad99adb)">
+     <use xlink:href="#pooled-mf6129336e1" x="222.504005" y="44.789026" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="pooled-point-sparse_pls">
+    <g clip-path="url(#pooled-p4f5ad99adb)">
+     <use xlink:href="#pooled-mb48aa43e44" x="268.725117" y="145.371013" style="fill: #ffadad; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="pooled-point-sparse_cca">
+    <g clip-path="url(#pooled-p4f5ad99adb)">
+     <use xlink:href="#pooled-mf6129336e1" x="215.432826" y="139.280631" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="pooled-point-cca_cov">
+    <g clip-path="url(#pooled-p4f5ad99adb)">
+     <use xlink:href="#pooled-mf6129336e1" x="271.721965" y="44.789026" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="pooled-point-cca_cov64">
+    <g clip-path="url(#pooled-p4f5ad99adb)">
+     <use xlink:href="#pooled-mf6129336e1" x="315.065123" y="87.298232" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="pooled-point-sinkhorn">
+    <defs>
+     <path id="pooled-mc8518a6905" d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="stroke: #414b54; stroke-width: 0.85"/>
+    </defs>
+    <g clip-path="url(#pooled-p4f5ad99adb)">
+     <use xlink:href="#pooled-mc8518a6905" x="736.338447" y="115.310242" style="fill: #caffbf; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="pooled-point-procrustes">
+    <defs>
+     <path id="pooled-m7c1fed2897" d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="stroke: #414b54; stroke-width: 0.85"/>
+    </defs>
+    <g clip-path="url(#pooled-p4f5ad99adb)">
+     <use xlink:href="#pooled-m7c1fed2897" x="533.618396" y="55.751204" style="fill: #a0c4ff; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="pooled-point-group_sparse">
+    <defs>
+     <path id="pooled-mf2e1e6e776" d="M 0 -6.123724 
+L -6.123724 6.123724 
+L 6.123724 6.123724 
+z
+" style="stroke: #414b54; stroke-width: 0.85"/>
+    </defs>
+    <g clip-path="url(#pooled-p4f5ad99adb)">
+     <use xlink:href="#pooled-mf2e1e6e776" x="392.448027" y="192.156692" style="fill: #bdb2ff; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="pooled-point-iso_align">
+    <defs>
+     <path id="pooled-m95856601cb" d="M 0 -6.123724 
+L -6.123724 6.123724 
+L 6.123724 6.123724 
+z
+" style="stroke: #414b54; stroke-width: 0.85"/>
+    </defs>
+    <g clip-path="url(#pooled-p4f5ad99adb)">
+     <use xlink:href="#pooled-m95856601cb" x="634.821433" y="214.845375" style="fill: #ffc6ff; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="pooled-patch_13">
+    <path d="M 264.725117 149.371013 
+Q 268.725117 145.371013 272.725117 141.371013 
+" style="fill: none; stroke: #ffffff; stroke-width: 2.25; stroke-linecap: round"/>
+   </g>
+   <g id="pooled-patch_14">
+    <path d="M 211.432826 143.280631 
+Q 215.432826 139.280631 219.432826 135.280631 
+" style="fill: none; stroke: #ffffff; stroke-width: 2.25; stroke-linecap: round"/>
+   </g>
+   <g id="pooled-patch_15">
+    <path d="M 267.721965 40.789026 
+Q 271.721965 44.789026 275.721965 48.789026 
+" style="fill: none; stroke: #202020; stroke-width: 2.25; stroke-linecap: round"/>
+   </g>
+   <g id="pooled-patch_16">
+    <path d="M 311.065123 83.298232 
+Q 315.065123 87.298232 319.065123 91.298232 
+" style="fill: none; stroke: #202020; stroke-width: 2.25; stroke-linecap: round"/>
+   </g>
+   <g id="pooled-patch_17">
+    <path d="M 311.065123 91.298232 
+Q 315.065123 87.298232 319.065123 83.298232 
+" style="fill: none; stroke: #ffffff; stroke-width: 2.25; stroke-linecap: round"/>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pooled-p4f5ad99adb">
+   <rect x="66.816" y="10.71" width="747.504" height="246.33"/>
+  </clipPath>
+ </defs>
+</svg>
+        <div style="display:flex;justify-content:center;gap:30px;font-size:17px;margin-top:6px"><span style="display:inline-flex;align-items:center;gap:6px"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22"><g fill="#a8b0b7" stroke="#424b53"><rect x="3" y="3" width="16" height="16"/></g></svg>헝가리안</span><span style="display:inline-flex;align-items:center;gap:6px"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22"><g fill="#a8b0b7" stroke="#424b53"><circle cx="11" cy="11" r="8"/></g></svg>소프트 대응</span><span style="display:inline-flex;align-items:center;gap:6px"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22"><g fill="#a8b0b7" stroke="#424b53"><path d="M11 2 L20 19 H2 Z"/></g></svg>공유 SAE</span><span style="display:inline-flex;align-items:center;gap:6px"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22"><g fill="#a8b0b7" stroke="#424b53"><circle cx="11" cy="11" r="8"/></g><path d="M5.5 16.5L16.5 5.5" stroke="white" stroke-width="3"/></svg>희소화</span><span style="display:inline-flex;align-items:center;gap:6px"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22"><g fill="#a8b0b7" stroke="#424b53"><circle cx="11" cy="11" r="8"/></g><path d="M5.5 5.5L16.5 16.5" stroke="#222" stroke-width="3"/></svg>회전</span></div>
+        <p class="query-note">* 텍스트 검색은 캡션으로 정답 이미지를 찾는 평가이고, 이미지 검색은 이미지로 정답 캡션을 찾는 평가입니다.</p>
+      <div class="takeaway-overlay" hidden aria-label="그림의 핵심 설명">
+          <button type="button" class="takeaway-close" aria-label="핵심 설명 닫기">닫기 ×</button>
+          <div class="takeaway-highlight"></div>
+          <div class="takeaway-copy" role="status" aria-live="polite"><h3></h3><ul></ul></div>
+        </div>
+      </section>
+      <section class="slide result-slide" id="s10" aria-label="Figure 1 in detail: 이미지와 텍스트의 개념 예측 손실과 검색 성능">
+        <p class="eyebrow">Main Figure</p><h2>Figure 1 in detail: 이미지와 텍스트의 개념 예측 손실과 검색 성능</h2>
+        <div class="results-notes"><p><b>검색 성능</b>　COCO val2017, Flickr30K, DOCCI, IIW에서 검색 방향별 R@5를 구한 뒤 네 자료에 같은 비중을 두어 평균</p><ul><li><b>이미지 예측 손실</b>　COCO-Stuff의 물체 80개와 배경 91개, 총 171개 개념의 예측 손실을 같은 비중으로 평균</li><li><b>텍스트 예측 손실</b>　Visual Genome 내의 COCO 이미지에 붙은 영역 캡션 문장에서 물체 170개의 개념별 예측 손실을 평균</li></ul><p class="mapping-direction">헝가리안·Sinkhorn·Procrustes는 각 입력을 상대 모달리티의 좌표로 옮긴 뒤 개념별로 좌표 하나를 선택. 각 조합의 계수는 모두 사용</p></div>
+        <nav class="takeaway-tabs" aria-label="핵심 설명"><button type="button" data-takeaway="0" aria-pressed="false">takeaway #1</button><button type="button" data-takeaway="1" aria-pressed="false">takeaway #2</button><button type="button" data-takeaway="2" aria-pressed="false">takeaway #3</button></nav>
+        <svg class="results-chart" role="img" aria-label="위는 이미지, 아래는 텍스트. 같은 세로축으로 비교한 11개 방법의 개념 예측 손실과 검색 R@5" xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="327.6pt" viewBox="0 0 864 327.6" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.1, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="paired-figure_1">
+  <g id="paired-patch_1">
+   <path d="M 0 327.6 
+L 864 327.6 
+L 864 0 
+L 0 0 
+L 0 327.6 
+z
+" style="fill: none; opacity: 0"/>
+  </g>
+  <g id="paired-axes_1">
+   <g id="paired-patch_2">
+    <path d="M 69.12 132.749217 
+L 851.04 132.749217 
+L 851.04 13.104 
+L 69.12 13.104 
+L 69.12 132.749217 
+z
+" style="fill: none"/>
+   </g>
+   <g id="paired-matplotlib.axis_1">
+    <g id="paired-xtick_1">
+     <g id="paired-line2d_1">
+      <path d="M 849.354 132.749217 
+L 849.354 13.104 
+" clip-path="url(#paired-p8264f1758a)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_2"/>
+     <g id="paired-text_1">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="849.354" y="144.749217" transform="rotate(-0 849.354 144.749217)">0.126</text>
+     </g>
+    </g>
+    <g id="paired-xtick_2">
+     <g id="paired-line2d_3">
+      <path d="M 750.400543 132.749217 
+L 750.400543 13.104 
+" clip-path="url(#paired-p8264f1758a)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_4"/>
+     <g id="paired-text_2">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="750.400543" y="144.749217" transform="rotate(-0 750.400543 144.749217)">0.128</text>
+     </g>
+    </g>
+    <g id="paired-xtick_3">
+     <g id="paired-line2d_5">
+      <path d="M 651.447087 132.749217 
+L 651.447087 13.104 
+" clip-path="url(#paired-p8264f1758a)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_6"/>
+     <g id="paired-text_3">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="651.447087" y="144.749217" transform="rotate(-0 651.447087 144.749217)">0.130</text>
+     </g>
+    </g>
+    <g id="paired-xtick_4">
+     <g id="paired-line2d_7">
+      <path d="M 552.49363 132.749217 
+L 552.49363 13.104 
+" clip-path="url(#paired-p8264f1758a)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_8"/>
+     <g id="paired-text_4">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="552.49363" y="144.749217" transform="rotate(-0 552.49363 144.749217)">0.132</text>
+     </g>
+    </g>
+    <g id="paired-xtick_5">
+     <g id="paired-line2d_9">
+      <path d="M 453.540173 132.749217 
+L 453.540173 13.104 
+" clip-path="url(#paired-p8264f1758a)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_10"/>
+     <g id="paired-text_5">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="453.540173" y="144.749217" transform="rotate(-0 453.540173 144.749217)">0.134</text>
+     </g>
+    </g>
+    <g id="paired-xtick_6">
+     <g id="paired-line2d_11">
+      <path d="M 354.586716 132.749217 
+L 354.586716 13.104 
+" clip-path="url(#paired-p8264f1758a)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_12"/>
+     <g id="paired-text_6">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="354.586716" y="144.749217" transform="rotate(-0 354.586716 144.749217)">0.136</text>
+     </g>
+    </g>
+    <g id="paired-xtick_7">
+     <g id="paired-line2d_13">
+      <path d="M 255.63326 132.749217 
+L 255.63326 13.104 
+" clip-path="url(#paired-p8264f1758a)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_14"/>
+     <g id="paired-text_7">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="255.63326" y="144.749217" transform="rotate(-0 255.63326 144.749217)">0.138</text>
+     </g>
+    </g>
+    <g id="paired-xtick_8">
+     <g id="paired-line2d_15">
+      <path d="M 156.679803 132.749217 
+L 156.679803 13.104 
+" clip-path="url(#paired-p8264f1758a)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_16"/>
+     <g id="paired-text_8">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="156.679803" y="144.749217" transform="rotate(-0 156.679803 144.749217)">0.140</text>
+     </g>
+    </g>
+   </g>
+   <g id="paired-matplotlib.axis_2">
+    <g id="paired-ytick_1">
+     <g id="paired-line2d_17">
+      <path d="M 69.12 132.749217 
+L 851.04 132.749217 
+" clip-path="url(#paired-p8264f1758a)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_18"/>
+     <g id="paired-text_9">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #535d64" x="66.12" y="137.249217" transform="rotate(-0 66.12 137.249217)">20</text>
+     </g>
+    </g>
+    <g id="paired-ytick_2">
+     <g id="paired-line2d_19">
+      <path d="M 69.12 102.837913 
+L 851.04 102.837913 
+" clip-path="url(#paired-p8264f1758a)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_20"/>
+     <g id="paired-text_10">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #535d64" x="66.12" y="107.337913" transform="rotate(-0 66.12 107.337913)">30</text>
+     </g>
+    </g>
+    <g id="paired-ytick_3">
+     <g id="paired-line2d_21">
+      <path d="M 69.12 72.926609 
+L 851.04 72.926609 
+" clip-path="url(#paired-p8264f1758a)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_22"/>
+     <g id="paired-text_11">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #535d64" x="66.12" y="77.426609" transform="rotate(-0 66.12 77.426609)">40</text>
+     </g>
+    </g>
+    <g id="paired-ytick_4">
+     <g id="paired-line2d_23">
+      <path d="M 69.12 43.015304 
+L 851.04 43.015304 
+" clip-path="url(#paired-p8264f1758a)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_24"/>
+     <g id="paired-text_12">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #535d64" x="66.12" y="47.515304" transform="rotate(-0 66.12 47.515304)">50</text>
+     </g>
+    </g>
+    <g id="paired-ytick_5">
+     <g id="paired-line2d_25">
+      <path d="M 69.12 13.104 
+L 851.04 13.104 
+" clip-path="url(#paired-p8264f1758a)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_26"/>
+     <g id="paired-text_13">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #535d64" x="66.12" y="17.604" transform="rotate(-0 66.12 17.604)">60</text>
+     </g>
+    </g>
+    <g id="paired-text_14">
+     <text style="font-size: 11px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle" x="46.97" y="72.926609" transform="rotate(-90 46.97 72.926609)">이미지 검색 R@5 (%)</text>
+    </g>
+   </g>
+   <g id="paired-patch_3">
+    <path d="M 276.878649 26.078486 
+Q 309.820008 36.707698 321.518933 68.155011 
+" style="fill: none; stroke-dasharray: 1.9,1.9; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 0.95; stroke-linecap: round"/>
+    <path d="M 321.99874 63.708689 
+L 321.518933 68.155011 
+L 318.249759 65.103372 
+z
+" style="fill: #7c8187; stroke-dasharray: 1.9,1.9; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 0.95; stroke-linecap: round"/>
+   </g>
+   <g id="paired-patch_4">
+    <path d="M 390.255558 29.224939 
+Q 322.877134 81.856478 239.589174 67.982132 
+" style="fill: none; stroke-dasharray: 1.9,1.9; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 0.95; stroke-linecap: round"/>
+    <path d="M 243.206167 70.612221 
+L 239.589174 67.982132 
+L 243.863441 66.666592 
+z
+" style="fill: #7c8187; stroke-dasharray: 1.9,1.9; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 0.95; stroke-linecap: round"/>
+   </g>
+   <g id="paired-patch_5">
+    <path d="M 389.424313 26.203634 
+Q 343.950029 20.347433 299.529179 26.067538 
+" style="fill: none; stroke-dasharray: 1.9,1.9; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 0.95; stroke-linecap: round"/>
+    <path d="M 303.751854 27.540295 
+L 299.529179 26.067538 
+L 303.240989 23.573052 
+z
+" style="fill: #7c8187; stroke-dasharray: 1.9,1.9; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 0.95; stroke-linecap: round"/>
+   </g>
+   <g id="paired-patch_6">
+    <path d="M 298.49251 27.129524 
+Q 324.560713 30.103964 346.352981 42.709169 
+" style="fill: none; stroke-dasharray: 1.9,1.9; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 0.95; stroke-linecap: round"/>
+    <path d="M 343.891889 38.975133 
+L 346.352981 42.709169 
+L 341.889097 42.437622 
+z
+" style="fill: #7c8187; stroke-dasharray: 1.9,1.9; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 0.95; stroke-linecap: round"/>
+   </g>
+   <g id="paired-patch_7">
+    <path d="M 69.12 132.749217 
+L 69.12 13.104 
+" style="fill: none; stroke: #9ba2a8; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="paired-patch_8">
+    <path d="M 69.12 132.749217 
+L 851.04 132.749217 
+" style="fill: none; stroke: #9ba2a8; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="paired-text_15">
+    <g id="paired-patch_9">
+     <path d="M 302.183786 60.566265 
+L 322.057786 60.566265 
+L 322.057786 51.294265 
+L 302.183786 51.294265 
+z
+" style="fill: #ffffff"/>
+    </g>
+    <text style="font-size: 7.6px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #5b6268" x="312.120786" y="58.210265" transform="rotate(-0 312.120786 58.210265)">희소화</text>
+   </g>
+   <g id="paired-text_16">
+    <g id="paired-patch_10">
+     <path d="M 266.056173 64.562207 
+L 285.930173 64.562207 
+L 285.930173 55.290207 
+L 266.056173 55.290207 
+z
+" style="fill: #ffffff"/>
+    </g>
+    <text style="font-size: 7.6px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #5b6268" x="275.993173" y="62.206207" transform="rotate(-0 275.993173 62.206207)">희소화</text>
+   </g>
+   <g id="paired-text_17">
+    <g id="paired-patch_11">
+     <path d="M 349.298301 30.372077 
+L 362.598301 30.372077 
+L 362.598301 21.100077 
+L 349.298301 21.100077 
+z
+" style="fill: #ffffff"/>
+    </g>
+    <text style="font-size: 7.6px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #5b6268" x="355.948301" y="28.016077" transform="rotate(-0 355.948301 28.016077)">회전</text>
+   </g>
+   <g id="paired-text_18">
+    <g id="paired-patch_12">
+     <path d="M 312.670403 38.652059 
+L 332.544403 38.652059 
+L 332.544403 29.380059 
+L 312.670403 29.380059 
+z
+" style="fill: #ffffff"/>
+    </g>
+    <text style="font-size: 7.6px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #5b6268" x="322.607403" y="36.296059" transform="rotate(-0 322.607403 36.296059)">희소화</text>
+   </g>
+   <g id="paired-text_19">
+    <a target="_blank" rel="noopener" xlink:href="https://arxiv.org/abs/2601.20028" target="_blank">
+     <text style="font-size: 8px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #48596b" x="151.341538" y="104.743103" transform="rotate(-0 151.341538 104.743103)">(Kaushik et al., 2026)</text>
+    </a>
+   </g>
+   <g id="paired-text_20">
+    <a target="_blank" rel="noopener" xlink:href="https://arxiv.org/abs/2602.06218" target="_blank">
+     <text style="font-size: 8px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #48596b" x="480.719656" y="121.959087" transform="rotate(-0 480.719656 121.959087)">(Dhimoïla et al., 2026)</text>
+    </a>
+   </g>
+   <g id="paired-point-hungarian-1">
+    <defs>
+     <path id="paired-mbe875d9b13" d="M -4.031129 4.031129 
+L 4.031129 4.031129 
+L 4.031129 -4.031129 
+L -4.031129 -4.031129 
+z
+" style="stroke: #414b54; stroke-width: 0.85"/>
+    </defs>
+    <g clip-path="url(#paired-p8264f1758a)">
+     <use xlink:href="#paired-mbe875d9b13" x="496.780312" y="75.155001" style="fill: #9bf6ff; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-pls-1">
+    <defs>
+     <path id="paired-m441578ca4d" d="M 0 4.031129 
+C 1.069068 4.031129 2.094493 3.606384 2.850439 2.850439 
+C 3.606384 2.094493 4.031129 1.069068 4.031129 0 
+C 4.031129 -1.069068 3.606384 -2.094493 2.850439 -2.850439 
+C 2.094493 -3.606384 1.069068 -4.031129 0 -4.031129 
+C -1.069068 -4.031129 -2.094493 -3.606384 -2.850439 -2.850439 
+C -3.606384 -2.094493 -4.031129 -1.069068 -4.031129 0 
+C -4.031129 1.069068 -3.606384 2.094493 -2.850439 2.850439 
+C -2.094493 3.606384 -1.069068 4.031129 0 4.031129 
+z
+" style="stroke: #414b54; stroke-width: 0.85"/>
+    </defs>
+    <g clip-path="url(#paired-p8264f1758a)">
+     <use xlink:href="#paired-m441578ca4d" x="273.042035" y="24.933921" style="fill: #ffadad; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-cca-1">
+    <defs>
+     <path id="paired-ma23967653c" d="M 0 4.031129 
+C 1.069068 4.031129 2.094493 3.606384 2.850439 2.850439 
+C 3.606384 2.094493 4.031129 1.069068 4.031129 0 
+C 4.031129 -1.069068 3.606384 -2.094493 2.850439 -2.850439 
+C 2.094493 -3.606384 1.069068 -4.031129 0 -4.031129 
+C -1.069068 -4.031129 -2.094493 -3.606384 -2.850439 -2.850439 
+C -3.606384 -2.094493 -4.031129 -1.069068 -4.031129 0 
+C -4.031129 1.069068 -3.606384 2.094493 -2.850439 2.850439 
+C -2.094493 3.606384 -1.069068 4.031129 0 4.031129 
+z
+" style="stroke: #414b54; stroke-width: 0.85"/>
+    </defs>
+    <g clip-path="url(#paired-p8264f1758a)">
+     <use xlink:href="#paired-ma23967653c" x="393.386226" y="26.736077" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-sparse_pls-1">
+    <g clip-path="url(#paired-p8264f1758a)">
+     <use xlink:href="#paired-m441578ca4d" x="323.199536" y="72.926609" style="fill: #ffadad; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-sparse_cca-1">
+    <g clip-path="url(#paired-p8264f1758a)">
+     <use xlink:href="#paired-ma23967653c" x="234.60012" y="67.116338" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-cca_cov-1">
+    <g clip-path="url(#paired-p8264f1758a)">
+     <use xlink:href="#paired-ma23967653c" x="294.510377" y="26.736077" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-cca_cov64-1">
+    <g clip-path="url(#paired-p8264f1758a)">
+     <use xlink:href="#paired-ma23967653c" x="350.70443" y="45.296041" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-sinkhorn-1">
+    <defs>
+     <path id="paired-m5354eda6ab" d="M 0 4.031129 
+C 1.069068 4.031129 2.094493 3.606384 2.850439 2.850439 
+C 3.606384 2.094493 4.031129 1.069068 4.031129 0 
+C 4.031129 -1.069068 3.606384 -2.094493 2.850439 -2.850439 
+C 2.094493 -3.606384 1.069068 -4.031129 0 -4.031129 
+C -1.069068 -4.031129 -2.094493 -3.606384 -2.850439 -2.850439 
+C -3.606384 -2.094493 -4.031129 -1.069068 -4.031129 0 
+C -4.031129 1.069068 -3.606384 2.094493 -2.850439 2.850439 
+C -2.094493 3.606384 -1.069068 4.031129 0 4.031129 
+z
+" style="stroke: #414b54; stroke-width: 0.85"/>
+    </defs>
+    <g clip-path="url(#paired-p8264f1758a)">
+     <use xlink:href="#paired-m5354eda6ab" x="760.818462" y="45.385775" style="fill: #caffbf; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-procrustes-1">
+    <defs>
+     <path id="paired-mb95bc89dc4" d="M 0 4.031129 
+C 1.069068 4.031129 2.094493 3.606384 2.850439 2.850439 
+C 3.606384 2.094493 4.031129 1.069068 4.031129 0 
+C 4.031129 -1.069068 3.606384 -2.094493 2.850439 -2.850439 
+C 2.094493 -3.606384 1.069068 -4.031129 0 -4.031129 
+C -1.069068 -4.031129 -2.094493 -3.606384 -2.850439 -2.850439 
+C -3.606384 -2.094493 -4.031129 -1.069068 -4.031129 0 
+C -4.031129 1.069068 -3.606384 2.094493 -2.850439 2.850439 
+C -2.094493 3.606384 -1.069068 4.031129 0 4.031129 
+z
+" style="stroke: #414b54; stroke-width: 0.85"/>
+    </defs>
+    <g clip-path="url(#paired-p8264f1758a)">
+     <use xlink:href="#paired-mb95bc89dc4" x="487.151457" y="30.355345" style="fill: #a0c4ff; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-group_sparse-1">
+    <defs>
+     <path id="paired-m530afe82c6" d="M 0 -4.031129 
+L -4.031129 4.031129 
+L 4.031129 4.031129 
+z
+" style="stroke: #414b54; stroke-width: 0.85"/>
+    </defs>
+    <g clip-path="url(#paired-p8264f1758a)">
+     <use xlink:href="#paired-m530afe82c6" x="159.341538" y="94.343103" style="fill: #bdb2ff; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-iso_align-1">
+    <defs>
+     <path id="paired-m8abb532eb0" d="M 0 -4.031129 
+L -4.031129 4.031129 
+L 4.031129 4.031129 
+z
+" style="stroke: #414b54; stroke-width: 0.85"/>
+    </defs>
+    <g clip-path="url(#paired-p8264f1758a)">
+     <use xlink:href="#paired-m8abb532eb0" x="489.719656" y="112.559087" style="fill: #ffc6ff; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-patch_13">
+    <path d="M 320.649536 75.476609 
+Q 323.199536 72.926609 325.749536 70.376609 
+" style="fill: none; stroke: #ffffff; stroke-width: 1.7; stroke-linecap: round"/>
+   </g>
+   <g id="paired-patch_14">
+    <path d="M 232.05012 69.666338 
+Q 234.60012 67.116338 237.15012 64.566338 
+" style="fill: none; stroke: #ffffff; stroke-width: 1.7; stroke-linecap: round"/>
+   </g>
+   <g id="paired-patch_15">
+    <path d="M 291.960377 24.186077 
+Q 294.510377 26.736077 297.060377 29.286077 
+" style="fill: none; stroke: #202020; stroke-width: 1.7; stroke-linecap: round"/>
+   </g>
+   <g id="paired-patch_16">
+    <path d="M 348.15443 42.746041 
+Q 350.70443 45.296041 353.25443 47.846041 
+" style="fill: none; stroke: #202020; stroke-width: 1.7; stroke-linecap: round"/>
+   </g>
+   <g id="paired-patch_17">
+    <path d="M 348.15443 47.846041 
+Q 350.70443 45.296041 353.25443 42.746041 
+" style="fill: none; stroke: #ffffff; stroke-width: 1.7; stroke-linecap: round"/>
+   </g>
+   <g id="paired-label-hungarian-1">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end" x="487.780312" y="78.155001" transform="rotate(-0 487.780312 78.155001)">Hungarian</text>
+   </g>
+   <g id="paired-label-pls-1">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end" x="265.042035" y="27.933921" transform="rotate(-0 265.042035 27.933921)">PLS-SVD (256)</text>
+   </g>
+   <g id="paired-label-cca-1">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: start" x="401.386226" y="19.736077" transform="rotate(-0 401.386226 19.736077)">CCA (256)</text>
+   </g>
+   <g id="paired-label-sparse_pls-1">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: start" x="331.199536" y="81.926609" transform="rotate(-0 331.199536 81.926609)">Sparse PLS-SVD</text>
+   </g>
+   <g id="paired-label-sparse_cca-1">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end" x="226.60012" y="67.116338" transform="rotate(-0 226.60012 67.116338)">Sparse CCA</text>
+   </g>
+   <g id="paired-label-cca_cov-1">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: start" x="297.510377" y="19.736077" transform="rotate(-0 297.510377 19.736077)">CCA + 공분산 회전</text>
+   </g>
+   <g id="paired-label-cca_cov64-1">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: start" x="359.70443" y="49.296041" transform="rotate(-0 359.70443 49.296041)">CCA + 회전 + 희소화</text>
+   </g>
+   <g id="paired-label-sinkhorn-1">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end" x="751.818462" y="49.385775" transform="rotate(-0 751.818462 49.385775)">Sinkhorn</text>
+   </g>
+   <g id="paired-label-procrustes-1">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: start" x="496.151457" y="36.355345" transform="rotate(-0 496.151457 36.355345)">Procrustes</text>
+   </g>
+   <g id="paired-label-group_sparse-1">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end" x="151.341538" y="96.343103" transform="rotate(-0 151.341538 96.343103)">Group-Sparse</text>
+   </g>
+   <g id="paired-label-iso_align-1">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end" x="480.719656" y="113.559087" transform="rotate(-0 480.719656 113.559087)">Iso-Energy</text>
+   </g>
+  </g>
+  <g id="paired-axes_2">
+   <g id="paired-patch_18">
+    <path d="M 69.12 288.288 
+L 851.04 288.288 
+L 851.04 168.642783 
+L 69.12 168.642783 
+L 69.12 288.288 
+z
+" style="fill: none"/>
+   </g>
+   <g id="paired-matplotlib.axis_3">
+    <g id="paired-xtick_9">
+     <g id="paired-line2d_27">
+      <path d="M 849.384318 288.288 
+L 849.384318 168.642783 
+" clip-path="url(#paired-p62164a7f34)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_28"/>
+     <g id="paired-text_21">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="849.384318" y="300.288" transform="rotate(-0 849.384318 300.288)">0.010</text>
+     </g>
+    </g>
+    <g id="paired-xtick_10">
+     <g id="paired-line2d_29">
+      <path d="M 741.793771 288.288 
+L 741.793771 168.642783 
+" clip-path="url(#paired-p62164a7f34)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_30"/>
+     <g id="paired-text_22">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="741.793771" y="300.288" transform="rotate(-0 741.793771 300.288)">0.012</text>
+     </g>
+    </g>
+    <g id="paired-xtick_11">
+     <g id="paired-line2d_31">
+      <path d="M 634.203224 288.288 
+L 634.203224 168.642783 
+" clip-path="url(#paired-p62164a7f34)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_32"/>
+     <g id="paired-text_23">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="634.203224" y="300.288" transform="rotate(-0 634.203224 300.288)">0.014</text>
+     </g>
+    </g>
+    <g id="paired-xtick_12">
+     <g id="paired-line2d_33">
+      <path d="M 526.612678 288.288 
+L 526.612678 168.642783 
+" clip-path="url(#paired-p62164a7f34)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_34"/>
+     <g id="paired-text_24">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="526.612678" y="300.288" transform="rotate(-0 526.612678 300.288)">0.016</text>
+     </g>
+    </g>
+    <g id="paired-xtick_13">
+     <g id="paired-line2d_35">
+      <path d="M 419.022131 288.288 
+L 419.022131 168.642783 
+" clip-path="url(#paired-p62164a7f34)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_36"/>
+     <g id="paired-text_25">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="419.022131" y="300.288" transform="rotate(-0 419.022131 300.288)">0.018</text>
+     </g>
+    </g>
+    <g id="paired-xtick_14">
+     <g id="paired-line2d_37">
+      <path d="M 311.431584 288.288 
+L 311.431584 168.642783 
+" clip-path="url(#paired-p62164a7f34)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_38"/>
+     <g id="paired-text_26">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="311.431584" y="300.288" transform="rotate(-0 311.431584 300.288)">0.020</text>
+     </g>
+    </g>
+    <g id="paired-xtick_15">
+     <g id="paired-line2d_39">
+      <path d="M 203.841037 288.288 
+L 203.841037 168.642783 
+" clip-path="url(#paired-p62164a7f34)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_40"/>
+     <g id="paired-text_27">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="203.841037" y="300.288" transform="rotate(-0 203.841037 300.288)">0.022</text>
+     </g>
+    </g>
+    <g id="paired-xtick_16">
+     <g id="paired-line2d_41">
+      <path d="M 96.250491 288.288 
+L 96.250491 168.642783 
+" clip-path="url(#paired-p62164a7f34)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_42"/>
+     <g id="paired-text_28">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #535d64" x="96.250491" y="300.288" transform="rotate(-0 96.250491 300.288)">0.024</text>
+     </g>
+    </g>
+    <g id="paired-text_29">
+     <text style="font-size: 12px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle" x="460.08" y="318.088" transform="rotate(-0 460.08 318.088)">개념 예측 손실 (오른쪽일수록 낮음)</text>
+    </g>
+   </g>
+   <g id="paired-matplotlib.axis_4">
+    <g id="paired-ytick_6">
+     <g id="paired-line2d_43">
+      <path d="M 69.12 288.288 
+L 851.04 288.288 
+" clip-path="url(#paired-p62164a7f34)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_44"/>
+     <g id="paired-text_30">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #535d64" x="66.12" y="292.788" transform="rotate(-0 66.12 292.788)">20</text>
+     </g>
+    </g>
+    <g id="paired-ytick_7">
+     <g id="paired-line2d_45">
+      <path d="M 69.12 258.376696 
+L 851.04 258.376696 
+" clip-path="url(#paired-p62164a7f34)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_46"/>
+     <g id="paired-text_31">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #535d64" x="66.12" y="262.876696" transform="rotate(-0 66.12 262.876696)">30</text>
+     </g>
+    </g>
+    <g id="paired-ytick_8">
+     <g id="paired-line2d_47">
+      <path d="M 69.12 228.465391 
+L 851.04 228.465391 
+" clip-path="url(#paired-p62164a7f34)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_48"/>
+     <g id="paired-text_32">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #535d64" x="66.12" y="232.965391" transform="rotate(-0 66.12 232.965391)">40</text>
+     </g>
+    </g>
+    <g id="paired-ytick_9">
+     <g id="paired-line2d_49">
+      <path d="M 69.12 198.554087 
+L 851.04 198.554087 
+" clip-path="url(#paired-p62164a7f34)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_50"/>
+     <g id="paired-text_33">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #535d64" x="66.12" y="203.054087" transform="rotate(-0 66.12 203.054087)">50</text>
+     </g>
+    </g>
+    <g id="paired-ytick_10">
+     <g id="paired-line2d_51">
+      <path d="M 69.12 168.642783 
+L 851.04 168.642783 
+" clip-path="url(#paired-p62164a7f34)" style="fill: none; stroke: #e0e4e7; stroke-width: 0.65; stroke-linecap: square"/>
+     </g>
+     <g id="paired-line2d_52"/>
+     <g id="paired-text_34">
+      <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #535d64" x="66.12" y="173.142783" transform="rotate(-0 66.12 173.142783)">60</text>
+     </g>
+    </g>
+    <g id="paired-text_35">
+     <text style="font-size: 11px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle" x="46.97" y="228.465391" transform="rotate(-90 46.97 228.465391)">텍스트 검색 R@5 (%)</text>
+    </g>
+   </g>
+   <g id="paired-patch_19">
+    <path d="M 165.982651 184.693945 
+Q 249.741652 167.941541 311.160777 225.764619 
+" style="fill: none; stroke-dasharray: 1.9,1.9; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 0.95; stroke-linecap: round"/>
+    <path d="M 309.619317 221.566536 
+L 311.160777 225.764619 
+L 306.877435 224.478938 
+z
+" style="fill: #7c8187; stroke-dasharray: 1.9,1.9; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 0.95; stroke-linecap: round"/>
+   </g>
+   <g id="paired-patch_20">
+    <path d="M 162.242329 192.718279 
+Q 228.505683 254.566983 314.999518 231.249909 
+" style="fill: none; stroke-dasharray: 1.9,1.9; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 0.95; stroke-linecap: round"/>
+    <path d="M 310.616818 230.360001 
+L 314.999518 231.249909 
+L 311.657972 234.222125 
+z
+" style="fill: #7c8187; stroke-dasharray: 1.9,1.9; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 0.95; stroke-linecap: round"/>
+   </g>
+   <g id="paired-patch_21">
+    <path d="M 163.307272 190.503673 
+Q 255.245839 202.842823 346.131713 190.644725 
+" style="fill: none; stroke-dasharray: 1.9,1.9; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 0.95; stroke-linecap: round"/>
+    <path d="M 341.901219 189.194581 
+L 346.131713 190.644725 
+L 342.433302 193.159034 
+z
+" style="fill: #7c8187; stroke-dasharray: 1.9,1.9; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 0.95; stroke-linecap: round"/>
+   </g>
+   <g id="paired-patch_22">
+    <path d="M 354.117496 192.639424 
+Q 359.205926 197.631102 362.056241 202.985514 
+" style="fill: none; stroke-dasharray: 1.9,1.9; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 0.95; stroke-linecap: round"/>
+    <path d="M 361.942087 198.514835 
+L 362.056241 202.985514 
+L 358.411205 200.39443 
+z
+" style="fill: #7c8187; stroke-dasharray: 1.9,1.9; stroke-dashoffset: 0; stroke: #7c8187; stroke-width: 0.95; stroke-linecap: round"/>
+   </g>
+   <g id="paired-patch_23">
+    <path d="M 69.12 288.288 
+L 69.12 168.642783 
+" style="fill: none; stroke: #9ba2a8; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="paired-patch_24">
+    <path d="M 69.12 288.288 
+L 851.04 288.288 
+" style="fill: none; stroke: #9ba2a8; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="paired-text_36">
+    <g id="paired-patch_25">
+     <path d="M 225.507919 199.025524 
+L 245.381919 199.025524 
+L 245.381919 189.753524 
+L 225.507919 189.753524 
+z
+" style="fill: #ffffff"/>
+    </g>
+    <text style="font-size: 7.6px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #5b6268" x="235.444919" y="196.669524" transform="rotate(-0 235.444919 196.669524)">희소화</text>
+   </g>
+   <g id="paired-text_37">
+    <g id="paired-patch_26">
+     <path d="M 233.671593 231.564488 
+L 253.545593 231.564488 
+L 253.545593 222.292488 
+L 233.671593 222.292488 
+z
+" style="fill: #ffffff"/>
+    </g>
+    <text style="font-size: 7.6px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #5b6268" x="243.608593" y="229.208488" transform="rotate(-0 243.608593 229.208488)">희소화</text>
+   </g>
+   <g id="paired-text_38">
+    <g id="paired-patch_27">
+     <path d="M 248.594969 199.595949 
+L 261.894969 199.595949 
+L 261.894969 190.323949 
+L 248.594969 190.323949 
+z
+" style="fill: #ffffff"/>
+    </g>
+    <text style="font-size: 7.6px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #5b6268" x="255.244969" y="197.239949" transform="rotate(-0 255.244969 197.239949)">회전</text>
+   </g>
+   <g id="paired-text_39">
+    <g id="paired-patch_28">
+     <path d="M 329.7811 213.382261 
+L 349.6551 213.382261 
+L 349.6551 204.110261 
+L 329.7811 204.110261 
+z
+" style="fill: #ffffff"/>
+    </g>
+    <text style="font-size: 7.6px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle; fill: #5b6268" x="339.7181" y="211.026261" transform="rotate(-0 339.7181 211.026261)">희소화</text>
+   </g>
+   <g id="paired-text_40">
+    <a target="_blank" rel="noopener" xlink:href="https://arxiv.org/abs/2601.20028" target="_blank">
+     <text style="font-size: 8px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end; fill: #48596b" x="692.895393" y="262.01462" transform="rotate(-0 692.895393 262.01462)">(Kaushik et al., 2026)</text>
+    </a>
+   </g>
+   <g id="paired-text_41">
+    <a target="_blank" rel="noopener" xlink:href="https://arxiv.org/abs/2602.06218" target="_blank">
+     <text style="font-size: 8px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: start; fill: #48596b" x="769.818462" y="265.08389" transform="rotate(-0 769.818462 265.08389)">(Dhimoïla et al., 2026)</text>
+    </a>
+   </g>
+   <g id="paired-point-hungarian-2">
+    <g clip-path="url(#paired-p62164a7f34)">
+     <use xlink:href="#paired-mbe875d9b13" x="753.901761" y="232.927247" style="fill: #9bf6ff; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-pls-2">
+    <g clip-path="url(#paired-p62164a7f34)">
+     <use xlink:href="#paired-m441578ca4d" x="162.067724" y="185.5155" style="fill: #ffadad; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-cca-2">
+    <g clip-path="url(#paired-p62164a7f34)">
+     <use xlink:href="#paired-ma23967653c" x="159.341538" y="189.959949" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-sparse_pls-2">
+    <g clip-path="url(#paired-p62164a7f34)">
+     <use xlink:href="#paired-m441578ca4d" x="314.822114" y="229.263547" style="fill: #ffadad; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-sparse_cca-2">
+    <g clip-path="url(#paired-p62164a7f34)">
+     <use xlink:href="#paired-ma23967653c" x="319.875648" y="229.897027" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-cca_cov-2">
+    <g clip-path="url(#paired-p62164a7f34)">
+     <use xlink:href="#paired-ma23967653c" x="351.1484" y="189.959949" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-cca_cov64-2">
+    <g clip-path="url(#paired-p62164a7f34)">
+     <use xlink:href="#paired-ma23967653c" x="364.287799" y="207.532573" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-sinkhorn-2">
+    <g clip-path="url(#paired-p62164a7f34)">
+     <use xlink:href="#paired-m5354eda6ab" x="639.935668" y="231.252893" style="fill: #caffbf; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-procrustes-2">
+    <g clip-path="url(#paired-p62164a7f34)">
+     <use xlink:href="#paired-mb95bc89dc4" x="590.269902" y="195.658472" style="fill: #a0c4ff; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-group_sparse-2">
+    <g clip-path="url(#paired-p62164a7f34)">
+     <use xlink:href="#paired-m530afe82c6" x="704.895393" y="247.61462" style="fill: #bdb2ff; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-point-iso_align-2">
+    <g clip-path="url(#paired-p62164a7f34)">
+     <use xlink:href="#paired-m8abb532eb0" x="760.818462" y="248.68389" style="fill: #ffc6ff; stroke: #414b54; stroke-width: 0.85"/>
+    </g>
+   </g>
+   <g id="paired-patch_29">
+    <path d="M 312.272114 231.813547 
+Q 314.822114 229.263547 317.372114 226.713547 
+" style="fill: none; stroke: #ffffff; stroke-width: 1.7; stroke-linecap: round"/>
+   </g>
+   <g id="paired-patch_30">
+    <path d="M 317.325648 232.447027 
+Q 319.875648 229.897027 322.425648 227.347027 
+" style="fill: none; stroke: #ffffff; stroke-width: 1.7; stroke-linecap: round"/>
+   </g>
+   <g id="paired-patch_31">
+    <path d="M 348.5984 187.409949 
+Q 351.1484 189.959949 353.6984 192.509949 
+" style="fill: none; stroke: #202020; stroke-width: 1.7; stroke-linecap: round"/>
+   </g>
+   <g id="paired-patch_32">
+    <path d="M 361.737799 204.982573 
+Q 364.287799 207.532573 366.837799 210.082573 
+" style="fill: none; stroke: #202020; stroke-width: 1.7; stroke-linecap: round"/>
+   </g>
+   <g id="paired-patch_33">
+    <path d="M 361.737799 210.082573 
+Q 364.287799 207.532573 366.837799 204.982573 
+" style="fill: none; stroke: #ffffff; stroke-width: 1.7; stroke-linecap: round"/>
+   </g>
+   <g id="paired-label-hungarian-2">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: start" x="760.901761" y="234.927247" transform="rotate(-0 760.901761 234.927247)">Hungarian</text>
+   </g>
+   <g id="paired-label-pls-2">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle" x="162.067724" y="181.5155" transform="rotate(-0 162.067724 181.5155)">PLS-SVD (256)</text>
+   </g>
+   <g id="paired-label-cca-2">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end" x="150.341538" y="189.959949" transform="rotate(-0 150.341538 189.959949)">CCA (256)</text>
+   </g>
+   <g id="paired-label-sparse_pls-2">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end" x="305.822114" y="229.263547" transform="rotate(-0 305.822114 229.263547)">Sparse PLS-SVD</text>
+   </g>
+   <g id="paired-label-sparse_cca-2">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: start" x="329.875648" y="238.897027" transform="rotate(-0 329.875648 238.897027)">Sparse CCA</text>
+   </g>
+   <g id="paired-label-cca_cov-2">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: start" x="358.1484" y="188.959949" transform="rotate(-0 358.1484 188.959949)">CCA + 공분산 회전</text>
+   </g>
+   <g id="paired-label-cca_cov64-2">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: start" x="372.287799" y="214.532573" transform="rotate(-0 372.287799 214.532573)">CCA + 회전 + 희소화</text>
+   </g>
+   <g id="paired-label-sinkhorn-2">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end" x="631.935668" y="232.252893" transform="rotate(-0 631.935668 232.252893)">Sinkhorn</text>
+   </g>
+   <g id="paired-label-procrustes-2">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: middle" x="590.269902" y="190.658472" transform="rotate(-0 590.269902 190.658472)">Procrustes</text>
+   </g>
+   <g id="paired-label-group_sparse-2">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: end" x="692.895393" y="253.61462" transform="rotate(-0 692.895393 253.61462)">Group-Sparse</text>
+   </g>
+   <g id="paired-label-iso_align-2">
+    <text style="font-size: 10px; font-family: 'Apple SD Gothic Neo', 'DejaVu Sans'; text-anchor: start" x="769.818462" y="256.68389" transform="rotate(-0 769.818462 256.68389)">Iso-Energy</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="paired-p8264f1758a">
+   <rect x="69.12" y="13.104" width="781.92" height="119.645217"/>
+  </clipPath>
+  <clipPath id="paired-p62164a7f34">
+   <rect x="69.12" y="168.642783" width="781.92" height="119.645217"/>
+  </clipPath>
+ </defs>
+</svg>
+        <div style="display:flex;justify-content:center;gap:30px;font-size:17px;margin-top:6px"><span style="display:inline-flex;align-items:center;gap:6px"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22"><g fill="#a8b0b7" stroke="#424b53"><rect x="3" y="3" width="16" height="16"/></g></svg>헝가리안</span><span style="display:inline-flex;align-items:center;gap:6px"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22"><g fill="#a8b0b7" stroke="#424b53"><circle cx="11" cy="11" r="8"/></g></svg>소프트 대응</span><span style="display:inline-flex;align-items:center;gap:6px"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22"><g fill="#a8b0b7" stroke="#424b53"><path d="M11 2 L20 19 H2 Z"/></g></svg>공유 SAE</span><span style="display:inline-flex;align-items:center;gap:6px"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22"><g fill="#a8b0b7" stroke="#424b53"><circle cx="11" cy="11" r="8"/></g><path d="M5.5 16.5L16.5 5.5" stroke="white" stroke-width="3"/></svg>희소화</span><span style="display:inline-flex;align-items:center;gap:6px"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22"><g fill="#a8b0b7" stroke="#424b53"><circle cx="11" cy="11" r="8"/></g><path d="M5.5 5.5L16.5 16.5" stroke="#222" stroke-width="3"/></svg>회전</span></div>
+        <p class="query-note">* 텍스트 검색은 캡션으로 정답 이미지를 찾는 평가이고, 이미지 검색은 이미지로 정답 캡션을 찾는 평가입니다.</p>
+      <div class="takeaway-overlay" hidden aria-label="그림의 핵심 설명">
+          <button type="button" class="takeaway-close" aria-label="핵심 설명 닫기">닫기 ×</button>
+          <div class="takeaway-highlight"></div>
+          <div class="takeaway-copy" role="status" aria-live="polite"><h3></h3><ul></ul></div>
+        </div>
+      </section>
+      <section class="slide benchmark-slide benchmark-visual" id="s11">
+        <p class="eyebrow">평가 방식의 정리 · 모달리티 내 개념 대응</p>
+        <h2>Benchmark: 이미지와 텍스트의 개념 대응 평가</h2>
+        <p class="benchmark-lead"><strong>이미지는 COCO·COCO-Stuff의 시각 주석</strong>으로, <strong>텍스트는 Visual Genome의 문장별 개념 주석</strong>으로 평가합니다. <span class="benchmark-prior">(선행연구 <a href="https://arxiv.org/html/2606.24716#S4" target="_blank" rel="noopener">[5]</a> 참고)</span></p>
+        <div class="benchmark-columns">
+          <div>
+            <h3>이미지 · COCO / COCO-Stuff [6]</h3>
+            <p class="benchmark-kind">COCO의 물체 80개 · COCO-Stuff의 물체 80개와 배경·재질 91개</p>
+            <div class="stuff-images">
+              <figure><img class="benchmark-sample" src="assets/2026-11-04/000000000872.jpg" alt="잔디와 나무 앞에서 야구하는 두 사람의 COCO 이미지"><figcaption class="stuff-image-label">원본 이미지</figcaption></figure>
+              <figure><img class="benchmark-sample" src="assets/2026-11-04/000000000872-annotation.png" alt="사람, 잔디, 나무 등을 구분한 COCO-Stuff의 실제 영역 주석"><figcaption class="stuff-image-label">영역별 정답 주석</figcaption></figure>
+            </div>
+            <div class="benchmark-labels"><span><i class="annotation-dot" style="background:#cb5479"></i>사람 <strong>있음 (1)</strong></span><span><i class="annotation-dot" style="background:#779b49"></i>잔디 · <i class="annotation-dot" style="background:#255d50"></i>나무 <strong>있음 (1)</strong></span></div>
+            <p class="benchmark-explain">물체·영역 주석에서 개념의 존재 여부를 구하고, <strong>이미지 조합 점수로 개념 유무를 예측</strong>합니다.</p>
+          </div>
+          <div>
+            <h3>텍스트 · Visual Genome [7]</h3>
+            <p class="benchmark-kind">설명 문장마다 물체·속성·관계를 연결한 기존 주석 사용</p>
+            <blockquote class="vg-example">“a white cat with a tan tail and face markings”</blockquote>
+            <p class="vg-translation">황갈색 꼬리와 얼굴 무늬가 있는 흰 고양이</p>
+            <table class="vg-concept-table">
+              <thead><tr><th>주석 종류</th><th>이 문장에 연결된 주석 예시</th></tr></thead>
+              <tbody>
+                <tr><td>물체·부위</td><td><strong>고양이, 꼬리, 얼굴, 무늬</strong></td></tr>
+                <tr><td>속성</td><td><strong>고양이의 흰색, 꼬리의 황갈색</strong></td></tr>
+                <tr><td>관계</td><td>고양이가 꼬리를 가짐, 얼굴에 무늬가 있음</td></tr>
+              </tbody>
+            </table>
+            <p class="benchmark-explain">입력은 Visual Genome의 설명 문장입니다. <strong>문장에 연결된 개념 주석을 정답</strong>으로 텍스트 조합 점수의 예측 성능을 평가합니다.</p>
+          </div>
+        </div>
+        <p class="benchmark-scope"><strong>공통 이미지는 COCO 이미지 ID로 연결</strong>합니다. 사용할 이미지·개념 목록을 확인한 뒤, 양쪽에서 각각 개념별 예측 손실을 평균합니다.</p>
+        <p class="benchmark-source">[5] <a href="https://arxiv.org/html/2606.24716#S4" target="_blank" rel="noopener">Evaluating the Interpretability of Sparse Autoencoders with Concept Annotations</a>, ECCV 2026. 개념 주석을 활용한 이미지 평가를 참고했습니다.<br>[6] <a href="https://openaccess.thecvf.com/content_cvpr_2018/papers/Caesar_COCO-Stuff_Thing_and_CVPR_2018_paper.pdf" target="_blank" rel="noopener">COCO-Stuff: Thing and Stuff Classes in Context</a>, CVPR 2018. 이미지 예시 000000000872.<br>[7] <a href="https://arxiv.org/html/1602.07332" target="_blank" rel="noopener">Visual Genome: Connecting Language and Vision Using Crowdsourced Dense Image Annotations</a>, IJCV 2017. <a href="https://visualgenome.org/api/v0/api_endpoint_reference" target="_blank" rel="noopener">문장·주석의 공식 예시</a>는 VG 이미지 2407890에 속하며, 왼쪽 이미지와는 별개입니다.</p>
+      </section>
+      <section class="slide concept-results" id="s12" aria-label="이미지 개념 예측 성능">
+        <p class="eyebrow">모달리티 내의 개념 대응</p>
+        <div class="table-heading"><h2>이미지 개념 예측 성능</h2><nav class="takeaway-tabs" aria-label="핵심 설명"><button type="button" data-takeaway="0" aria-pressed="false">takeaway #1</button><button type="button" data-takeaway="1" aria-pressed="false">takeaway #2</button></nav></div>
+        <p class="scope">COCO-Stuff의 물체 80개와 배경 91개, 총 171개 개념에 같은 비중을 두어 평균</p>
+        <ul class="metric-definitions">
+          <li><strong>재현율(Recall)</strong>은 해당 개념이 실제로 있는 이미지 중 모델이 있다고 예측한 비율입니다.</li>
+          <li><strong>정밀도(Precision)</strong>는 모델이 해당 개념이 있다고 예측한 이미지 중 실제로 그 개념이 있는 비율입니다.</li>
+        </ul>
+        <table aria-label="이미지 개념 예측 손실과 재현율, 정밀도, F1">
+          <thead><tr><th scope="col">방법</th><th scope="col">예측 손실 (↓)</th><th scope="col">재현율 Recall (%)</th><th scope="col">정밀도 Precision (%)</th><th scope="col">F1 (%)</th></tr></thead>
+          <tbody>
+            <tr class="rule-below" data-result="row-12-0"><th scope="row">Hungarian</th><td>0.1331</td><td>23.9</td><td>53.8</td><td>29.9</td></tr>
+            <tr><th scope="row">PLS-SVD (rank=256)</th><td>0.1376 <small class="relative gain">(+3.4%)</small></td><td>11.1 <small class="relative drop">(-53.4%)</small></td><td>29.2 <small class="relative drop">(-45.6%)</small></td><td>14.6 <small class="relative drop">(-51.1%)</small></td></tr>
+            <tr data-result="row-12-3"><th scope="row">CCA (λ=1, rank=256)</th><td>0.1352 <small class="relative gain">(+1.6%)</small></td><td>13.8 <small class="relative drop">(-42.2%)</small></td><td>32.1 <small class="relative drop">(-40.3%)</small></td><td>17.6 <small class="relative drop">(-41.2%)</small></td></tr>
+            <tr><th scope="row">Sparse PLS-SVD</th><td>0.1366 <small class="relative gain">(+2.6%)</small></td><td>18.0 <small class="relative drop">(-24.8%)</small></td><td>45.6 <small class="relative drop">(-15.2%)</small></td><td>23.5 <small class="relative drop">(-21.3%)</small></td></tr>
+            <tr><th scope="row">Sparse CCA</th><td>0.1384 <small class="relative gain">(+4.0%)</small></td><td>19.4 <small class="relative drop">(-18.8%)</small></td><td>46.2 <small class="relative drop">(-14.2%)</small></td><td>24.5 <small class="relative drop">(-18.0%)</small></td></tr>
+            <tr data-result="row-12-7"><th scope="row">CCA + 공분산 회전</th><td>0.1372 <small class="relative gain">(+3.1%)</small></td><td>19.6 <small class="relative drop">(-17.9%)</small></td><td>48.7 <small class="relative drop">(-9.5%)</small></td><td>25.2 <small class="relative drop">(-15.7%)</small></td></tr>
+            <tr><th scope="row">CCA + 회전 + 희소화</th><td>0.1361 <small class="relative gain">(+2.2%)</small></td><td>20.3 <small class="relative drop">(-14.9%)</small></td><td>49.2 <small class="relative drop">(-8.5%)</small></td><td>26.1 <small class="relative drop">(-12.5%)</small></td></tr>
+            <tr data-result="row-12-9"><th scope="row">Sinkhorn (ε=0.05)</th><td><strong>0.1278</strong> <small class="relative drop">(-4.0%)</small></td><td><strong>25.1</strong> <small class="relative gain">(+4.9%)</small></td><td>50.1 <small class="relative drop">(-6.8%)</small></td><td><strong>31.0</strong> <small class="relative gain">(+3.7%)</small></td></tr>
+            <tr><th scope="row">Procrustes</th><td>0.1333 <small class="relative gain">(+0.1%)</small></td><td>23.5 <small class="relative drop">(-1.9%)</small></td><td>55.3 <small class="relative gain">(+2.8%)</small></td><td>29.8 <small class="relative drop">(-0.3%)</small></td></tr>
+            <tr class="rule-above"><th scope="row">Group-Sparse</th><td>0.1399 <small class="relative gain">(+5.1%)</small></td><td>21.0 <small class="relative drop">(-12.1%)</small></td><td><strong>57.3</strong> <small class="relative gain">(+6.6%)</small></td><td>27.9 <small class="relative drop">(-6.4%)</small></td></tr>
+            <tr><th scope="row">Iso-Energy</th><td>0.1333 <small class="relative gain">(+0.1%)</small></td><td>23.4 <small class="relative drop">(-2.2%)</small></td><td>54.0 <small class="relative gain">(+0.4%)</small></td><td>29.4 <small class="relative drop">(-1.7%)</small></td></tr>
+          </tbody>
+        </table>
+        <p class="metric-note">헝가리안·Sinkhorn·Procrustes는 이미지를 텍스트 좌표로 옮긴 뒤 개념별로 좌표 하나를 선택<br>학습된 계수를 모두 사용하며, 예측 확률 0.5 이상을 양성으로 판정. 괄호는 같은 열에서 헝가리안 대비 변화율(%)</p>
+      <div class="takeaway-overlay" hidden aria-label="그림의 핵심 설명">
+          <button type="button" class="takeaway-close" aria-label="핵심 설명 닫기">닫기 ×</button>
+          <div class="takeaway-highlight"></div>
+          <div class="takeaway-copy" role="status" aria-live="polite"><h3></h3><ul></ul></div>
+        </div>
+      </section>
+      <section class="slide concept-results" id="s13" aria-label="텍스트 개념 예측 성능">
+        <p class="eyebrow">모달리티 내의 개념 대응</p>
+        <div class="table-heading"><h2>텍스트 개념 예측 성능</h2><nav class="takeaway-tabs" aria-label="핵심 설명"><button type="button" data-takeaway="0" aria-pressed="false">takeaway #1</button><button type="button" data-takeaway="1" aria-pressed="false">takeaway #2</button></nav></div>
+        <p class="scope">Visual Genome 내의 COCO 이미지에 붙은 영역 캡션 문장에서 물체 170개 개념에 같은 비중을 두어 평균</p>
+        <table aria-label="텍스트 개념 예측 손실과 재현율, 정밀도, F1">
+          <thead><tr><th scope="col">방법</th><th scope="col">예측 손실 (↓)</th><th scope="col">재현율 Recall (%)</th><th scope="col">정밀도 Precision (%)</th><th scope="col">F1 (%)</th></tr></thead>
+          <tbody>
+            <tr class="rule-below"><th scope="row">Hungarian</th><td>0.0118</td><td>42.4</td><td>53.9</td><td>46.3</td></tr>
+            <tr><th scope="row">PLS-SVD (rank=256)</th><td>0.0228 <small class="relative gain">(+93.4%)</small></td><td>5.2 <small class="relative drop">(-87.8%)</small></td><td>15.1 <small class="relative drop">(-72.1%)</small></td><td>6.9 <small class="relative drop">(-85.0%)</small></td></tr>
+            <tr data-result="row-13-3"><th scope="row">CCA (λ=1, rank=256)</th><td>0.0228 <small class="relative gain">(+93.9%)</small></td><td>5.6 <small class="relative drop">(-86.9%)</small></td><td>15.5 <small class="relative drop">(-71.3%)</small></td><td>7.4 <small class="relative drop">(-84.0%)</small></td></tr>
+            <tr><th scope="row">Sparse PLS-SVD</th><td>0.0199 <small class="relative gain">(+69.3%)</small></td><td>13.4 <small class="relative drop">(-68.3%)</small></td><td>26.0 <small class="relative drop">(-51.7%)</small></td><td>16.6 <small class="relative drop">(-64.2%)</small></td></tr>
+            <tr><th scope="row">Sparse CCA</th><td>0.0198 <small class="relative gain">(+68.5%)</small></td><td>15.3 <small class="relative drop">(-63.9%)</small></td><td>26.7 <small class="relative drop">(-50.4%)</small></td><td>18.4 <small class="relative drop">(-60.2%)</small></td></tr>
+            <tr data-result="row-13-7"><th scope="row">CCA + 공분산 회전</th><td>0.0193 <small class="relative gain">(+63.6%)</small></td><td>15.2 <small class="relative drop">(-64.3%)</small></td><td>27.3 <small class="relative drop">(-49.5%)</small></td><td>18.3 <small class="relative drop">(-60.5%)</small></td></tr>
+            <tr data-result="row-13-8"><th scope="row">CCA + 회전 + 희소화</th><td>0.0190 <small class="relative gain">(+61.5%)</small></td><td>15.7 <small class="relative drop">(-63.0%)</small></td><td>27.3 <small class="relative drop">(-49.3%)</small></td><td>18.8 <small class="relative drop">(-59.5%)</small></td></tr>
+            <tr><th scope="row">Sinkhorn (ε=0.05)</th><td>0.0139 <small class="relative gain">(+18.0%)</small></td><td>33.5 <small class="relative drop">(-21.0%)</small></td><td>44.3 <small class="relative drop">(-17.9%)</small></td><td>37.1 <small class="relative drop">(-19.9%)</small></td></tr>
+            <tr><th scope="row">Procrustes</th><td>0.0148 <small class="relative gain">(+25.8%)</small></td><td>32.6 <small class="relative drop">(-23.1%)</small></td><td>49.6 <small class="relative drop">(-8.0%)</small></td><td>38.1 <small class="relative drop">(-17.9%)</small></td></tr>
+            <tr class="rule-above" data-result="row-13-11"><th scope="row">Group-Sparse</th><td>0.0127 <small class="relative gain">(+7.7%)</small></td><td><strong>44.8</strong> <small class="relative gain">(+5.5%)</small></td><td><strong>60.7</strong> <small class="relative gain">(+12.4%)</small></td><td><strong>50.4</strong> <small class="relative gain">(+8.8%)</small></td></tr>
+            <tr data-result="row-13-12"><th scope="row">Iso-Energy</th><td><strong>0.0116</strong> <small class="relative drop">(-1.1%)</small></td><td>42.3 <small class="relative drop">(-0.3%)</small></td><td>55.1 <small class="relative gain">(+2.2%)</small></td><td>46.6 <small class="relative gain">(+0.5%)</small></td></tr>
+          </tbody>
+        </table>
+        <p class="metric-note">헝가리안·Sinkhorn·Procrustes는 텍스트를 이미지 좌표로 옮긴 뒤 개념별로 좌표 하나를 선택<br>학습된 계수를 모두 사용하며, 예측 확률 0.5 이상을 양성으로 판정. 괄호는 같은 열에서 헝가리안 대비 변화율(%)</p>
+      <div class="takeaway-overlay" hidden aria-label="그림의 핵심 설명">
+          <button type="button" class="takeaway-close" aria-label="핵심 설명 닫기">닫기 ×</button>
+          <div class="takeaway-highlight"></div>
+          <div class="takeaway-copy" role="status" aria-live="polite"><h3></h3><ul></ul></div>
+        </div>
+      </section>
+      <section class="slide concept-results mixing-results" id="s14" aria-label="집합의 개념 혼합도와 개념 표현의 분산도">
+        <p class="eyebrow">모달리티 내의 개념 대응</p>
+        <div class="table-heading"><h2>집합의 개념 혼합도와 개념 표현의 분산도</h2><nav class="takeaway-tabs" aria-label="핵심 설명"><button type="button" data-takeaway="0" aria-pressed="false">takeaway #1</button><button type="button" data-takeaway="1" aria-pressed="false">takeaway #2</button></nav></div>
+        <ul class="metric-definitions">
+          <li><strong>개념 혼합도 <span data-tex="X\%"></span></strong>는 한 축의 예측 기여가 COCO-Stuff의 171개 개념 중 <strong><span data-tex="171^{X/100}"></span>개 개념에 균등하게</strong> 퍼진 정도에 해당함. 예를 들어 70%면 약 37개.</li>
+          <li><strong>표현 분산도 <span data-tex="X\%"></span></strong>는 한 개념의 예측 기여가 전체 <span data-tex="r"></span>개 축 중 <strong><span data-tex="r^{X/100}"></span>개 축에 균등하게</strong> 퍼진 정도에 해당함. 예를 들어 256축에서 70%면 약 49개.</li>
+        </ul>
+        <table aria-label="이미지와 텍스트의 집합의 개념 혼합도와 개념 표현의 분산도">
+          <colgroup><col></colgroup><colgroup span="2"></colgroup><colgroup span="2"></colgroup>
+          <thead><tr><th scope="col" rowspan="2">방법</th><th scope="colgroup" colspan="2">이미지 · COCO-Stuff 171개 개념</th><th scope="colgroup" colspan="2">텍스트 · Visual Genome 물체 170개</th></tr>
+            <tr><th scope="col">개념 혼합도 (↓)</th><th scope="col">표현 분산도 (↓)</th><th scope="col">개념 혼합도 (↓)</th><th scope="col">표현 분산도 (↓)</th></tr></thead>
+          <tbody>
+            <tr class="rule-below" data-method="hungarian"><th scope="row">Hungarian</th><td>0.757</td><td>0.715</td><td>0.595</td><td>0.626</td></tr>
+            <tr><th scope="row">PLS-SVD (rank=256)</th><td>0.765 <small class="relative gain">(+1.0%)</small></td><td>0.830 <small class="relative gain">(+16.1%)</small></td><td>0.752 <small class="relative gain">(+26.4%)</small></td><td>0.844 <small class="relative gain">(+34.7%)</small></td></tr>
+            <tr data-method="cca"><th scope="row">CCA (λ=1, rank=256)</th><td>0.743 <small class="relative drop">(-1.9%)</small></td><td>0.816 <small class="relative gain">(+14.2%)</small></td><td>0.738 <small class="relative gain">(+24.1%)</small></td><td>0.835 <small class="relative gain">(+33.4%)</small></td></tr>
+            <tr><th scope="row">Sparse PLS-SVD</th><td>0.788 <small class="relative gain">(+4.1%)</small></td><td>0.785 <small class="relative gain">(+9.9%)</small></td><td>0.672 <small class="relative gain">(+13.0%)</small></td><td>0.754 <small class="relative gain">(+20.3%)</small></td></tr>
+            <tr><th scope="row">Sparse CCA</th><td><strong>0.710</strong> <small class="relative drop">(-6.3%)</small></td><td>0.701 <small class="relative drop">(-1.9%)</small></td><td><strong>0.548</strong> <small class="relative drop">(-7.9%)</small></td><td>0.640 <small class="relative gain">(+2.1%)</small></td></tr>
+            <tr data-method="rotated"><th scope="row">CCA + 공분산 회전</th><td>0.722 <small class="relative drop">(-4.6%)</small></td><td>0.765 <small class="relative gain">(+7.1%)</small></td><td>0.669 <small class="relative gain">(+12.4%)</small></td><td>0.737 <small class="relative gain">(+17.7%)</small></td></tr>
+            <tr data-method="pruned"><th scope="row">CCA + 회전 + 희소화</th><td>0.711 <small class="relative drop">(-6.1%)</small></td><td>0.730 <small class="relative gain">(+2.1%)</small></td><td>0.570 <small class="relative drop">(-4.1%)</small></td><td>0.659 <small class="relative gain">(+5.2%)</small></td></tr>
+            <tr data-method="sinkhorn"><th scope="row">Sinkhorn (ε=0.05)</th><td>0.822 <small class="relative gain">(+8.6%)</small></td><td>0.906 <small class="relative gain">(+26.7%)</small></td><td>0.788 <small class="relative gain">(+32.4%)</small></td><td>0.903 <small class="relative gain">(+44.2%)</small></td></tr>
+            <tr><th scope="row">Procrustes</th><td>0.735 <small class="relative drop">(-3.0%)</small></td><td>0.809 <small class="relative gain">(+13.2%)</small></td><td>0.681 <small class="relative gain">(+14.4%)</small></td><td>0.819 <small class="relative gain">(+30.8%)</small></td></tr>
+            <tr class="rule-above"><th scope="row">Group-Sparse</th><td>0.762 <small class="relative gain">(+0.6%)</small></td><td>0.705 <small class="relative drop">(-1.3%)</small></td><td>0.601 <small class="relative gain">(+1.0%)</small></td><td>0.631 <small class="relative gain">(+0.8%)</small></td></tr>
+            <tr><th scope="row">Iso-Energy</th><td>0.757 <small class="relative drop">(-0.1%)</small></td><td><strong>0.663</strong> <small class="relative drop">(-7.3%)</small></td><td>0.589 <small class="relative drop">(-1.0%)</small></td><td><strong>0.585</strong> <small class="relative drop">(-6.7%)</small></td></tr>
+          </tbody>
+        </table>
+      <div class="takeaway-overlay" hidden aria-label="표의 핵심 설명">
+          <button type="button" class="takeaway-close" aria-label="핵심 설명 닫기">닫기 ×</button>
+          <div class="takeaway-highlight"></div>
+          <div class="takeaway-copy" role="status" aria-live="polite"><h3></h3><ul></ul></div>
+        </div>
+      </section>
+      <section class="slide retrieval-slide" id="s15">
+        <p class="eyebrow">평가 방식의 정리 · 모달리티 간 대응</p>
+        <h2>Benchmark: 네 이미지·캡션 자료로 검색 평가를 확장</h2>
+        <p class="retrieval-lead"><strong>COCO·Flickr30k의 짧은 설명</strong>과 <strong>DOCCI·IIW의 상세한 설명</strong>에서 양방향 R@1·5·10을 측정합니다.</p>
+        <div class="retrieval-sample-grid">
+          <div class="retrieval-sample">
+            <h3>COCO [11] · 일상 장면의 짧은 설명</h3>
+            <div class="retrieval-sample-body"><figure><img src="assets/2026-11-04/coco-train2017-000000094271.jpg" alt="닥스훈트 옆에서 자는 사람"><figcaption>실제 샘플 · train2017 000000094271</figcaption></figure><div><blockquote>“A man sleeping next to a dachshund puppy.”</blockquote><p>사람과 강아지가 있는 장면을 짧게 설명합니다. 기존 검색 평가와 이어서 비교합니다.</p><p class="sample-setting">평가 자료는 COCO val2017을 사용합니다.</p></div></div>
+          </div>
+          <div class="retrieval-sample">
+            <h3>Flickr30k [12] · 인물·복장·행동의 설명</h3>
+            <div class="retrieval-sample-body"><figure><img src="assets/2026-11-04/flickr30k-3131519555.jpg" alt="고글과 화려한 옷을 입고 모자를 쓴 남성"><figcaption>실제 샘플 · 3131519555</figcaption></figure><div><blockquote>“A happy looking, long-haired man, wearing goggles over his eyes and very colorful clothing and a hat…”</blockquote><p>고글과 화려한 옷을 착용한 인물의 외형·행동을 구별하는지 봅니다.</p><p class="sample-setting">공개 검색 평가 분할을 사용합니다.</p></div></div>
+          </div>
+          <div class="retrieval-sample">
+            <h3>DOCCI [13] · 외형과 공간 관계의 상세 설명</h3>
+            <div class="retrieval-sample-body"><figure><img src="assets/2026-11-04/docci-test_00001.png" alt="물 위 이끼 낀 통나무에 앉은 거북"><figcaption>실제 샘플 · test_00001</figcaption></figure><div><blockquote>“An outdoor front view of a turtle that is sitting on a…”</blockquote><p>거북의 자세와 등껍질, 통나무·물·주변 풀까지 설명합니다.</p><p class="sample-setting">공개 test 분할의 이미지·설명을 사용합니다.</p></div></div>
+          </div>
+          <div class="retrieval-sample">
+            <h3>IIW [14] · 무늬와 배치의 상세 설명</h3>
+            <div class="retrieval-sample-body"><figure><img src="assets/2026-11-04/iiw-aar_test_04601.jpg" alt="십자 무늬가 있는 타일 벽과 구름 낀 하늘"><figcaption>실제 샘플 · aar_test_04601</figcaption></figure><div><blockquote>“In a low-angle shot, a wall decorated with a pattern of square tiles stands below a wide blue sky…”</blockquote><p>벽의 타일 무늬와 하늘·구름의 배치를 자세히 구별하는지 봅니다.</p><p class="sample-setting">IIW-400의 이미지 400장과 사람의 설명을 사용합니다.</p></div></div>
+          </div>
+        </div>
+        <p class="retrieval-notes">긴 설명은 모든 방법에 같은 텍스트 입력 길이를 적용하고, 잘린 비율을 기록합니다. IIW-400은 DOCCI-AAR 사진에 별도로 상세 설명을 붙인 자료입니다.</p>
+        <p class="retrieval-source">[11] <a href="https://cocodataset.org/#captions" target="_blank" rel="noopener">COCO Captions</a> · [12] <a href="https://bryanplummer.com/Flickr30kEntities/" target="_blank" rel="noopener">Flickr30k Entities</a><br>[13] <a href="https://google.github.io/docci/" target="_blank" rel="noopener">DOCCI: Descriptions of Connected and Contrasting Images</a> · [14] <a href="https://github.com/google/imageinwords/tree/main/datasets" target="_blank" rel="noopener">ImageInWords (IIW), 공개 평가 자료</a></p>
+      </section>
+      <section class="slide concept-results retrieval-results" id="s16" aria-label="이미지와 텍스트 검색 Recall@5">
+        <p class="eyebrow">모달리티 간의 대응</p>
+        <div class="table-heading"><h2>이미지와 텍스트 검색 성능 · Recall@5 (%)</h2><nav class="takeaway-tabs" aria-label="핵심 설명"><button type="button" data-takeaway="0" aria-pressed="false">takeaway #1</button></nav></div>
+        <p class="scope">정답이 상위 5개 안에 든 질의의 비율. 각 방향의 평균은 네 벤치마크에 같은 비중을 두어 계산.</p>
+        <table aria-label="11개 방법의 벤치마크별 양방향 Recall@5">
+          <colgroup><col></colgroup><colgroup span="5"></colgroup><colgroup span="5"></colgroup>
+          <thead><tr><th rowspan="2" scope="col">방법</th><th colspan="5" scope="colgroup">이미지 검색 · 이미지로 정답 캡션 찾기</th><th colspan="5" scope="colgroup">텍스트 검색 · 캡션으로 정답 이미지 찾기</th></tr>
+          <tr><th scope="col">COCO</th><th scope="col">Flickr30K</th><th scope="col">DOCCI</th><th scope="col">IIW</th><th scope="col">평균</th><th scope="col">COCO</th><th scope="col">Flickr30K</th><th scope="col">DOCCI</th><th scope="col">IIW</th><th scope="col">평균</th></tr></thead>
+          <tbody>
+            <tr class="rule-below"><th scope="row">Hungarian</th><td>25.3</td><td>42.9</td><td>23.3</td><td>65.5</td><td>39.3</td><td>19.3</td><td>41.3</td><td>25.0</td><td>68.5</td><td>38.5</td></tr>
+            <tr data-result="row-16-1"><th scope="row">PLS-SVD (rank=256)</th><td><strong>41.2</strong></td><td>64.2</td><td><strong>38.7</strong></td><td><strong>80.0</strong></td><td><strong>56.0</strong></td><td><strong>31.5</strong></td><td>60.0</td><td><strong>41.6</strong></td><td><strong>84.2</strong></td><td><strong>54.4</strong></td></tr>
+            <tr data-result="row-16-3"><th scope="row">CCA (λ=1, rank=256)</th><td>41.2</td><td><strong>65.1</strong></td><td>37.7</td><td>77.8</td><td>55.4</td><td>30.7</td><td>59.8</td><td>39.8</td><td>81.2</td><td>52.9</td></tr>
+            <tr data-result="row-16-5"><th scope="row">Sparse PLS-SVD</th><td>25.5</td><td>49.0</td><td>23.0</td><td>62.5</td><td>40.0</td><td>20.3</td><td>45.6</td><td>26.1</td><td>67.0</td><td>39.7</td></tr>
+            <tr data-result="row-16-6"><th scope="row">Sparse CCA</th><td>28.9</td><td>49.6</td><td>25.0</td><td>64.2</td><td>41.9</td><td>22.3</td><td>43.5</td><td>27.0</td><td>65.2</td><td>39.5</td></tr>
+            <tr><th scope="row">CCA + 공분산 회전</th><td>41.2</td><td><strong>65.1</strong></td><td>37.7</td><td>77.8</td><td>55.4</td><td>30.7</td><td>59.8</td><td>39.8</td><td>81.2</td><td>52.9</td></tr>
+            <tr><th scope="row">CCA + 회전 + 희소화</th><td>35.2</td><td>58.1</td><td>30.9</td><td>72.8</td><td>49.2</td><td>26.5</td><td>52.0</td><td>33.6</td><td>76.0</td><td>47.0</td></tr>
+            <tr><th scope="row">Sinkhorn (ε=0.05)</th><td>33.8</td><td>56.4</td><td>31.3</td><td>75.2</td><td>49.2</td><td>17.3</td><td>44.8</td><td>24.5</td><td>69.8</td><td>39.1</td></tr>
+            <tr><th scope="row">Procrustes</th><td>38.9</td><td>64.2</td><td>37.6</td><td>76.2</td><td>54.2</td><td>28.1</td><td><strong>60.1</strong></td><td>38.7</td><td>77.0</td><td>51.0</td></tr>
+            <tr class="rule-above"><th scope="row">Group-Sparse</th><td>15.2</td><td>30.8</td><td>26.4</td><td>59.0</td><td>32.8</td><td>10.7</td><td>24.5</td><td>31.4</td><td>67.8</td><td>33.6</td></tr>
+            <tr><th scope="row">Iso-Energy</th><td>15.2</td><td>28.4</td><td>18.4</td><td>45.0</td><td>26.8</td><td>10.6</td><td>24.7</td><td>31.6</td><td>66.0</td><td>33.2</td></tr>
+          </tbody>
+        </table>
+      <div class="takeaway-overlay" hidden aria-label="그림의 핵심 설명">
+          <button type="button" class="takeaway-close" aria-label="핵심 설명 닫기">닫기 ×</button>
+          <div class="takeaway-highlight"></div>
+          <div class="takeaway-copy" role="status" aria-live="polite"><h3></h3><ul></ul></div>
+        </div>
+      </section>
+      <section class="slide discussion-slide" id="s17" aria-label="이번 실험의 Takeaway와 차주 계획">
+        <p class="eyebrow">연구 질문과 다음 실험</p>
+        <h2>이번 실험의 Takeaway와 차주 계획</h2>
+        <div class="discussion-section">
+          <h3>여러 특징을 연결하면 같은 개념을 더 잘 찾을 수 있을까?</h3>
+          <ul>
+            <li><strong>다대다 매핑의 가능성 확인:</strong> 일대일로 연결한 헝가리안보다 여러 특징을 연결한 Sinkhorn에서 <strong>검색과 이미지 개념 검출이 개선.</strong> 다만 한 이미지 축이 더 많은 개념의 예측에 기여해, 같은 의미의 특징끼리 연결됐는지는 확실치 않음.</li>
+            <li><strong>공통 직교 회전의 가능성 확인:</strong> CCA로 구한 이미지·텍스트 조합을 <strong>함께 회전하면 검색 성능을 유지하면서</strong> 양쪽 모두 개념 검출 F1이 높아지고 축마다 예측 기여가 더 적은 개념에 집중됨. 회전 뒤 작은 계수를 제거하자 이 집중은 더 뚜렷해졌지만 검색 성능은 낮아짐.</li>
+          </ul>
+        </div>
+        <div class="discussion-section">
+          <h3>차주 계획</h3>
+          <ul>
+            <li><strong>대응 조합을 구하는 방법</strong>을 실험합니다.
+              <ul><li>이미지·텍스트 특징을 묶을 때 어떤 목적함수와 제약을 쓰면 같은 개념을 나타내는 조합끼리 더 잘 대응하는지 비교</li></ul>
+            </li>
+            <li><strong>회전하고 희소화하는 방법</strong>을 실험합니다.
+              <ul><li>어떤 기준으로 조합을 회전하고 계수를 제거해야 검색 성능을 유지하면서 각 축이 소수 개념에 집중되는지 확인</li></ul>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </main>
+  <nav class="nav" aria-label="슬라이드 이동">
+    <button id="prev" disabled>이전</button>
+    <span class="counter">1 / 17</span>
+    <button id="next">다음</button>
+  </nav>
+  <script src="assets/katex/katex.min.js"></script>
+  <script>
+    document.querySelectorAll("[data-tex]").forEach(el => katex.render(el.dataset.tex, el, {throwOnError:false}));
+    const slides = [...document.querySelectorAll('.slide')];
+    let current = 0;
+    function fit() {
+      const scale = Math.max(.05, Math.min((innerWidth - 32) / 1280, (innerHeight - 66) / 720));
+      document.querySelector('.stage').style.transform = `scale(${scale})`;
+    }
+    function show(index) {
+      current = Math.max(0, Math.min(slides.length - 1, index));
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === current));
+      document.querySelector('.counter').textContent = `${current + 1} / ${slides.length}`;
+      document.getElementById('prev').disabled = current === 0;
+      document.getElementById('next').disabled = current === slides.length - 1;
+      history.replaceState(null, '', '#' + (current + 1));
+    }
+    document.getElementById('prev').onclick = () => show(current - 1);
+    document.getElementById('next').onclick = () => show(current + 1);
+    addEventListener('resize', fit);
+    addEventListener('hashchange', () => show((parseInt(location.hash.slice(1), 10) || 1) - 1));
+    addEventListener('keydown', async event => {
+      if (event.target.closest('button,a,input,select,textarea')) return;
+      if (event.ctrlKey || event.metaKey || event.altKey || event.target.isContentEditable) return;
+      if (['ArrowRight','ArrowDown','PageDown',' '].includes(event.key)) { event.preventDefault(); show(current + 1); }
+      if (['ArrowLeft','ArrowUp','PageUp'].includes(event.key)) { event.preventDefault(); show(current - 1); }
+      if (event.key === 'Home') show(0);
+      if (event.key === 'End') show(slides.length - 1);
+      if (event.key.toLowerCase() === 'f') {
+        try {
+          if (document.fullscreenElement) await document.exitFullscreen();
+          else await document.documentElement.requestFullscreen();
+        } catch (_) {}
+      }
+    });
+    fit();
+    show((parseInt(location.hash.slice(1), 10) || 1) - 1);
+  </script>
+
+  <script>
+  (() => {
+    const pooledItems = [
+  {
+    "methods": [
+      "hungarian",
+      "sinkhorn"
+    ],
+    "title": "1. Soft 방법론의 가능성 확인",
+    "bullets": [
+      "여러 특징을 조합한 Sinkhorn에서 평균 손실과 검색 성능이 개선됐습니다."
+    ]
+  },
+  {
+    "methods": [
+      "cca",
+      "cca_cov"
+    ],
+    "title": "2. 공통 직교 회전의 가능성 확인",
+    "bullets": [
+      "CCA에 공통 직교회전을 적용하자 개념 예측이 개선됨 (평균 예측 손실은 0.0790에서 0.0782로)"
+    ]
+  },
+  {
+    "methods": [
+      "cca_cov",
+      "cca_cov64"
+    ],
+    "title": "3. 회전 뒤 작은 계수를 제거하니 개념 예측은 좋아졌지만 검색 성능은 낮아짐",
+    "bullets": [
+      "CCA 회전 후 조합당 64개 계수를 남겼을 때 평균 개념 예측 손실은 0.0782에서 0.0775로 개선됨",
+      "검색 R@5는 54.2%에서 48.1%로 낮아짐"
+    ]
+  }
+];
+    const detailItems = [
+      {
+        focus: ['#paired-axes_1 g[id*="-point-"] use', '#paired-axes_2 g[id*="-point-"] use'],
+        title: '1. 이미지에서 개념 예측 손실이 더 높고, 개념 등장 빈도도 다름',
+        bullets: [
+          '11개 방법의 평균 예측 손실 범위는 이미지 0.1278–0.1399, 텍스트 0.0116–0.0228',
+          '개념별 등장 비율은 이미지에서 평균 4.92%, 텍스트에서 평균 0.54%'
+        ]
+      },
+      {
+        focus: ['#paired-point-hungarian-1 use, #paired-label-hungarian-1 text, #paired-point-sinkhorn-1 use, #paired-label-sinkhorn-1 text'],
+        title: '2. 헝가리안 대비 Sinkhorn에서 이미지 개념 예측이 개선됨',
+        bullets: [
+          '이미지 예측 손실은 0.1331에서 0.1278로 낮아짐',
+          '텍스트 예측 손실은 0.0118에서 0.0139로 높아짐'
+        ]
+      },
+      {
+        focus: ['#paired-point-cca-2 use, #paired-label-cca-2 text, #paired-point-cca_cov-2 use, #paired-label-cca_cov-2 text'],
+        title: '3. CCA에 공통 직교회전을 적용하자 텍스트 개념 예측이 개선됨',
+        bullets: [
+          '텍스트 예측 손실은 0.0228에서 0.0193으로 낮아짐',
+          '이미지 예측 손실은 0.1352에서 0.1372로 높아짐'
+        ]
+      }
+    ];
+
+    function bindTakeaways(slide, items) {
+      const chart = slide.querySelector('.results-chart, table');
+      const overlay = slide.querySelector('.takeaway-overlay');
+      const tabs = [...slide.querySelectorAll('[data-takeaway]')];
+      let active = -1;
+      function place() {
+        if (active < 0) return;
+        const p=slide.getBoundingClientRect(),scale=p.width/slide.offsetWidth;
+        const item = items[active];
+        const groups = item.focus || [item.methods.map(method =>
+          '#pooled-point-' + method + ' use, #pooled-label-' + method + ' text'
+        ).join(', ')];
+        for (const oldBox of overlay.querySelectorAll('.takeaway-highlight')) oldBox.remove();
+        for (const selectors of groups) {
+          const bounds = Array.from(chart.querySelectorAll(selectors), node => node.getBoundingClientRect());
+          const pad = 7 * scale;
+          const left = Math.min(...bounds.map(rect => rect.left)) - pad;
+          const top = Math.min(...bounds.map(rect => rect.top)) - pad;
+          const right = Math.max(...bounds.map(rect => rect.right)) + pad;
+          const bottom = Math.max(...bounds.map(rect => rect.bottom)) + pad;
+          const box = document.createElement('div');
+          box.className = 'takeaway-highlight';
+          Object.assign(box.style, {
+            left: (left - p.left) / scale + 'px', top: (top - p.top) / scale + 'px',
+            width: (right - left) / scale + 'px', height: (bottom - top) / scale + 'px'
+          });
+          overlay.prepend(box);
+        }
+      }
+      function select(index) {
+        active=index;
+        overlay.hidden=index<0;
+        tabs.forEach((button,i)=>button.setAttribute('aria-pressed',String(i===index)));
+        if(index<0)return;
+        overlay.querySelector('h3').textContent=items[index].title;
+        const ul=overlay.querySelector('ul');ul.replaceChildren();
+        items[index].bullets.forEach(text=>{const li=document.createElement('li');li.textContent=text;ul.append(li)});
+        place();
+      }
+      tabs.forEach((button,i)=>button.addEventListener('click',()=>select(active===i?-1:i)));
+      overlay.querySelector('.takeaway-close').addEventListener('click',()=>{const previous=active;select(-1);tabs[previous]?.focus()});
+      overlay.addEventListener('click',event=>{if(event.target===overlay)select(-1)});
+      addEventListener('keydown',event=>{if(event.key==='Escape'&&active>=0){event.preventDefault();const previous=active;select(-1);tabs[previous]?.focus()}});
+      addEventListener('resize',place);
+      new MutationObserver(()=>{if(!slide.classList.contains('active'))select(-1)}).observe(slide,{attributes:true,attributeFilter:['class']});
+    }
+    bindTakeaways(document.getElementById('s9'), pooledItems);
+    bindTakeaways(document.getElementById('s10'), detailItems);
+    bindTakeaways(document.getElementById('s12'), [
+  {
+    "focus": [
+      "[data-result=\"row-12-3\"]",
+      "[data-result=\"row-12-7\"]"
+    ],
+    "title": "1. CCA 회전 후 이미지 손실은 높아졌지만 재현율과 정밀도는 모두 개선됨",
+    "bullets": [
+      "예측 손실은 0.1352에서 0.1372로 높아졌지만, F1은 17.6%에서 25.2%로 높아짐",
+      "재현율은 13.8%에서 19.6%로, 정밀도는 32.1%에서 48.7%로 높아짐"
+    ]
+  },
+  {
+    "focus": [
+      "[data-result=\"row-12-0\"]",
+      "[data-result=\"row-12-9\"]"
+    ],
+    "title": "2. 헝가리안 대비 Sinkhorn에서 이미지 재현율이 높아져 F1이 가장 높음",
+    "bullets": [
+      "재현율은 23.9%에서 25.1%로 높아지고, 정밀도는 53.8%에서 50.1%로 낮아짐",
+      "F1은 29.9%에서 31.0%로 높아짐"
+    ]
+  }
+]);
+    bindTakeaways(document.getElementById('s13'), [
+  {
+    "focus": [
+      "[data-result=\"row-13-11\"]",
+      "[data-result=\"row-13-12\"]"
+    ],
+    "title": "1. Group-Sparse에서 텍스트 재현율·정밀도·F1이 모두 가장 높음",
+    "bullets": [
+      "Group-Sparse의 재현율은 44.8%, 정밀도는 60.7%, F1은 50.4%",
+      "텍스트 손실이 가장 낮았던 Iso-Energy의 F1은 46.6%"
+    ]
+  },
+  {
+    "focus": [
+      "[data-result=\"row-13-3\"]",
+      "[data-result=\"row-13-7\"]",
+      "[data-result=\"row-13-8\"]"
+    ],
+    "title": "2. CCA의 256개 축을 회전하면 텍스트 F1이 높아짐",
+    "bullets": [
+      "텍스트 F1은 회전 전 7.4%에서 회전 후 18.3%로 높아짐",
+      "회전 후 작은 계수까지 제거하면 F1은 18.8%"
+    ]
+  }
+]);
+    bindTakeaways(document.getElementById('s14'), [
+  {
+    "focus": [
+      "[data-method=\"cca\"]",
+      "[data-method=\"rotated\"]",
+      "[data-method=\"pruned\"]"
+    ],
+    "title": "1. CCA를 회전하고 희소화하면 개념 혼합도와 표현 분산도가 모두 낮아짐",
+    "bullets": [
+      "이미지에서 회전 전, 회전 후, 희소화 후 순으로 혼합도는 0.743, 0.722, 0.711이고 분산도는 0.816, 0.765, 0.730",
+      "텍스트에서 같은 순서로 혼합도는 0.738, 0.669, 0.570이고 분산도는 0.835, 0.737, 0.659"
+    ]
+  },
+  {
+    "focus": [
+      "[data-method=\"hungarian\"]",
+      "[data-method=\"sinkhorn\"]"
+    ],
+    "title": "2. Sinkhorn은 헝가리안보다 이미지 F1이 높지만 혼합도와 분산도도 높음",
+    "bullets": [
+      "이미지 F1은 헝가리안 29.9%, Sinkhorn 31.0%",
+      "이미지 혼합도는 0.757에서 0.822로, 분산도는 0.715에서 0.906으로 높아짐"
+    ]
+  }
+]);
+    bindTakeaways(document.getElementById('s16'), [
+  {
+    "focus": [
+      "[data-result=\"row-16-1\"]",
+      "[data-result=\"row-16-3\"]",
+      "[data-result=\"row-16-5\"]",
+      "[data-result=\"row-16-6\"]"
+    ],
+    "title": "1. PLS-SVD와 CCA를 희소하게 학습하자 양방향 검색 성능이 낮아짐",
+    "bullets": [
+      "PLS-SVD의 평균 R@5는 이미지 검색에서 56.0%에서 40.0%로, 텍스트 검색에서 54.4%에서 39.7%로 낮아짐",
+      "CCA의 평균 R@5는 이미지 검색에서 55.4%에서 41.9%로, 텍스트 검색에서 52.9%에서 39.5%로 낮아짐"
+    ]
+  }
+]);
+
+  })();
+  </script>
+
+</body>
+</html>
