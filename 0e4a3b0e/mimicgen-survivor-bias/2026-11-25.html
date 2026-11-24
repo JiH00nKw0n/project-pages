@@ -457,65 +457,6 @@ table.low th:first-child{width:16%}table.low th:nth-child(n+2){width:42%}table.l
 <p>표 2는 SoftMimicGen의 줄 조작과 수건 접기에서 제안 방법이 변형되는 물체를 다룰 때도 효과가 있는지 확인합니다. 표 3은 DexMimicGen의 GR1 휴머노이드 로봇이 양팔과 여러 손가락을 함께 쓰는 과제에도 제안 방법을 적용할 수 있는지 확인합니다.</p>
 <figure id="paper-tables-2-3"><img src="assets/2026-11-11/paper-tables-2-3.png" alt="논문 표 2와 표 3의 실험 구성. 왼쪽은 SoftMimicGen의 두 과제, 오른쪽은 DexMimicGen의 GR1 로봇 세 과제를 비교합니다."></figure>
 
-<hr>
-<h3 id="skill-mixup">Skill-Mixup 분석 및 방법론 확정</h3>
-<h4 id="threading-analysis" class="result-heading">Threading 과제에서의 분석: 생성 성공률이 높은 원본 데모들을 혼합하면, <strong>더 안정적으로 성공하는 움직임을 만들 수 있다.</strong></h4>
-<p>바늘을 구멍에 꿰는 Threading 과제에서 원본 시연 하나를 사용하는 세 조건과 여러 원본의 손동작을 섞는 두 조건을 비교했습니다.</p>
-<div class="threading-comparison">
-<figure>
-<img src="assets/2026-11-11/threading-policy-success.png" alt="다섯 조건의 정책 시험 성공률. 원본 10개 중 무작위로 하나를 썼을 때 Diffusion Policy는 29.3%, BC-RNN은 24.0%였다. 예측 성공률이 평균보다 높은 원본만 섞었을 때 각각 48.9%와 67.6%로 가장 높았다.">
-<figcaption><strong>예측 성공률이 높은 원본을 섞어 만든 시연으로 학습했을 때 두 정책 모두 시험 성공률이 가장 높았습니다.</strong> 조건마다 성공 시연 500개로 학습하고 같은 시험 장면 150개에서 평가했습니다. 막대는 세 번의 학습에서 얻은 평균이고, 오차 막대는 표준편차입니다.</figcaption>
-</figure>
-<figure>
-<img src="assets/2026-11-11/threading-generation-success.png" alt="시연 생성 성공률. 원본을 섞지 않은 세 조건은 각각 19.3%, 36.6%, 25.7%였다. 원본 10개를 모두 섞으면 54.6%, 예측 성공률이 평균보다 높은 원본만 섞으면 62.5%였다.">
-<figcaption><strong>원본을 섞은 두 조건 모두 시연 생성 성공률이 높아졌습니다.</strong> 순위 1위 원본만 쓰면 36.6%가 성공했고, 예측 성공률이 평균보다 높은 원본만 섞으면 62.5%가 성공했습니다.</figcaption>
-</figure>
-</div>
-
-
-
-
-<hr>
-<h4 id="microwave-opening-analysis" class="result-heading">DexMimicGen의 Microwave Opening 과제에서의 분석: <strong>전체 장면의 평균보다 생성할 장면에서의 성공률을 기준으로 원본 데모를 섞었을 때 성능이 높았습니다.</strong></h4>
-<div class="threading-comparison" id="microwave-opening-charts">
-<figure>
-<img src="assets/2026-11-11/microwave-opening-bc-rnn.png" alt="BC-RNN 정책 시험 성공률의 평균과 표준편차. 무작위 원본은 66.0 ± 2.7%, 1위 원본은 64.0 ± 5.0%, 전체 장면 평균에 따른 혼합은 68.7 ± 2.4%, 생성할 장면의 예측에 따른 혼합은 71.8 ± 4.3%.">
-<figcaption>막대는 BC-RNN의 평균 시험 성공률을, 오차 막대는 반복 학습 간 표준편차를 나타냅니다.</figcaption>
-</figure>
-<figure>
-<img src="assets/2026-11-11/microwave-opening-generation.png" alt="시연 생성 성공률. 무작위 원본은 1,500회 중 1,034회 성공해 68.9%, 1위 원본은 750회 중 533회로 71.1%, 전체 장면 평균에 따른 혼합은 546/750회로 72.8%, 생성할 장면의 예측에 따른 혼합은 566/750회로 75.5%.">
-<figcaption>막대 안에 전자레인지 문을 여는 데 성공한 시연 수와 전체 생성 시도 수를 함께 적었습니다.</figcaption>
-</figure>
-</div>
-
-
-
-<hr>
-<h4 id="proposed-mixup" class="result-heading">제안할 Mixup 방법론: <strong>합성할 장면에서 원본 데모별 생성 성공률을 추정한 뒤, 평균 이상인 원본 데모를 예측 성공률에 비례해 혼합합니다.</strong></h4>
-<ol>
-<li><strong>원본별 구간 성공률을 로지스틱 회귀로 추정합니다.</strong>
-<p>동작 구간 <i>k</i>마다 모형을 따로 학습합니다. 학습 자료는 원본을 무작위로 골라 만든 생성 기록 가운데 구간 <i>k</i>에 도달한 <i>N</i><sub>k</sub>건입니다. 시도 <i>i</i>가 이 구간 <i>k</i>를 성공하면 <i>y</i><sub>i</sub> = 1, 실패하면 0입니다. 구간의 성공은 생성 기록에 남은 구간 종료 신호로 판단하며, 마지막 구간의 성공은 과제 성공과 같습니다.</p>
-<p><strong>입력.</strong> 시도 <i>i</i>가 구간 <i>k</i>에 쓴 원본을 <i>j</i><sub>i</sub>라 하고, 그 구간이 시작될 때 기준 물체의 자세를 현재 장면과 원본 <i>j</i><sub>i</sub>에서 비교합니다.</p>
-<ul>
-<li>|Δ<i>x</i>|, |Δ<i>y</i>|: 탁자 평면의 x·y 방향 위치 차이의 크기(m)</li>
-<li><i>θ</i>: 두 물체 방향 사이의 회전각(rad)</li>
-<li><i>h</i><sup>위치</sup>, <i>h</i><sup>회전</sup>: 두 번째 구간부터만 씁니다. 손에 쥔 물체가 손에 대해 놓인 자세를 현재 시도와 원본에서 비교한 위치 차이(m)와 회전각(rad)입니다.</li>
-</ul>
-<p><strong>학습할 계수</strong>는 원본마다 하나씩인 기본 점수 <i>α</i><sub>k,1</sub>, …, <i>α</i><sub>k,J</sub>와, 모든 원본이 함께 쓰는 기울기 <i>a</i><sub>k</sub>, <i>b</i><sub>k</sub>, <i>c</i><sub>k</sub>(첫 구간), 그리고 <i>d</i><sub>k</sub>, <i>e</i><sub>k</sub>(두 번째 구간부터)입니다. 공통 절편은 따로 두지 않습니다. 원본별 기본 점수에 이미 포함되기 때문입니다. 점수 <i>z</i>를 로지스틱 함수에 넣으면 구간 <i>k</i>에 도달한 시도가 이 구간을 성공할 확률이 됩니다.</p>
-<div class="mixup-eqs"><math display="block"><munder><munder><mrow><msub><mi>z</mi><mrow><mi>k</mi><mo>,</mo><mi>i</mi></mrow></msub><mo>=</mo><mrow><msub><mi>α</mi><mrow><mi>k</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>+</mo><msub><mi>a</mi><mrow><mi>k</mi></mrow></msub><mo>|</mo><mrow><mi mathvariant="normal">Δ</mi><msub><mi>x</mi><mrow><mi>k</mi><mo>,</mo><mi>i</mi></mrow></msub></mrow><mo>|</mo><mo>+</mo><msub><mi>b</mi><mrow><mi>k</mi></mrow></msub><mo>|</mo><mrow><mi mathvariant="normal">Δ</mi><msub><mi>y</mi><mrow><mi>k</mi><mo>,</mo><mi>i</mi></mrow></msub></mrow><mo>|</mo><mo>+</mo><msub><mi>c</mi><mrow><mi>k</mi></mrow></msub><msub><mi>θ</mi><mrow><mi>k</mi><mo>,</mo><mi>i</mi></mrow></msub><mo>+</mo><mn mathvariant="bold">1</mn><mo>[</mo><mi>k</mi><mo>≥</mo><mn>1</mn><mo>]</mo><mo>(</mo><msub><mi>d</mi><mrow><mi>k</mi></mrow></msub><msubsup><mi>h</mi><mrow><mi>k</mi><mo>,</mo><mi>i</mi></mrow><mtext>위치</mtext></msubsup><mo>+</mo><msub><mi>e</mi><mrow><mi>k</mi></mrow></msub><msubsup><mi>h</mi><mrow><mi>k</mi><mo>,</mo><mi>i</mi></mrow><mtext>회전</mtext></msubsup><mo>)</mo></mrow></mrow><mo stretchy="true">⏟</mo></munder><mtext>원본 j를 쓴 시도 i의 점수</mtext></munder></math><math display="block"><mrow><mstyle mathcolor="#c62828"><munder><munder><mrow><msub><mi>q</mi><mrow><mi>k</mi><mo>,</mo><mi>i</mi></mrow></msub><mo>=</mo><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><mi>exp</mi><mo>(</mo><mo>−</mo><msub><mi>z</mi><mrow><mi>k</mi><mo>,</mo><mi>i</mi></mrow></msub><mo>)</mo></mrow></mfrac></mrow><mo stretchy="true">⏟</mo></munder><mtext>구간 k에 도달한 시도가 이 구간을 성공할 확률</mtext></munder></mstyle><mspace width="2em"/><mtext mathcolor="#1565c0">구간 k에 도달한 시도가 전체 테스크를 성공할 확률로 수정 필요</mtext></mrow></math></div>
-<p><strong>학습 목적함수.</strong> 성공한 기록에서는 예측 확률 <i>q</i><sub>ki</sub>가 높을수록, 실패한 기록에서는 그 확률이 낮을수록 손실이 작습니다. 모든 기록의 손실에 계수 크기 벌점을 더하고, 이 합이 가장 작은 계수 β̂<sub>k</sub>를 구합니다. 벌점은 모든 계수에 같은 아주 작은 값(Λ = 10<sup>−3</sup><i>I</i>, 조정하지 않음)을 씁니다. 늘 성공하거나 늘 실패하는 원본이 있어도 계수가 무한히 커지지 않게 하려는 것입니다.</p>
-<div class="mixup-eqs"><img style="display:block;width:487.9px;max-width:none;height:auto" src="assets/2026-11-11/mixup-fit.svg" alt="관측한 성공·실패의 예측 손실과 계수 벌점의 합을 최소화 \hat\beta_k=\underset{\beta_k}{\arg\min}\left\{-\sum_{i=1}^{N_k}\left[y_i\log q_{ki}+(1-y_i)\log(1-q_{ki})\right]+\frac12\beta_k^\top\Lambda\beta_k\right\}"></div>
-<p><strong>새 장면에서의 예측.</strong> 학습한 계수를 고정합니다. 합성할 장면에서 구간 <i>k</i>가 시작될 때, 원본 <i>j</i>를 바꿔 가며 그 원본과 현재 장면 사이의 위치·방향 차이와 손에 쥔 자세의 차이를 넣습니다. 이렇게 구한 원본별 구간 성공 확률을 다음 단계에서 비교합니다.</p>
-<div class="mixup-eqs"><math display="block"><munder><munder><mrow><msub><mover><mi>z</mi><mo>^</mo></mover><mrow><mi>k</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>=</mo><mrow><msub><mover><mi>α</mi><mo>^</mo></mover><mrow><mi>k</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>+</mo><msub><mover><mi>a</mi><mo>^</mo></mover><mrow><mi>k</mi></mrow></msub><mo>|</mo><mrow><mi mathvariant="normal">Δ</mi><msub><mi>x</mi><mrow><mi>k</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow><mo>|</mo><mo>+</mo><msub><mover><mi>b</mi><mo>^</mo></mover><mrow><mi>k</mi></mrow></msub><mo>|</mo><mrow><mi mathvariant="normal">Δ</mi><msub><mi>y</mi><mrow><mi>k</mi><mo>,</mo><mi>j</mi></mrow></msub></mrow><mo>|</mo><mo>+</mo><msub><mover><mi>c</mi><mo>^</mo></mover><mrow><mi>k</mi></mrow></msub><msub><mi>θ</mi><mrow><mi>k</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>+</mo><mn mathvariant="bold">1</mn><mo>[</mo><mi>k</mi><mo>≥</mo><mn>1</mn><mo>]</mo><mo>(</mo><msub><mover><mi>d</mi><mo>^</mo></mover><mrow><mi>k</mi></mrow></msub><msubsup><mi>h</mi><mrow><mi>k</mi><mo>,</mo><mi>j</mi></mrow><mtext>위치</mtext></msubsup><mo>+</mo><msub><mover><mi>e</mi><mo>^</mo></mover><mrow><mi>k</mi></mrow></msub><msubsup><mi>h</mi><mrow><mi>k</mi><mo>,</mo><mi>j</mi></mrow><mtext>회전</mtext></msubsup><mo>)</mo></mrow></mrow><mo stretchy="true">⏟</mo></munder><mtext>현재 장면에서 원본 j를 쓸 때의 점수</mtext></munder></math><math display="block"><munder><munder><mrow><msub><mover><mi>p</mi><mo>^</mo></mover><mrow><mi>j</mi></mrow></msub><mo>=</mo><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><mi>exp</mi><mo>(</mo><mo>−</mo><msub><mover><mi>z</mi><mo>^</mo></mover><mrow><mi>k</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>)</mo></mrow></mfrac></mrow><mo stretchy="true">⏟</mo></munder><mtext>혼합 비율 계산에 쓰는 예측 구간 성공률</mtext></munder></math></div></li>
-<li><strong>같은 장면에서 예측 성공률이 평균 이상인 원본만 남깁니다.</strong> 원본 <i>J</i>개의 예측 성공률을 평균한 뒤, 예측값이 그 평균과 같거나 큰 원본을 집합 <i>A</i>에 넣습니다. 이 기준은 장면과 동작 구간마다 다시 계산합니다.
-
-<div class="mixup-eqs"><img style="display:block;width:367.7px;max-width:none;height:auto" src="assets/2026-11-11/mixup-equation-2.svg" alt="현재 장면에서 모든 원본의 평균 예측 성공률: \bar p=\frac1J\sum_{j=1}^{J}\hat p_j / 예측 성공률이 평균 이상인 원본 집합: A=\{j:\hat p_j\geq\bar p\}"></div>
-</li>
-<li><strong>남긴 원본의 예측 성공률에 비례해 손동작을 섞습니다.</strong> 각 원본의 예측 성공률을 남긴 원본들의 예측 성공률 합으로 나누면 혼합 비율 <i>w</i><sub>j</sub>가 됩니다. 평균 미만인 원본의 비율은 0입니다.
-
-<div class="mixup-eqs"><img style="display:block;width:412.9px;max-width:none;height:auto" src="assets/2026-11-11/mixup-equation-3.svg" alt="선택된 원본의 성공률에 비례한 혼합 비율: w_j=\frac{\mathbf1[j\in A]\,\hat p_j}{\sum_{i\in A}\hat p_i} / 모든 비율은 0 이상: w_j\geq0 / 모든 혼합 비율의 합은 1: \sum_{j=1}^{J}w_j=1"></div>
-<p>선택된 원본의 경로를 현재 물체 자세에 맞게 옮기고 동작 시점을 맞춘 뒤, 계산한 비율로 손의 위치와 방향을 섞습니다.</p></li>
-</ol>
 
 <ul>
 <li>다음으로 로봇 손이 목표 경로를 따라가도록 제어하는 방식(Track)을 추가로 비교해 가장 성능이 좋은 방식을 고르겠습니다. 이어서 선택한 방식과 Mixup을 함께 적용해 시연 생성 성공률과 정책 시험 성공률을 평가하겠습니다.</li>
