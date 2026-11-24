@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>2026-11-25 진행 상황 공유</title>
+  <style>
+    :root { --accent:#750014; --ink:#1a1d21; --muted:#4f5660; --line:#d9dde2; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",Arial,sans-serif; background:#eef0f2; color:var(--ink); overflow:hidden; letter-spacing:-.02em; }
+    .deck { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
+    .stage { width:1280px; height:720px; position:relative; flex-shrink:0; }
+    .slide { position:absolute; inset:0; padding:50px 60px; background:linear-gradient(145deg,#fff,#f5f7f9); border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 40px #0001; visibility:hidden; opacity:0; overflow:hidden; }
+    .slide.active { visibility:visible; opacity:1; }
+    .slide::before { content:""; position:absolute; left:60px; right:60px; top:26px; height:3px; background:linear-gradient(90deg,var(--accent),transparent 70%); }
+    .title-slide { display:flex; align-items:center; justify-content:center; }
+    .title-slide::before { display:none; }
+    .title-hero { text-align:center; transform:translateY(-10px); }
+    .title-hero h1 { font-size:67px; line-height:1.3; letter-spacing:-.035em; font-weight:700; margin:0; }
+    .nav { position:fixed; bottom:12px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:15px; font-size:14px; color:var(--muted); }
+    button { font:inherit; border:1px solid #ccd1d6; background:white; border-radius:6px; padding:5px 12px; cursor:pointer; }
+    button:disabled { opacity:.4; cursor:default; }
+    .counter { min-width:54px; text-align:center; }
+    .hint { position:fixed; bottom:17px; right:22px; font-size:12px; color:var(--muted); }
+    @media (max-width:600px) { .hint { display:none; } }
+    @media print {
+      body { overflow:visible; background:white; }
+      .deck { position:static; display:block; }
+      .stage { width:auto; height:auto; transform:none!important; }
+      .slide { position:relative; visibility:visible; opacity:1; width:1280px; height:720px; break-after:page; border:0; box-shadow:none; border-radius:0; }
+      .nav,.hint { display:none; }
+      @page { size:1280px 720px; margin:0; }
+    }
+
+    .eyebrow { color:var(--accent); font-size:13px; font-weight:600; letter-spacing:.1em; margin-bottom:12px; }
+    h2 { font-size:33px; line-height:1.3; margin-bottom:26px; font-weight:720; letter-spacing:-.035em; }
+    .content { height:492px; }
+    h3 { font-size:23px; color:var(--accent); margin-bottom:14px; line-height:1.4; }
+    p { font-size:22px; line-height:1.6; word-break:keep-all; }
+    .research-slide h2 { font-size:35px; margin-bottom:22px; }
+    .research-lead { font-size:25px; line-height:1.55; margin-bottom:30px; }
+    .research-block { padding:22px 0; border-top:1px solid var(--line); }
+    .research-block h3 { font-size:25px; margin-bottom:12px; }
+    .research-block p { font-size:23px; line-height:1.6; }
+    .research-block p + p { margin-top:10px; }
+    /* Reused from the 2026-09-16 presentation, slide 4. */
+.imported-related-work{position:absolute;inset:0;padding:52px 60px;background:linear-gradient(145deg,rgba(255,255,255,.99),rgba(244,246,248,.97));border:1px solid var(--line);border-radius:22px;box-shadow:0 18px 40px rgba(0,0,0,.07);visibility:hidden;opacity:0;pointer-events:none;display:flex;flex-direction:column;overflow:hidden}
+.imported-related-work::before{content:"";position:absolute;left:60px;right:60px;top:26px;height:3px;background:linear-gradient(90deg,var(--accent),transparent 70%);opacity:.85}
+.imported-related-work .eyebrow{font-family:"SF Mono",ui-monospace,Menlo,monospace;color:var(--accent);font-size:13px;letter-spacing:.14em;font-weight:600;margin-bottom:12px}
+.imported-related-work h2{font-size:37px;line-height:1.22;letter-spacing:-.035em;font-weight:720;margin-bottom:24px}
+.imported-related-work .content{flex:1;min-height:0;position:relative}
+.imported-related-work footer{position:absolute;left:60px;right:60px;bottom:33px;font-size:14px;color:#69727c;letter-spacing:-.01em;line-height:1.4}
+.imported-related-work footer a{border-bottom:1px solid #b9bec5}
+.imported-related-work .figma-figure{display:block;object-fit:contain;width:100%;mix-blend-mode:multiply}
+.imported-related-work .method{height:274px;margin:30px 0 20px}
+.imported-related-work .method-steps{display:flex;gap:50px;margin-top:7px}
+.imported-related-work .method-steps p{flex:1;display:flex;flex-direction:column;gap:10px;font-size:24px}
+.imported-related-work .method-steps b{color:var(--accent);font-size:20px}
+.imported-related-work .small-definition{font-size:21px;color:var(--muted);line-height:1.5}
+.imported-related-work .speaker-notes{display:none}
+.imported-related-work{transition:opacity .18s ease}
+.imported-related-work .content{height:auto}
+.imported-related-work.active{visibility:visible;opacity:1;pointer-events:auto}
+.imported-related-work .method-steps p{line-height:1.4}
+.imported-related-work a{color:inherit;text-decoration:none}
+
+    /* Original related-work slide from 2026-10-06, page 3. */
+.imported-related-work .literature{margin-top:-2px}
+.imported-related-work .literature a{display:grid;grid-template-columns:282px 1fr;column-gap:24px;row-gap:7px;padding:18px 0;border-bottom:1px solid var(--line);text-decoration:none}
+.imported-related-work .literature a:first-child{padding-top:11px}
+.imported-related-work .literature .citation{grid-row:1/3;color:var(--accent);font-size:20px;align-self:center;font-weight:600;letter-spacing:-.015em}
+.imported-related-work .literature strong{font-size:23px;font-weight:580}
+.imported-related-work .literature-focus{font-size:23px;color:var(--accent);font-weight:600;margin-top:27px;line-height:1.5}
+.imported-related-work .literature small{font-size:16px;color:var(--muted);letter-spacing:0}
+.imported-related-work .literature a:hover strong{text-decoration:underline}
+.imported-related-work .literature a{display:grid;grid-template-columns:270px 1fr;gap:22px;padding:17px 0;align-items:center}
+.imported-related-work .literature .citation{grid-row:auto;font-size:19px}
+.imported-related-work .literature strong{font-size:21px;line-height:1.4}
+.imported-related-work .literature-focus{margin-top:22px;font-size:23px;line-height:1.5}
+.imported-related-work .review-label{display:block;font-size:17px;color:var(--muted);margin-bottom:8px;font-weight:500}
+.imported-related-work .limitation-questions{padding-left:30px;font-size:21px;line-height:1.45;font-weight:600}
+.imported-related-work .limitation-questions li+li{margin-top:13px}
+
+    /* Research questions reused from 2026-10-06, page 4. */
+.research-questions .content{padding-top:20px}
+.research-questions .rq-item{padding:20px 0 34px}
+.research-questions .rq-item+.rq-item{border-top:1px solid var(--line);padding-top:34px}
+.research-questions .rq-item h3{font-size:26px;color:var(--accent);margin-bottom:18px;font-weight:650}
+.research-questions .rq-item p{font-size:28px;line-height:1.65;word-break:keep-all}
+.research-questions .rq-item .rq-footnote{font-size:19px;line-height:1.5;color:var(--muted);margin-top:18px}
+.research-questions .rq-item sup{font-size:18px;color:var(--accent)}
+.research-questions{padding:52px 60px}
+.research-questions h2{font-size:37px;line-height:1.22;margin-bottom:24px}
+.research-questions .eyebrow{font-family:"SF Mono",ui-monospace,Menlo,monospace;letter-spacing:.14em}
+.research-questions .content{height:auto}
+.research-questions .speaker-notes{display:none}
+
+    .discussion-slide h2 { font-size:37px; margin-bottom:32px; }
+    .discussion-section { padding:24px 0 28px; }
+    .discussion-section + .discussion-section { border-top:1px solid var(--line); padding-top:28px; }
+    .discussion-section h3 { font-size:28px; font-weight:700; margin-bottom:18px; }
+    .discussion-section ul { padding-left:27px; }
+    .discussion-section li { padding-left:4px; font-size:22px; line-height:1.6; word-break:keep-all; }
+    .discussion-section li + li { margin-top:13px; }
+
+    .evaluation-overview h2 { font-size:35px; margin-bottom:14px; }
+    .evaluation-overview .eval-lead { font-size:23px; margin-bottom:22px; }
+    .evaluation-overview .eval-layout { display:grid; grid-template-columns:760px 1fr; gap:30px; align-items:start; }
+    .evaluation-overview svg { width:760px; height:430px; }
+    .evaluation-overview .axis-note { padding:18px 0; border-top:2px solid var(--line); }
+    .evaluation-overview .axis-note h3 { font-size:23px; margin-bottom:10px; }
+    .evaluation-overview .axis-note p { font-size:21px; line-height:1.55; }
+    .evaluation-overview .plot-note { font-size:17px; color:var(--muted); margin-top:6px; }
+    .evaluation-overview .source-note { font-size:14px; color:var(--muted); margin-top:8px; }
+    .evaluation-overview .source-note a { color:inherit; }
+
+
+    .method-summary {padding:42px 44px 30px;}
+    .method-summary::before {left:44px;right:44px;}
+    .method-summary .eyebrow {font-size:13px;line-height:1.6;}
+    .method-summary h2 {font-size:32px;margin-bottom:17px;}
+    .method-summary .method-lead {font-size:22px;line-height:1.5;margin-bottom:20px;}
+    .method-summary h3 {font-size:23px;margin-bottom:10px;}
+    .method-summary p {font-size:21px;line-height:1.5;}
+    .method-summary .method-foot {font-size:12px;line-height:1.45;color:var(--muted);margin-top:14px;}
+    .method-summary .method-foot a {color:inherit;text-underline-offset:2px;}
+    .method-summary .speaker-notes {display:none;}
+    .method-summary .katex {font-size:1.08em;}
+    .method-family-table {width:100%;border-collapse:collapse;table-layout:fixed;font-size:18px;line-height:1.4;}
+    .method-family-table th {text-align:left;background:#edf0f3;padding:10px 12px;border-bottom:2px solid var(--line);font-weight:700;}
+    .method-family-table td {padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle;}
+    .method-family-table th:first-child {width:23%;}
+    .method-family-table th:nth-child(2) {width:28%;}
+    .method-family-table .ours td {background:#f7edef;}
+    .method-family-table small {display:block;font-size:15px;color:var(--muted);margin-top:3px;}
+    .method-invariance {display:grid;grid-template-columns:1.05fr 1fr;gap:25px;align-items:center;margin-top:16px;}
+    .method-invariance .invariance-math {font-size:25px;line-height:1.65;}
+    .method-invariance p {font-size:19px;}
+    .slide.mapping-recall .method-lead {margin-bottom:20px;}
+    .mapping-recall-grid {display:grid;grid-template-columns: 0.86fr 1.3fr;gap:32px;align-items:center;}
+    .mapping-recall-copy h3 {font-size:23px;margin:0 0 10px;}
+    .mapping-recall-copy h3:not(:first-child) {margin-top:24px;}
+    .mapping-recall-copy p {font-size:21px;line-height:1.55;margin:0;}
+    .mapping-recall-visual {background:#faf8f9;border:1px solid #e7dce0;border-radius:12px;padding:18px 16px;}
+    .mapping-recall-diagram {display:block;width:100%;height:340px;}
+    .mapping-recall-diagram text {font-family:Arial,"Apple SD Gothic Neo",sans-serif;font-size:10px;fill:#4b4650;}
+    .mapping-recall-diagram .diagram-head {font-size:11px;font-weight:700;fill:#750014;}
+    .mapping-recall-diagram .diagram-note {font-size:9px;fill:#776d74;}
+    .mapping-recall-score {display:flex;gap:30px;align-items:center;margin-top:22px;padding:17px 22px;background:#f6edf0;border-left:4px solid #750014;}
+    .mapping-recall-score > div {font-size:31px;flex-shrink:0;}
+    .mapping-recall-score p {font-size:20px;line-height:1.5;margin:0;}
+    .method-family-table td {padding-block:8px;}
+    .result-slide {padding:41px 50px 18px;}
+    .result-slide .eyebrow {margin-bottom:3px;}
+    .result-slide h2 {margin-bottom:7px;}
+    .results-notes ul {padding-left:21px;list-style:disc;}
+    .results-notes p, .results-notes li {font-size:16px;line-height:1.4;color:var(--muted);}
+    .results-notes .pool-note {padding-left:86px;}
+    .results-chart {display:block;width:100%;height:408px;margin:4px 0;}
+    #s10 .results-chart {height:400px;}
+    #s10:has(.takeaway-overlay:not([hidden])) .results-chart {height:335px;}
+    .results-notes .mapping-direction {font-size:15px;}
+    .result-slide .query-note {font-size:15px;color:var(--muted);margin-top:7px;}
+
+    .concept-results {padding:42px 50px 24px;}
+    .concept-results .eyebrow {margin-bottom:3px;}
+    .concept-results h2 {margin-bottom:7px;}
+    .concept-results .scope {font-size:19px;margin-bottom:15px;}
+    #s12 .scope {margin-bottom:4px;}
+    .metric-definitions {padding-left:24px;margin:0 0 10px;font-size:18px;line-height:1.45;}
+    #s12 .metric-definitions + table :is(th, td) {padding-block:3px;}
+    .concept-results table {border-collapse:collapse;width:100%;table-layout:fixed;font-size:18px;line-height:1.22;font-variant-numeric:tabular-nums;}
+    .concept-results th, .concept-results td {padding:5px 12px;border-bottom:1px solid var(--line);text-align:right;}
+    .concept-results thead th {background:#edf0f3;font-size:17px;font-weight:650;}
+    .concept-results th:first-child {text-align:left;width:31%;}
+    .concept-results .rule-below > * {border-bottom:3px solid #818991;}
+    .concept-results .rule-above > * {border-top:3px solid #818991;}
+    .concept-results tbody th {font-weight:450;}
+    .concept-results td {white-space:nowrap;}
+    .concept-results .relative {font-size:calc(1em - 3pt);font-weight:400;}
+    .concept-results .gain {color:#ae352c;}
+    .concept-results .drop {color:#245ca5;}
+    .concept-results .equal {color:var(--muted);}
+    .retrieval-results {padding:39px 44px 22px;}
+    .retrieval-results table colgroup:first-child col {width:24%;}
+    .retrieval-results tbody th {white-space:nowrap;}
+    .retrieval-results table :is(th,td) {padding:5px 4px;text-align:center;}
+    .retrieval-results tbody th, .retrieval-results thead th[rowspan] {text-align:left;padding-left:10px;}
+    .retrieval-results table th:first-child {width:auto;}
+    .retrieval-results thead tr:first-child th[rowspan] {width:24%;}
+    .retrieval-results thead tr:nth-child(2) th {text-align:center;padding-left:4px;}
+    .retrieval-results thead tr:nth-child(2) th {font-size:15px;}
+    .retrieval-results th[scope="colgroup"], .retrieval-results td:nth-child(2), .retrieval-results td:nth-child(7), .retrieval-results thead tr:nth-child(2) :is(:first-child,:nth-child(6)) {border-left:1px solid #b9c0c8;}
+    .retrieval-results tbody :is(:nth-child(6),:nth-child(11)) {background:#edf0f36b;}
+    .mixing-results {padding:36px 50px 16px;}
+    .mixing-results .metric-definitions {margin:0 0 12px;line-height:1.5;}
+    .mixing-results tbody :is(th,td) {padding-block:4px;}
+    .mixing-results table colgroup:first-child {width:29%;}
+    .mixing-results table :is(th,td):not([scope="row"]) {text-align:center;}
+    .mixing-results thead th {padding-block:4px;}
+    .mixing-results thead tr:first-child th:first-child {width:auto;text-align:left;}
+    .mixing-results thead tr:nth-child(2) th:first-child {width:auto;}
+    .mixing-results thead th[scope="colgroup"], .mixing-results thead tr:nth-child(2) th:nth-child(odd), .mixing-results td:nth-child(even) {border-left:1px solid var(--line);}
+    .concept-results .metric-note {margin-top:11px;color:var(--muted);font-size:16px;}
+    .benchmark-slide { padding:40px 44px 30px; }
+    .benchmark-slide h2 { font-size:33px; margin-bottom:16px; }
+    .benchmark-lead { font-size:22px; line-height:1.5; margin-bottom:22px; }
+    .benchmark-columns { display:grid; grid-template-columns:1fr 1fr; gap:34px; }
+    .benchmark-columns > div + div { border-left:1px solid var(--line); padding-left:34px; }
+    .benchmark-columns h3 { font-size:25px; margin-bottom:10px; }
+    .benchmark-columns p { font-size:20px; line-height:1.5; margin-bottom:12px; }
+    .benchmark-scope { margin-top:22px; padding-top:15px; border-top:1px solid var(--line); font-size:18px; line-height:1.5; }
+    .benchmark-source { margin-top:16px; font-size:14px; line-height:1.5; color:var(--muted); }
+    .benchmark-source a { color:inherit; }
+    .benchmark-visual .benchmark-lead { font-size:21px; margin-bottom:17px; }
+    .benchmark-visual .benchmark-columns { gap:28px; }
+    .benchmark-visual .benchmark-columns > div + div { padding-left:28px; }
+    .benchmark-visual .benchmark-columns h3 { font-size:24px; margin-bottom:9px; }
+    .benchmark-visual figure { margin:0; }
+    .benchmark-sample { width:100%; height:238px; display:block; object-fit:contain; background:#edf0f2; }
+    .benchmark-labels { display:flex; justify-content:space-between; gap:10px; padding:11px 0 9px; border-bottom:1px solid var(--line); font-size:18px; line-height:1.4; }
+    .benchmark-labels strong { color:var(--accent); }
+    .benchmark-visual .benchmark-columns .benchmark-explain { font-size:19px; line-height:1.45; margin:10px 0 0; }
+    .benchmark-visual .benchmark-scope { font-size:18px; margin-top:17px; padding-top:12px; }
+    .benchmark-visual .benchmark-source { font-size:13px; margin-top:12px; }
+    #s11 .benchmark-columns { grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; }
+    #s11 .benchmark-columns > div + div { padding-left:22px; }
+    #s11 .benchmark-columns h3 { margin-bottom:4px; }
+    #s11 .benchmark-kind { font-size:18px; color:var(--muted); margin:0 0 12px; }
+    #s11 .benchmark-sample { height:195px; }
+    #s11 .benchmark-labels { display:block; font-size:17px; min-height:62px; line-height:1.5; }
+    #s11 .benchmark-labels span { display:block; }
+    #s11 .benchmark-columns .benchmark-explain { font-size:18px; line-height:1.5; }
+    #s11 .stuff-images { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+    #s11 .stuff-images figure { position:relative; }
+    #s11 .stuff-image-label { position:absolute; bottom:0; left:0; right:0; background:#ffffffed; text-align:center; font-size:14px; line-height:1.5; }
+    #s11 .annotation-dot { display:inline-block; width:10px; height:10px; margin-right:5px; }
+    #s11 .benchmark-scope { margin-top:15px; }
+    #s11 .benchmark-source { font-size:12px; margin-top:10px; line-height:1.4; }
+    #s11 .benchmark-columns { grid-template-columns:1fr 1fr; gap:32px; }
+    #s11 .benchmark-columns > div + div { padding-left:32px; }
+    #s11 .benchmark-kind { font-size:17px; min-height:26px; margin-bottom:12px; }
+    #s11 .benchmark-sample { height:210px; }
+    #s11 .benchmark-labels { display:flex; justify-content:flex-start; gap:26px; min-height:0; padding:10px 0; }
+    #s11 .benchmark-explain { margin-top:12px; }
+    #s11 .vg-example { font-size:25px; line-height:1.45; color:var(--accent); border-left:3px solid var(--accent); padding:10px 0 10px 17px; margin:5px 0 8px; }
+    #s11 .vg-translation { font-size:17px; color:var(--muted); margin:0 0 15px 20px; }
+    #s11 .vg-concept-table { border-collapse:collapse; width:100%; font-size:17px; line-height:1.45; }
+    #s11 .vg-concept-table th { text-align:left; color:var(--muted); font-weight:600; border-bottom:1px solid var(--line); padding:7px 8px; }
+    #s11 .vg-concept-table td { padding:7px 8px; border-bottom:1px solid var(--line); }
+    #s11 .vg-concept-table td:first-child { width:100px; white-space:nowrap; }
+    #s11 .benchmark-scope { font-size:18px; margin-top:12px; }
+    #s11 .benchmark-source { font-size:12px; line-height:1.5; }
+    #s11 .benchmark-prior { font-size:17px; white-space:nowrap; }
+    #s11 .benchmark-prior a { color:inherit; text-decoration:underline; }
+    .retrieval-slide {padding:42px 44px 32px;}
+    .retrieval-slide::before {left:44px;right:44px;}
+    .retrieval-slide h2 {font-size:32px;margin-bottom:17px;}
+    .retrieval-slide .retrieval-lead {font-size:21px;line-height:1.5;margin-bottom:24px;}
+    .retrieval-slide strong {font-weight:730;}
+    .retrieval-source {font-size:12px!important;line-height:1.5!important;color:var(--muted);margin-top:14px;}
+    .retrieval-source a {color:inherit;text-underline-offset:2px;}
+    .retrieval-sample-grid {display:grid;grid-template-columns:1fr 1fr;gap:12px 32px;}
+    .retrieval-sample {border-top:1px solid var(--line);padding-top:12px;}
+    .retrieval-sample h3 {font-size:23px;margin-bottom:9px;}
+    .retrieval-sample-body {display:grid;grid-template-columns:175px 1fr;gap:16px;}
+    .retrieval-sample figure {margin:0;}
+    .retrieval-sample img {width:175px;height:135px;object-fit:contain;background:#edf0f2;display:block;}
+    .retrieval-sample figcaption {font-size:11px;color:var(--muted);margin-top:4px;line-height:1.3;}
+    .retrieval-sample blockquote {font-size:17px;line-height:1.4;color:var(--accent);margin:0 0 8px;}
+    .retrieval-sample p {font-size:18px;line-height:1.4;}
+    .retrieval-sample .sample-setting {font-size:15px;color:var(--muted);margin-top:8px;}
+    #s15 .retrieval-lead {margin-bottom:12px;}
+    #s15 .retrieval-notes {font-size:16px;line-height:1.45;margin-top:10px;border-top:1px solid var(--line);padding-top:12px;}
+    #s15 .retrieval-source {margin-top:9px;font-size:11px!important;}
+    #s11.benchmark-slide, #s15.retrieval-slide {padding-bottom:12px;}
+  
+    /* Slide 9: click-to-explain comparisons, positioned in chart coordinates. */
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-tabs {display:flex;gap:22px;align-items:center;height:28px;margin:0 0 2px;position:relative;z-index:12;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-tabs button {font-size:15px;color:#000;font-weight:700;border:0;border-radius:0;background:transparent;padding:2px 0;border-bottom:2px solid transparent;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-tabs button[aria-pressed="true"] {color:#000;border-bottom-color:#1365ba;font-weight:700;}
+    #s9 .results-chart {height:378px;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-overlay {position:absolute;inset:0;z-index:10;background:rgba(70,78,86,.24);border-radius:22px;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-overlay[hidden] {display:none;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-highlight {position:absolute;border:3px solid #1673cf;border-radius:4px;background:transparent;pointer-events:none;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-copy {position:absolute;left:70px;right:70px;bottom:16px;background:#e5e8eb;padding:16px 20px 12px;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-copy h3 {font-size:26px;color:#145b9f;margin:0 0 8px;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-copy ul {padding-left:25px;margin:0;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-copy li {font-size:23px;line-height:1.43;margin:5px 0;}
+    :is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-close {position:absolute;right:24px;top:20px;font-size:16px;padding:4px 10px;}
+    @media print {:is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-tabs,:is(#s9,#s10,#s12,#s13,#s14,#s16) .takeaway-overlay {display:none!important;}}
+
+    .table-heading {display:flex;align-items:baseline;gap:32px;}
+    .table-heading h2 {flex-shrink:0;}
+    .concept-results:has(.takeaway-overlay:not([hidden])) :is(.scope,.metric-note,.metric-definitions) {display:none;}
+    .concept-results:has(.takeaway-overlay:not([hidden])) table :is(th,td) {padding-block:3px;}
+    #s17 .discussion-section {padding-block:16px;}
+    #s17 .discussion-section ul ul {list-style-type:circle;margin-top:3px;}
+    #s17 .discussion-section ul ul li {font-size:20px;}
+  </style>
+  <link rel="stylesheet" href="assets/katex/katex.min.css">
+<style>.reg-slide{padding-top:45px}.reg-slide h2{margin-bottom:16px}.reg-slide p{font-size:19px;line-height:1.4;margin:9px 0}.reg-slide h3{font-size:22px;margin:14px 0 5px}.reg-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:13px 0 19px}.reg-grid>div{border:1px solid #ccd4da;border-radius:8px;padding:5px 16px 10px}.reg-grid.amp>div:first-child{background:#edf4ff;border-color:#6792c7}.reg-grid.ev>div:last-child{background:#fff1f1;border-color:#cd8686}.reg-eq{font-size:21px;margin:13px 0}.reg-slide .reg-note{font-size:17px;margin-top:13px}</style><style>.sparse-pair{display:grid;grid-template-columns:1fr 1fr;gap:28px}.sparse-compare h3{font-size:21px}.sparse-compare table{font-size:17px}.sparse-compare th,.sparse-compare td{padding:13px 5px}.sparse-pair th:first-child{width:38%}.sparse-compare .sparse-search{table-layout:auto}.sparse-search th:first-child{width:auto}.sparse-search thead th{text-align:center;font-size:15px}.sparse-search tbody th{white-space:nowrap}</style><style>
+.sparse-search thead tr:first-child th:nth-child(n+2),
+.sparse-search thead tr:nth-child(2) th:is(:nth-child(1),:nth-child(6)),
+.sparse-search tbody tr > :is(:nth-child(2),:nth-child(7),:nth-child(12)){border-left:2px solid #9aa4ad}
+.sparse-search thead tr:nth-child(2) th:is(:nth-child(5),:nth-child(10)),
+.sparse-search tbody tr > :is(:nth-child(6),:nth-child(11)){border-left:1px solid #c6cdd3}
+.sparse-compare .relative.gain{color:#aa2837}.sparse-compare .relative.drop{color:#26629c}
+</style></head>
+<body>
+  <main class="deck">
+    <div class="stage">
+      <section class="slide title-slide active" id="s1" aria-label="2026-11-25 진행 상황 공유">
+        <div class="title-hero">
+          <h1>2026-11-25<br>진행 상황 공유</h1>
+        </div>
+      </section>
+      <section class="slide research-slide" id="s2" aria-label="연구 목표">
+        <p class="eyebrow">연구 목표</p>
+        <h2>SAE를 통해 멀티모달 임베딩의 표현을 이해하고 해석하기</h2>
+        <ul class="research-lead" style="padding-left:1.3em">
+          <li>SAE는 임베딩을 여러 특징의 활성값으로 표현</li>
+          <li>이 활성값으로 멀티모달 임베딩을 해석하려면, 다음 두 관계를 정확히 이해해야 함</li>
+        </ul>
+        <div class="research-block">
+          <h3>각 모달리티의 SAE latent의 활성값과 개념의 관계</h3>
+          <p><strong>모달리티 내의 대응:</strong> 각 모달리티에서 <strong>어떤 활성값 (집합)이 어떤 개념을 나타내는지</strong> 찾고, 그 집합이 해당 개념을 다른 개념과 정확히 구별하는지 확인</p>
+        </div>
+        <div class="research-block">
+          <h3>모달리티 간의 개념 및 SAE latent 활성값의 대응</h3>
+          <p><strong>모달리티 간의 대응:</strong> 한 모달리티에서 찾은 개념 집합과 <strong>같은 의미를 나타내는 다른 모달리티의 집합</strong>을 대응시켜, 두 모달리티가 같은 개념을 어떻게 표현하는지 이해</p>
+        </div>
+      </section>
+      <section class="slide imported-related-work" id="s3"><p class="eyebrow">RELATED WORK</p><h2>멀티모달 SAE의 특징 해석과 대응 관련 연구의 한계점</h2><div class="content">
+<div class="literature">
+<a href="https://arxiv.org/abs/2504.11695" target="_blank" rel="noopener"><span class="citation">Papadimitriou et al., 2025</span><strong>Interpreting the Linear Structure of Vision-language Model Embedding Spaces</strong></a>
+<a href="https://arxiv.org/abs/2601.20028" target="_blank" rel="noopener"><span class="citation">Kaushik et al., 2026</span><strong>Decomposing Multimodal Embedding Spaces with Group-Sparse Autoencoders</strong></a>
+<a href="https://arxiv.org/abs/2602.06218" target="_blank" rel="noopener"><span class="citation">Dhimoïla et al., 2026</span><strong>Cross-Modal Redundancy and the Geometry of Vision–Language Embeddings</strong></a>
+<a href="https://arxiv.org/abs/2606.29888" target="_blank" rel="noopener"><span class="citation">우리의 지난 연구, 2026</span><strong>Same Concept, Different Directions</strong></a>
+</div><div class="literature-focus"><span class="review-label">선행 연구와 지난 연구를 바탕으로 검토할 한계</span><ol class="limitation-questions"><li>활성값의 상관관계(coactivation correlation)가 높은 두 특징을 같은 개념을 나타내는 특징으로 볼 수 있는가?</li><li>한 개념이 여러 특징에 나뉘거나 여러 개념이 한 특징을 공유해도, 이미지·텍스트 특징을 하나씩 짝짓는 방식 (1 to 1)이 적절한가?</li></ol></div></div><aside class="speaker-notes"><p>논문 제목의 원문 링크 제공. Papadimitriou et al.의 BridgeScore는 공동 활성화와 기하학적 정렬의 결합. 본문 그림 5에서 다대다 개념 관계의 명시적 분석. Kaushik et al.은 모달리티 가림과 그룹 희소성을 통한 공통 사전 학습. Dhimoïla et al.은 Iso-Energy 등 활성 에너지 일관성 기반 학습.</p><p>모든 선행 연구의 공통 방법을 coactivation correlation·개념당 한 특징·헝가리안 1대1 대응으로 일반화하는 주장 제외. 이번 검토의 직접 대상은 우리의 기존 대응 방식과 진단 실험의 대표 특징 선택 방식.</p></aside></section>
+      <section class="slide research-questions" id="s4">
+<p class="eyebrow">RESEARCH QUESTIONS</p><h2>이번 연구의 연구 질문</h2>
+<div class="content">
+<div class="rq-item"><h3>RQ1. coactivation correlation의 한계와 개선</h3><p>활성값의 상관관계(coactivation correlation)가 실제 의미 대응을 정확히 반영하지 못하는 경우는 언제이며, 이를 어떻게 개선할 수 있을까?</p></div>
+<div class="rq-item"><h3>RQ2. 일대일 대응의 한계와 대안</h3><p>같은 개념을 나타내는 이미지·텍스트 특징의 관계를 1 대 1로 표현하기 어려운 경우<sup>*</sup>는 언제이며, 이를 어떤 대응 방식으로 해결할 수 있을까?</p><p class="rq-footnote">* 한 개념이 여러 특징에 나뉘거나(feature splitting), 여러 개념이 한 특징을 공유하는(feature merging) 경우</p></div>
+</div><aside class="speaker-notes"><p>RQ1은 coactivation correlation이 의미 대응을 잘못 나타내는 조건과 점수의 개선 방법을 검토한다. RQ2는 같은 개념을 나타내는 모달리티별 특징의 관계를 일대일로 표현하기 어려운 조건과 대안적 대응 방식을 검토한다. 별표는 검토할 경우의 예시이며 해결 여부를 단정하지 않는다.</p></aside></section>
+      
+      <section class="slide evaluation-overview" id="s6" aria-label="Main Figure">
+        <p class="eyebrow">Main Figure</p>
+        <h2>Figure 1: 모달리티 내 대응과 모달리티 간 대응 성능을 비교</h2>
+        <p class="eval-lead">각 방법을 <strong>점 하나</strong>로 나타내어, 두 대응을 얼마나 잘 찾는지 함께 살펴보려 합니다.</p>
+        <div class="eval-layout">
+          <div>
+            <svg viewBox="0 0 760 430" role="img" aria-label="가로축은 오른쪽으로 갈수록 좋은 모달리티 내 개념 대응 점수, 세로축은 모달리티 간 개념 대응 점수인 비교 구도. 방법별 점의 위치는 측정값이 아닌 예시입니다.">
+              <rect x="92" y="28" width="638" height="322" rx="8" fill="#fff" stroke="#e0e4e8"/>
+              <g stroke="#edf0f3" stroke-width="1"><path d="M92 108H730 M92 188H730 M92 268H730 M252 28V350 M412 28V350 M572 28V350"/></g>
+              <path d="M92 28V350H730" fill="none" stroke="#555d67" stroke-width="2"/>
+              <g font-family="inherit" font-size="22" fill="#1a1d21" font-weight="650">
+                <text x="411" y="410" text-anchor="middle">모달리티 내 개념 대응 점수</text>
+                <text transform="translate(29 190) rotate(-90)" text-anchor="middle">모달리티 간 개념 대응 점수</text>
+              </g>
+              <g font-family="inherit" font-size="15" fill="#69717b"><text x="92" y="376">나쁨</text><text x="730" y="376" text-anchor="end">좋음</text><text x="78" y="42" text-anchor="end">좋음</text><text x="78" y="347" text-anchor="end">나쁨</text></g>
+              <g font-family="inherit" font-size="20" fill="#4f5660"><text x="192" y="122">비교 방법 1</text><text x="462" y="284">비교 방법 2</text><text x="549" y="128">비교 방법 3</text></g>
+              <circle cx="225" cy="149" r="9" fill="#69859b"/><circle cx="497" cy="251" r="9" fill="#9d8b70"/><circle cx="585" cy="155" r="9" fill="#750014"/>
+              <text x="710" y="60" text-anchor="end" font-family="inherit" font-size="18" fill="#750014">두 대응 성능이 모두 좋은 방향</text>
+            </svg>
+          </div>
+          <div>
+            <div class="axis-note"><h3>가로축 · 모달리티 내 대응</h3><p>이미지와 텍스트 각각에서 <strong>활성값 집합이 해당 개념을 정확히 나타내는지</strong> 평가합니다.</p></div>
+            <div class="axis-note"><h3>세로축 · 모달리티 간 대응</h3><p>서로 대응시킨 이미지·텍스트 활성값 집합이 <strong>같은 개념을 나타내는지</strong> 평가합니다.</p></div>
+          </div>
+        </div>
+        <p class="source-note">가로축은 선행 연구 [1]의 단일 좌표 예측 평가를 적용합니다. <a href="https://arxiv.org/html/2406.04093v1#S4.SS2" target="_blank" rel="noopener">Scaling and evaluating sparse autoencoders (2024)</a></p>
+      </section>
+      <section class="slide result-slide" id="weekly-f1"><p class="eyebrow">Main Figure</p><h2>지난 Figure 1 + 금주 진행한 메소드: 개념 예측과 검색 성능</h2><div class="results-notes"><p><b>개념 예측 F1</b>　COCO-Stuff 이미지 171개 개념과 Visual Genome 영역 캡션의 물체 170개에서 각각 개념별 F1을 평균한 뒤 두 값의 평균</p><p><b>검색 성능</b>　COCO val2017, Flickr30K, DOCCI, IIW에서 양방향 R@5를 구한 뒤 네 자료에 같은 비중을 두어 평균</p></div><svg viewBox="0 0 1160 460" width="100%" role="img" aria-label="지난 11개 방법과 금주 회귀 네 조건의 F1과 검색 R@5"><path d="M110 52 L110 392" stroke="#d5dce0"/><text x="110" y="414" font-size="15" text-anchor="middle" fill="#253544">10</text><path d="M215 52 L215 392" stroke="#d5dce0"/><text x="215" y="414" font-size="15" text-anchor="middle" fill="#253544">15</text><path d="M320 52 L320 392" stroke="#d5dce0"/><text x="320" y="414" font-size="15" text-anchor="middle" fill="#253544">20</text><path d="M425 52 L425 392" stroke="#d5dce0"/><text x="425" y="414" font-size="15" text-anchor="middle" fill="#253544">25</text><path d="M530 52 L530 392" stroke="#d5dce0"/><text x="530" y="414" font-size="15" text-anchor="middle" fill="#253544">30</text><path d="M635 52 L635 392" stroke="#d5dce0"/><text x="635" y="414" font-size="15" text-anchor="middle" fill="#253544">35</text><path d="M740 52 L740 392" stroke="#d5dce0"/><text x="740" y="414" font-size="15" text-anchor="middle" fill="#253544">40</text><path d="M845 52 L845 392" stroke="#d5dce0"/><text x="845" y="414" font-size="15" text-anchor="middle" fill="#253544">45</text><path d="M68 355 L840 355" stroke="#d5dce0"/><text x="55" y="360" font-size="15" text-anchor="end" fill="#253544">30</text><path d="M68 305 L840 305" stroke="#d5dce0"/><text x="55" y="310" font-size="15" text-anchor="end" fill="#253544">35</text><path d="M68 255 L840 255" stroke="#d5dce0"/><text x="55" y="260" font-size="15" text-anchor="end" fill="#253544">40</text><path d="M68 205 L840 205" stroke="#d5dce0"/><text x="55" y="210" font-size="15" text-anchor="end" fill="#253544">45</text><path d="M68 155 L840 155" stroke="#d5dce0"/><text x="55" y="160" font-size="15" text-anchor="end" fill="#253544">50</text><path d="M68 105 L840 105" stroke="#d5dce0"/><text x="55" y="110" font-size="15" text-anchor="end" fill="#253544">55</text><path d="M68 55 L840 55" stroke="#d5dce0"/><text x="55" y="60" font-size="15" text-anchor="end" fill="#253544">60</text><text x="65" y="28" font-size="18" text-anchor="start" fill="#253544">양방향 평균 R@5 (%)</text><text x="455" y="449" font-size="18" text-anchor="middle" fill="#253544">이미지·텍스트 평균 개념 예측 F1 (%)</text><g opacity=".72" transform="translate(700.1860670930281 266.1834772527385)"><path d="M -6.123724 6.123724 
+L 6.123724 6.123724 
+L 6.123724 -6.123724 
+L -6.123724 -6.123724 
+z
+" style="fill: #9bf6ff; stroke: #414b54; stroke-width: 0.85"/></g><text x="686.1860670930281" y="256.1834772527385" font-size="14" text-anchor="end" fill="#253544">헝가리안</text><g opacity=".72" transform="translate(126.37215813966672 102.97958243383704)"><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #ffadad; stroke: #414b54; stroke-width: 0.85"/></g><text x="126.37215813966672" y="89.97958243383704" font-size="14" text-anchor="start" fill="#253544">PLS-SVD</text><g opacity=".72" transform="translate(162.1705529307967 113.4214639801711)"><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/></g><text x="174.1705529307967" y="131.4214639801711" font-size="14" text-anchor="start" fill="#253544">CCA</text><g opacity=".72" transform="translate(321.36010850485104 256.33420484528665)"><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #ffadad; stroke: #414b54; stroke-width: 0.85"/><g transform="translate(-268.725117 -145.371013)"><path d="M 264.725117 149.371013 
+Q 268.725117 145.371013 272.725117 141.371013 
+" style="fill: none; stroke: #ffffff; stroke-width: 2.25; stroke-linecap: round"/></g></g><text x="307.36010850485104" y="271.33420484528665" font-size="14" text-anchor="end" fill="#253544">Sparse PLS-SVD</text><g opacity=".72" transform="translate(350.6148402257306 247.6806348444871)"><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/><g transform="translate(-215.432826 -139.280631)"><path d="M 211.432826 143.280631 
+Q 215.432826 139.280631 219.432826 135.280631 
+" style="fill: none; stroke: #ffffff; stroke-width: 2.25; stroke-linecap: round"/></g></g><text x="360.6148402257306" y="238.6806348444871" font-size="14" text-anchor="start" fill="#253544">Sparse CCA</text><g opacity=".72" transform="translate(356.4316352524769 113.4214639801711)"><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/><g transform="translate(-271.721965 -44.789026)"><path d="M 267.721965 40.789026 
+Q 271.721965 44.789026 275.721965 48.789026 
+" style="fill: none; stroke: #202020; stroke-width: 2.25; stroke-linecap: round"/></g></g><text x="366.4316352524769" y="105.4214639801711" font-size="14" text-anchor="start" fill="#253544">CCA + 회전</text><g opacity=".72" transform="translate(371.3500219333333 173.821017230351)"><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/><g transform="translate(-315.065123 -87.298232)"><path d="M 311.065123 83.298232 
+Q 315.065123 87.298232 319.065123 91.298232 
+" style="fill: none; stroke: #202020; stroke-width: 2.25; stroke-linecap: round"/></g><g transform="translate(-315.065123 -87.298232)"><path d="M 311.065123 91.298232 
+Q 315.065123 87.298232 319.065123 83.298232 
+" style="fill: none; stroke: #ffffff; stroke-width: 2.25; stroke-linecap: round"/></g></g><text x="361.3500219333333" y="164.821017230351" font-size="14" text-anchor="end" fill="#253544">CCA + 회전 + 희소화</text><g opacity=".72" transform="translate(614.693093478073 213.62211161749423)"><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #caffbf; stroke: #414b54; stroke-width: 0.85"/></g><text x="604.693093478073" y="205.62211161749423" font-size="14" text-anchor="end" fill="#253544">Sinkhorn</text><g opacity=".72" transform="translate(612.1110083758092 128.9971645878308)"><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #a0c4ff; stroke: #414b54; stroke-width: 0.85"/></g><text x="600.1110083758092" y="119.99716458783081" font-size="14" text-anchor="end" fill="#253544">Procrustes</text><g opacity=".72" transform="translate(723.0894080475865 322.810019389142)"><path d="M 0 -6.123724 
+L -6.123724 6.123724 
+L 6.123724 6.123724 
+z
+" style="fill: #bdb2ff; stroke: #414b54; stroke-width: 0.85"/></g><text x="711.0894080475865" y="317.810019389142" font-size="14" text-anchor="end" fill="#253544">Group-Sparse</text><g opacity=".72" transform="translate(697.1746900645904 355.04742144399137)"><path d="M 0 -6.123724 
+L -6.123724 6.123724 
+L 6.123724 6.123724 
+z
+" style="fill: #ffc6ff; stroke: #414b54; stroke-width: 0.85"/></g><text x="685.1746900645904" y="369.04742144399137" font-size="14" text-anchor="end" fill="#253544">Iso-Energy</text><text x="865" y="88" font-size="20" text-anchor="start" fill="#253544">금주 방법</text><polygon points="742.31,187.69 744.78,194.29 751.82,194.60 746.31,198.98 748.19,205.78 742.31,201.89 736.43,205.78 738.32,198.98 732.80,194.60 739.84,194.29" stroke="#2564bf" stroke-width="2" fill="white"/><polygon points="877.00,122.00 879.47,128.60 886.51,128.91 880.99,133.30 882.88,140.09 877.00,136.20 871.12,140.09 873.01,133.30 867.49,128.91 874.53,128.60" stroke="#2564bf" stroke-width="2" fill="white"/><text x="897" y="137" font-size="16" text-anchor="start" fill="#253544">활성값 크기 회귀 (이미지 → 텍스트)</text><text x="897" y="157" font-size="14" text-anchor="start" fill="#253544">F1 40.11% · R@5 45.73%</text><polygon points="757.18,145.20 759.65,151.80 766.69,152.11 761.18,156.50 763.06,163.29 757.18,159.40 751.31,163.29 753.19,156.50 747.67,152.11 754.72,151.80" stroke="#2564bf" stroke-width="2" fill="#2564bf"/><polygon points="877.00,183.00 879.47,189.60 886.51,189.91 880.99,194.30 882.88,201.09 877.00,197.20 871.12,201.09 873.01,194.30 867.49,189.91 874.53,189.60" stroke="#2564bf" stroke-width="2" fill="#2564bf"/><text x="897" y="198" font-size="16" text-anchor="start" fill="#253544">활성값 크기 회귀 (대칭)</text><text x="897" y="218" font-size="14" text-anchor="start" fill="#253544">F1 40.82% · R@5 49.98%</text><polygon points="748.21,112.72 750.68,119.32 757.72,119.63 752.21,124.02 754.09,130.81 748.21,126.92 742.33,130.81 744.22,124.02 738.70,119.63 745.74,119.32" stroke="#c83243" stroke-width="2" fill="white"/><polygon points="877.00,244.00 879.47,250.60 886.51,250.91 880.99,255.30 882.88,262.09 877.00,258.20 871.12,262.09 873.01,255.30 867.49,250.91 874.53,250.60" stroke="#c83243" stroke-width="2" fill="white"/><text x="897" y="259" font-size="16" text-anchor="start" fill="#253544">켜짐 예측 회귀 (이미지 → 텍스트)</text><text x="897" y="279" font-size="14" text-anchor="start" fill="#253544">F1 40.39% · R@5 53.23%</text><polygon points="760.24,72.85 762.71,79.46 769.75,79.76 764.24,84.15 766.12,90.94 760.24,87.05 754.36,90.94 756.25,84.15 750.73,79.76 757.77,79.46" stroke="#c83243" stroke-width="2" fill="#c83243"/><polygon points="877.00,305.00 879.47,311.60 886.51,311.91 880.99,316.30 882.88,323.09 877.00,319.20 871.12,323.09 873.01,316.30 867.49,311.91 874.53,311.60" stroke="#c83243" stroke-width="2" fill="#c83243"/><text x="897" y="320" font-size="16" text-anchor="start" fill="#253544">켜짐 예측 회귀 (대칭)</text><text x="897" y="340" font-size="14" text-anchor="start" fill="#253544">F1 40.96% · R@5 57.21%</text></svg></section>
+      <section class="slide result-slide" id="history139"><p class="eyebrow">실험 이력</p><h2>메소드를 실험한 방법론: Karpathy AutoResearch</h2><a style="color:#195bab;text-decoration:underline;font-size:19px" href="https://github.com/karpathy/autoresearch" target="_blank" rel="noopener">https://github.com/karpathy/autoresearch</a><p style="font-size:23px">Codex 에이전트를 통해 파레토 최적을 탐색하도록 지시</p><svg viewBox="0 0 1150 477" width="100%" role="img" aria-label="실험 이력과 지난 기준선"><text x="65" y="35" font-size="16" fill="#273746">양방향 평균 검색 R@5 (%)</text><text x="915" y="58" font-size="16" fill="#273746">지난 기준선</text><path d="M74 53V410" stroke="#ddd"/><text x="66" y="435" font-size="16" fill="#273746">0</text><path d="M234 53V410" stroke="#ddd"/><text x="226" y="435" font-size="16" fill="#273746">10</text><path d="M394 53V410" stroke="#ddd"/><text x="386" y="435" font-size="16" fill="#273746">20</text><path d="M554 53V410" stroke="#ddd"/><text x="546" y="435" font-size="16" fill="#273746">30</text><path d="M714 53V410" stroke="#ddd"/><text x="706" y="435" font-size="16" fill="#273746">40</text><path d="M874 53V410" stroke="#ddd"/><text x="866" y="435" font-size="16" fill="#273746">50</text><path d="M74 410.0h800" stroke="#ddd"/><text x="40" y="415.0" font-size="16" fill="#273746">0</text><path d="M74 368.0h800" stroke="#ddd"/><text x="40" y="373.0" font-size="16" fill="#273746">10</text><path d="M74 326.0h800" stroke="#ddd"/><text x="40" y="331.0" font-size="16" fill="#273746">20</text><path d="M74 284.0h800" stroke="#ddd"/><text x="40" y="289.0" font-size="16" fill="#273746">30</text><path d="M74 242.0h800" stroke="#ddd"/><text x="40" y="247.0" font-size="16" fill="#273746">40</text><path d="M74 200.0h800" stroke="#ddd"/><text x="40" y="205.0" font-size="16" fill="#273746">50</text><path d="M74 158.0h800" stroke="#ddd"/><text x="40" y="163.0" font-size="16" fill="#273746">60</text><path d="M74 116.0h800" stroke="#ddd"/><text x="40" y="121.0" font-size="16" fill="#273746">70</text><path d="M74 74.0h800" stroke="#ddd"/><text x="40" y="79.0" font-size="16" fill="#273746">80</text><circle cx="429.61118946097474" cy="178.15142462221155" r="5" fill="#5d6870" opacity=".49"><title>접근 1 · F1 22.23% · R@5 55.20%</title></circle><circle cx="430.42947336677105" cy="178.15142462221155" r="5" fill="#5d6870" opacity=".49"><title>접근 2 · F1 22.28% · R@5 55.20%</title></circle><circle cx="440.26956346581613" cy="178.15142462221155" r="5" fill="#5d6870" opacity=".49"><title>접근 3 · F1 22.89% · R@5 55.20%</title></circle><circle cx="363.4239662891522" cy="195.76669165267452" r="5" fill="#5d6870" opacity=".49"><title>접근 4 · F1 18.09% · R@5 51.01%</title></circle><circle cx="247.78556058788288" cy="222.63844369153276" r="5" fill="#5d6870" opacity=".49"><title>접근 5 · F1 10.86% · R@5 44.61%</title></circle><circle cx="676.3954064078856" cy="205.87487047253535" r="5" fill="#5d6870" opacity=".49"><title>접근 7 · F1 37.65% · R@5 48.60%</title></circle><circle cx="650.3434108103667" cy="176.05081974094506" r="5" fill="#5d6870" opacity=".49"><title>접근 10 · F1 36.02% · R@5 55.70%</title></circle><circle cx="688.6194818903579" cy="184.62065999040533" r="5" fill="#5d6870" opacity=".49"><title>접근 14 · F1 38.41% · R@5 53.66%</title></circle><circle cx="704.8241143825377" cy="191.37529311585513" r="5" fill="#5d6870" opacity=".49"><title>접근 17 · F1 39.43% · R@5 52.05%</title></circle><circle cx="677.5162785240784" cy="185.54306026625088" r="5" fill="#5d6870" opacity=".49"><title>접근 18 · F1 37.72% · R@5 53.44%</title></circle><circle cx="675.6261905888516" cy="162.69949214439916" r="5" fill="#5d6870" opacity=".49"><title>접근 21 · F1 37.60% · R@5 58.88%</title></circle><circle cx="694.0901047611018" cy="211.3742662508995" r="5" fill="#5d6870" opacity=".49"><title>접근 25 · F1 38.76% · R@5 47.29%</title></circle><circle cx="698.3227573245375" cy="121.33990315423358" r="5" fill="#5d6870" opacity=".49"><title>접근 29 · F1 39.02% · R@5 68.73%</title></circle><circle cx="687.3211027964416" cy="118.52415105540894" r="5" fill="#5d6870" opacity=".49"><title>접근 32 · F1 38.33% · R@5 69.40%</title></circle><circle cx="703.8639053346532" cy="119.40919057327898" r="5" fill="#5d6870" opacity=".49"><title>접근 33 · F1 39.37% · R@5 69.19%</title></circle><circle cx="707.7328397464856" cy="120.8845933677141" r="5" fill="#5d6870" opacity=".49"><title>접근 39 · F1 39.61% · R@5 68.84%</title></circle><circle cx="718.2332218723964" cy="122.0101980690813" r="5" fill="#5d6870" opacity=".49"><title>접근 46 · F1 40.26% · R@5 68.57%</title></circle><circle cx="721.498024429451" cy="122.0101980690813" r="5" fill="#5d6870" opacity=".49"><title>접근 53 · F1 40.47% · R@5 68.57%</title></circle><circle cx="735.294534786246" cy="122.0101980690813" r="5" fill="#5d6870" opacity=".49"><title>접근 58 · F1 41.33% · R@5 68.57%</title></circle><circle cx="717.1547928191706" cy="122.0101980690813" r="5" fill="#5d6870" opacity=".49"><title>접근 64 · F1 40.20% · R@5 68.57%</title></circle><circle cx="735.294534786246" cy="120.58120448548812" r="5" fill="#5d6870" opacity=".49"><title>접근 67 · F1 41.33% · R@5 68.91%</title></circle><circle cx="735.294534786246" cy="122.0101980690813" r="5" fill="#5d6870" opacity=".49"><title>접근 69 · F1 41.33% · R@5 68.57%</title></circle><circle cx="735.294534786246" cy="121.31721569920842" r="5" fill="#5d6870" opacity=".49"><title>접근 70 · F1 41.33% · R@5 68.73%</title></circle><circle cx="751.7712269876635" cy="142.13272607339889" r="5" fill="#5d6870" opacity=".49"><title>접근 75 · F1 42.36% · R@5 63.78%</title></circle><circle cx="759.8355780716902" cy="120.58120448548812" r="5" fill="#5d6870" opacity=".49"><title>접근 85 · F1 42.86% · R@5 68.91%</title></circle><circle cx="759.1497351389936" cy="114.4310383185416" r="5" fill="#5d6870" opacity=".49"><title>접근 90 · F1 42.82% · R@5 70.37%</title></circle><circle cx="748.7736955899455" cy="114.84260775965458" r="5" fill="#5d6870" opacity=".49"><title>접근 93 · F1 42.17% · R@5 70.28%</title></circle><circle cx="769.4049200020911" cy="120.58120448548812" r="5" fill="#5d6870" opacity=".49"><title>접근 94 · F1 43.46% · R@5 68.91%</title></circle><circle cx="764.4551095693101" cy="114.61166652674495" r="5" fill="#5d6870" opacity=".49"><title>접근 95 · F1 43.15% · R@5 70.33%</title></circle><circle cx="759.9756168946253" cy="114.15174184456703" r="5" fill="#5d6870" opacity=".49"><title>접근 96 · F1 42.87% · R@5 70.44%</title></circle><circle cx="775.6443220275402" cy="113.92399292396254" r="5" fill="#5d6870" opacity=".49"><title>접근 97 · F1 43.85% · R@5 70.49%</title></circle><circle cx="734.6905892855211" cy="120.58120448548812" r="5" fill="#5d6870" opacity=".49"><title>접근 98 · F1 41.29% · R@5 68.91%</title></circle><circle cx="754.6707294151367" cy="115.15652602542576" r="5" fill="#5d6870" opacity=".49"><title>접근 100 · F1 42.54% · R@5 70.20%</title></circle><circle cx="764.9132093616661" cy="114.61166652674495" r="5" fill="#5d6870" opacity=".49"><title>접근 101 · F1 43.18% · R@5 70.33%</title></circle><circle cx="768.8059617146699" cy="118.7731820580475" r="5" fill="#5d6870" opacity=".49"><title>접근 102 · F1 43.43% · R@5 69.34%</title></circle><circle cx="768.8059617146699" cy="112.96010937874786" r="5" fill="#5d6870" opacity=".49"><title>접근 103 · F1 43.43% · R@5 70.72%</title></circle><circle cx="769.4423819072779" cy="113.43473758695131" r="5" fill="#5d6870" opacity=".49"><title>접근 104 · F1 43.47% · R@5 70.61%</title></circle><circle cx="769.7035104543914" cy="113.19953993763488" r="5" fill="#5d6870" opacity=".49"><title>접근 105 · F1 43.48% · R@5 70.67%</title></circle><circle cx="750.7677023623769" cy="118.48597847205559" r="5" fill="#5d6870" opacity=".49"><title>접근 106 · F1 42.30% · R@5 69.41%</title></circle><circle cx="762.0041756470671" cy="120.72966274886056" r="5" fill="#5d6870" opacity=".49"><title>접근 107 · F1 43.00% · R@5 68.87%</title></circle><circle cx="702.0149366709486" cy="115.80763180618845" r="5" fill="#5d6870" opacity=".49"><title>접근 108 · F1 39.25% · R@5 70.05%</title></circle><circle cx="769.2282045051555" cy="113.39273758695134" r="5" fill="#5d6870" opacity=".49"><title>접근 110 · F1 43.45% · R@5 70.62%</title></circle><circle cx="753.6786765078631" cy="116.91632837610933" r="5" fill="#5d6870" opacity=".49"><title>접근 112 · F1 42.48% · R@5 69.78%</title></circle><circle cx="709.9337752315747" cy="205.61075899496282" r="5" fill="#5d6870" opacity=".49"><title>접근 113 · F1 39.75% · R@5 48.66%</title></circle><circle cx="705.0568413994683" cy="167.16310955864714" r="5" fill="#5d6870" opacity=".49"><title>접근 114 · F1 39.44% · R@5 57.82%</title></circle><circle cx="680.2575860001648" cy="115.79503298153031" r="5" fill="#5d6870" opacity=".49"><title>접근 115 · F1 37.89% · R@5 70.05%</title></circle><circle cx="679.8781006012155" cy="115.83703298153034" r="5" fill="#5d6870" opacity=".49"><title>접근 116 · F1 37.87% · R@5 70.04%</title></circle><circle cx="709.8110222230625" cy="130.89870748380906" r="5" fill="#5d6870" opacity=".49"><title>접근 117 · F1 39.74% · R@5 66.45%</title></circle><circle cx="698.3445289333534" cy="127.67227374670182" r="5" fill="#5d6870" opacity=".49"><title>접근 118 · F1 39.02% · R@5 67.22%</title></circle><circle cx="708.8851029576335" cy="133.79007016071" r="5" fill="#5d6870" opacity=".49"><title>접근 119 · F1 39.68% · R@5 65.76%</title></circle><circle cx="712.1752286807794" cy="147.1061341448788" r="5" fill="#5d6870" opacity=".49"><title>접근 120 · F1 39.89% · R@5 62.59%</title></circle><circle cx="650.1862506416071" cy="115.81183533221389" r="5" fill="#5d6870" opacity=".49"><title>접근 121 · F1 36.01% · R@5 70.04%</title></circle><circle cx="649.369572497997" cy="115.81183533221389" r="5" fill="#5d6870" opacity=".49"><title>접근 122 · F1 35.96% · R@5 70.04%</title></circle><circle cx="683.8340743977171" cy="115.81183533221389" r="5" fill="#5d6870" opacity=".49"><title>접근 123 · F1 38.11% · R@5 70.04%</title></circle><circle cx="702.6006113338079" cy="122.12359378747902" r="5" fill="#5d6870" opacity=".49"><title>접근 124 · F1 39.29% · R@5 68.54%</title></circle><circle cx="686.7098633553534" cy="115.81183533221389" r="5" fill="#5d6870" opacity=".49"><title>접근 125 · F1 38.29% · R@5 70.04%</title></circle><circle cx="717.2938686747964" cy="160.4556496162149" r="5" fill="#5d6870" opacity=".49"><title>접근 126 · F1 40.21% · R@5 59.42%</title></circle><circle cx="706.1713186255749" cy="183.62" r="5" fill="#5d6870" opacity=".49"><title>접근 6 · F1 39.51% · R@5 53.90%</title></circle><circle cx="658.9144182388502" cy="154.47199999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 8 · F1 36.56% · R@5 60.84%</title></circle><circle cx="634.7889884555825" cy="144.30799999999994" r="5" fill="#5d6870" opacity=".49"><title>접근 9 · F1 35.05% · R@5 63.26%</title></circle><circle cx="572.5197934251644" cy="176.05999999999995" r="5" fill="#5d6870" opacity=".49"><title>접근 11 · F1 31.16% · R@5 55.70%</title></circle><circle cx="642.1159060660079" cy="148.50799999999992" r="5" fill="#5d6870" opacity=".49"><title>접근 12 · F1 35.51% · R@5 62.26%</title></circle><circle cx="705.4694005590104" cy="167.87" r="5" fill="#5d6870" opacity=".49"><title>접근 13 · F1 39.47% · R@5 57.65%</title></circle><circle cx="712.3589645787688" cy="190.33999999999997" r="5" fill="#5d6870" opacity=".49"><title>접근 15 · F1 39.90% · R@5 52.30%</title></circle><circle cx="715.0265320466465" cy="172.32199999999997" r="5" fill="#5d6870" opacity=".49"><title>접근 16 · F1 40.06% · R@5 56.59%</title></circle><circle cx="705.6214189782336" cy="152.79199999999997" r="5" fill="#5d6870" opacity=".49"><title>접근 19 · F1 39.48% · R@5 61.24%</title></circle><circle cx="703.6320558762652" cy="161.06599999999997" r="5" fill="#5d6870" opacity=".49"><title>접근 20 · F1 39.35% · R@5 59.27%</title></circle><circle cx="694.6773793845227" cy="131.204" r="5" fill="#5d6870" opacity=".49"><title>접근 22 · F1 38.79% · R@5 66.38%</title></circle><circle cx="698.842433089869" cy="153.002" r="5" fill="#5d6870" opacity=".49"><title>접근 23 · F1 39.05% · R@5 61.19%</title></circle><circle cx="712.2685304243164" cy="188.072" r="5" fill="#5d6870" opacity=".49"><title>접근 24 · F1 39.89% · R@5 52.84%</title></circle><circle cx="714.9766853787842" cy="188.618" r="5" fill="#5d6870" opacity=".49"><title>접근 26 · F1 40.06% · R@5 52.71%</title></circle><circle cx="706.3084087293976" cy="155.06" r="5" fill="#5d6870" opacity=".49"><title>접근 27 · F1 39.52% · R@5 60.70%</title></circle><circle cx="713.3684222242017" cy="117.596" r="5" fill="#5d6870" opacity=".49"><title>접근 28 · F1 39.96% · R@5 69.62%</title></circle><circle cx="698.1991671584902" cy="132.926" r="5" fill="#5d6870" opacity=".49"><title>접근 30 · F1 39.01% · R@5 65.97%</title></circle><circle cx="696.5393459300204" cy="93.69799999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 31 · F1 38.91% · R@5 75.31%</title></circle><circle cx="713.0847475175555" cy="89.918" r="5" fill="#5d6870" opacity=".49"><title>접근 34 · F1 39.94% · R@5 76.21%</title></circle><circle cx="693.8134878335518" cy="89.49799999999999" r="5" fill="#5d6870" opacity=".49"><title>접근 35 · F1 38.74% · R@5 76.31%</title></circle><circle cx="650.8572308833004" cy="89.70800000000003" r="5" fill="#5d6870" opacity=".49"><title>접근 36 · F1 36.05% · R@5 76.26%</title></circle><circle cx="684.4128899646449" cy="183.91399999999996" r="5" fill="#5d6870" opacity=".49"><title>접근 37 · F1 38.15% · R@5 53.83%</title></circle><circle cx="719.7419800941805" cy="95.798" r="5" fill="#5d6870" opacity=".49"><title>접근 38 · F1 40.36% · R@5 74.81%</title></circle><circle cx="711.6246942683865" cy="90.00200000000001" r="5" fill="#5d6870" opacity=".49"><title>접근 40 · F1 39.85% · R@5 76.19%</title></circle><circle cx="712.3468258927112" cy="101.88799999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 41 · F1 39.90% · R@5 73.36%</title></circle><circle cx="713.5693262777254" cy="92.43799999999999" r="5" fill="#5d6870" opacity=".49"><title>접근 42 · F1 39.97% · R@5 75.61%</title></circle><circle cx="709.8420170914928" cy="89.87599999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 43 · F1 39.74% · R@5 76.22%</title></circle><circle cx="737.7787771744881" cy="96.30200000000002" r="5" fill="#5d6870" opacity=".49"><title>접근 44 · F1 41.49% · R@5 74.69%</title></circle><circle cx="735.5639906498267" cy="95.46199999999999" r="5" fill="#5d6870" opacity=".49"><title>접근 45 · F1 41.35% · R@5 74.89%</title></circle><circle cx="735.4670591906347" cy="148.80200000000002" r="5" fill="#5d6870" opacity=".49"><title>접근 47 · F1 41.34% · R@5 62.19%</title></circle><circle cx="736.4314221759362" cy="166.06399999999996" r="5" fill="#5d6870" opacity=".49"><title>접근 48 · F1 41.40% · R@5 58.08%</title></circle><circle cx="738.0490208014752" cy="205.83800000000002" r="5" fill="#5d6870" opacity=".49"><title>접근 49 · F1 41.50% · R@5 48.61%</title></circle><circle cx="731.8606323531307" cy="92.18599999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 50 · F1 41.12% · R@5 75.67%</title></circle><circle cx="732.7828640216906" cy="92.18599999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 51 · F1 41.17% · R@5 75.67%</title></circle><circle cx="732.3539879382638" cy="92.18599999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 52 · F1 41.15% · R@5 75.67%</title></circle><circle cx="730.5826515206578" cy="92.18599999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 54 · F1 41.04% · R@5 75.67%</title></circle><circle cx="730.1315326072779" cy="92.18599999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 55 · F1 41.01% · R@5 75.67%</title></circle><circle cx="733.629503764714" cy="92.18599999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 56 · F1 41.23% · R@5 75.67%</title></circle><circle cx="701.8458251419838" cy="92.18599999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 57 · F1 39.24% · R@5 75.67%</title></circle><circle cx="731.7457024809169" cy="92.18599999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 59 · F1 41.11% · R@5 75.67%</title></circle><circle cx="734.8859086449532" cy="92.18599999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 60 · F1 41.31% · R@5 75.67%</title></circle><circle cx="733.6881790489721" cy="92.18599999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 61 · F1 41.23% · R@5 75.67%</title></circle><circle cx="730.3196286445382" cy="92.18599999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 62 · F1 41.02% · R@5 75.67%</title></circle><circle cx="730.7815204918245" cy="92.18599999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 63 · F1 41.05% · R@5 75.67%</title></circle><circle cx="735.151500926443" cy="94.62199999999996" r="5" fill="#5d6870" opacity=".49"><title>접근 65 · F1 41.32% · R@5 75.09%</title></circle><circle cx="735.151500926443" cy="91.51400000000001" r="5" fill="#5d6870" opacity=".49"><title>접근 66 · F1 41.32% · R@5 75.83%</title></circle><circle cx="735.151500926443" cy="91.262" r="5" fill="#5d6870" opacity=".49"><title>접근 68 · F1 41.32% · R@5 75.89%</title></circle><circle cx="737.6006734835087" cy="90.88400000000001" r="5" fill="#5d6870" opacity=".49"><title>접근 72 · F1 41.48% · R@5 75.98%</title></circle><circle cx="735.2389489603637" cy="90.548" r="5" fill="#5d6870" opacity=".49"><title>접근 73 · F1 41.33% · R@5 76.06%</title></circle><circle cx="755.8870008559526" cy="91.13599999999991" r="5" fill="#5d6870" opacity=".49"><title>접근 74 · F1 42.62% · R@5 75.92%</title></circle><circle cx="753.0208779273194" cy="114.44599999999997" r="5" fill="#5d6870" opacity=".49"><title>접근 76 · F1 42.44% · R@5 70.37%</title></circle><circle cx="735.9135736965893" cy="123.26600000000002" r="5" fill="#5d6870" opacity=".49"><title>접근 77 · F1 41.37% · R@5 68.27%</title></circle><circle cx="736.7221550054887" cy="125.74400000000003" r="5" fill="#5d6870" opacity=".49"><title>접근 78 · F1 41.42% · R@5 67.68%</title></circle><circle cx="743.9041587960905" cy="106.33999999999997" r="5" fill="#5d6870" opacity=".49"><title>접근 79 · F1 41.87% · R@5 72.30%</title></circle><circle cx="740.6717401763763" cy="107.85199999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 80 · F1 41.67% · R@5 71.94%</title></circle><circle cx="763.2757135461187" cy="127.50800000000004" r="5" fill="#5d6870" opacity=".49"><title>접근 81 · F1 43.08% · R@5 67.26%</title></circle><circle cx="749.7000779658998" cy="91.09399999999994" r="5" fill="#5d6870" opacity=".49"><title>접근 82 · F1 42.23% · R@5 75.93%</title></circle><circle cx="746.9425202088142" cy="117.93200000000002" r="5" fill="#5d6870" opacity=".49"><title>접근 83 · F1 42.06% · R@5 69.54%</title></circle><circle cx="758.9097223558152" cy="110.70799999999997" r="5" fill="#5d6870" opacity=".49"><title>접근 84 · F1 42.81% · R@5 71.26%</title></circle><circle cx="755.7002783795251" cy="101.42599999999999" r="5" fill="#5d6870" opacity=".49"><title>접근 86 · F1 42.61% · R@5 73.47%</title></circle><circle cx="751.4248207860235" cy="102.89599999999996" r="5" fill="#5d6870" opacity=".49"><title>접근 87 · F1 42.34% · R@5 73.12%</title></circle><circle cx="735.9588727914294" cy="93.78200000000004" r="5" fill="#5d6870" opacity=".49"><title>접근 88 · F1 41.37% · R@5 75.29%</title></circle><circle cx="735.6584113364552" cy="95.96599999999995" r="5" fill="#5d6870" opacity=".49"><title>접근 89 · F1 41.35% · R@5 74.77%</title></circle><circle cx="739.1165711217901" cy="91.13599999999991" r="5" fill="#5d6870" opacity=".49"><title>접근 91 · F1 41.57% · R@5 75.92%</title></circle><circle cx="735.1495515967397" cy="90.58999999999997" r="5" fill="#5d6870" opacity=".49"><title>접근 92 · F1 41.32% · R@5 76.05%</title></circle><circle cx="734.8920173517516" cy="90.71599999999995" r="5" fill="#5d6870" opacity=".49"><title>접근 99 · F1 41.31% · R@5 76.02%</title></circle><circle cx="698.8167220658047" cy="165.81199999999995" r="5" fill="#5d6870" opacity=".49"><title>접근 128 · F1 39.05% · R@5 58.14%</title></circle><circle cx="719.7275451910965" cy="164.92999999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 130 · F1 40.36% · R@5 58.35%</title></circle><circle cx="727.245455187433" cy="152.54000000000002" r="5" fill="#5d6870" opacity=".49"><title>접근 131 · F1 40.83% · R@5 61.30%</title></circle><circle cx="728.6574709992755" cy="160.30999999999995" r="5" fill="#5d6870" opacity=".49"><title>접근 132 · F1 40.92% · R@5 59.45%</title></circle><circle cx="719.539395075635" cy="164.88800000000003" r="5" fill="#5d6870" opacity=".49"><title>접근 133 · F1 40.35% · R@5 58.36%</title></circle><circle cx="729.0177858077388" cy="160.436" r="5" fill="#5d6870" opacity=".49"><title>접근 134 · F1 40.94% · R@5 59.42%</title></circle><circle cx="728.7601413371425" cy="160.56199999999995" r="5" fill="#5d6870" opacity=".49"><title>접근 135 · F1 40.92% · R@5 59.39%</title></circle><circle cx="728.148353275389" cy="160.226" r="5" fill="#5d6870" opacity=".49"><title>접근 136 · F1 40.88% · R@5 59.47%</title></circle><circle cx="728.4437269886047" cy="160.51999999999998" r="5" fill="#5d6870" opacity=".49"><title>접근 137 · F1 40.90% · R@5 59.40%</title></circle><circle cx="731.0758537774927" cy="140.61199999999997" r="5" fill="#5d6870" opacity=".49"><title>접근 139 · F1 41.07% · R@5 64.14%</title></circle><g transform="translate(683.6655749280214 246.69706044615018)" opacity=".9"><title>헝가리안</title><path d="M -6.123724 6.123724 
+L 6.123724 6.123724 
+L 6.123724 -6.123724 
+L -6.123724 -6.123724 
+z
+" style="fill: #9bf6ff; stroke: #414b54; stroke-width: 0.85"/></g><g transform="translate(920 92)" opacity=".9"><title>헝가리안</title><path d="M -6.123724 6.123724 
+L 6.123724 6.123724 
+L 6.123724 -6.123724 
+L -6.123724 -6.123724 
+z
+" style="fill: #9bf6ff; stroke: #414b54; stroke-width: 0.85"/></g><text x="938" y="97" font-size="16" fill="#273746">헝가리안</text><g transform="translate(246.47402524926989 178.15142462221155)" opacity=".9"><title>PLS-SVD</title><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #ffadad; stroke: #414b54; stroke-width: 0.85"/></g><g transform="translate(920 121)" opacity=".9"><title>PLS-SVD</title><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #ffadad; stroke: #414b54; stroke-width: 0.85"/></g><text x="938" y="126" font-size="16" fill="#273746">PLS-SVD</text><g transform="translate(273.7489927091784 182.53701487167183)" opacity=".9"><title>CCA</title><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/></g><g transform="translate(920 150)" opacity=".9"><title>CCA</title><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/></g><text x="938" y="155" font-size="16" fill="#273746">CCA</text><g transform="translate(395.0362731465532 242.5603660350204)" opacity=".9"><title>Sparse PLS-SVD</title><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #ffadad; stroke: #414b54; stroke-width: 0.85"/><g transform="translate(-268.725117 -145.371013)"><path d="M 264.725117 149.371013 
+Q 268.725117 145.371013 272.725117 141.371013 
+" style="fill: none; stroke: #ffffff; stroke-width: 2.25; stroke-linecap: round"/></g></g><g transform="translate(920 179)" opacity=".9"><title>Sparse PLS-SVD</title><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #ffadad; stroke: #414b54; stroke-width: 0.85"/><g transform="translate(-268.725117 -145.371013)"><path d="M 264.725117 149.371013 
+Q 268.725117 145.371013 272.725117 141.371013 
+" style="fill: none; stroke: #ffffff; stroke-width: 2.25; stroke-linecap: round"/></g></g><text x="938" y="184" font-size="16" fill="#273746">Sparse PLS-SVD</text><g transform="translate(417.32559255293756 238.92586663468458)" opacity=".9"><title>Sparse CCA</title><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/><g transform="translate(-215.432826 -139.280631)"><path d="M 211.432826 143.280631 
+Q 215.432826 139.280631 219.432826 135.280631 
+" style="fill: none; stroke: #ffffff; stroke-width: 2.25; stroke-linecap: round"/></g></g><g transform="translate(920 208)" opacity=".9"><title>Sparse CCA</title><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/><g transform="translate(-215.432826 -139.280631)"><path d="M 211.432826 143.280631 
+Q 215.432826 139.280631 219.432826 135.280631 
+" style="fill: none; stroke: #ffffff; stroke-width: 2.25; stroke-linecap: round"/></g></g><text x="938" y="213" font-size="16" fill="#273746">Sparse CCA</text><g transform="translate(421.7574363828395 182.53701487167183)" opacity=".9"><title>CCA + 회전</title><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/><g transform="translate(-271.721965 -44.789026)"><path d="M 267.721965 40.789026 
+Q 271.721965 44.789026 275.721965 48.789026 
+" style="fill: none; stroke: #202020; stroke-width: 2.25; stroke-linecap: round"/></g></g><g transform="translate(920 237)" opacity=".9"><title>CCA + 회전</title><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/><g transform="translate(-271.721965 -44.789026)"><path d="M 267.721965 40.789026 
+Q 271.721965 44.789026 275.721965 48.789026 
+" style="fill: none; stroke: #202020; stroke-width: 2.25; stroke-linecap: round"/></g></g><text x="938" y="242" font-size="16" fill="#273746">CCA + 회전</text><g transform="translate(433.1238262349206 207.9048272367474)" opacity=".9"><title>CCA + 회전 + 희소화</title><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/><g transform="translate(-315.065123 -87.298232)"><path d="M 311.065123 83.298232 
+Q 315.065123 87.298232 319.065123 91.298232 
+" style="fill: none; stroke: #202020; stroke-width: 2.25; stroke-linecap: round"/></g><g transform="translate(-315.065123 -87.298232)"><path d="M 311.065123 91.298232 
+Q 315.065123 87.298232 319.065123 83.298232 
+" style="fill: none; stroke: #ffffff; stroke-width: 2.25; stroke-linecap: round"/></g></g><g transform="translate(920 266)" opacity=".9"><title>CCA + 회전 + 희소화</title><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #ffd6a5; stroke: #414b54; stroke-width: 0.85"/><g transform="translate(-315.065123 -87.298232)"><path d="M 311.065123 83.298232 
+Q 315.065123 87.298232 319.065123 91.298232 
+" style="fill: none; stroke: #202020; stroke-width: 2.25; stroke-linecap: round"/></g><g transform="translate(-315.065123 -87.298232)"><path d="M 311.065123 91.298232 
+Q 315.065123 87.298232 319.065123 83.298232 
+" style="fill: none; stroke: #ffffff; stroke-width: 2.25; stroke-linecap: round"/></g></g><text x="938" y="271" font-size="16" fill="#273746">CCA + 회전 + 희소화</text><g transform="translate(618.5280712213889 224.62128687934756)" opacity=".9"><title>Sinkhorn</title><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #caffbf; stroke: #414b54; stroke-width: 0.85"/></g><g transform="translate(920 295)" opacity=".9"><title>Sinkhorn</title><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #caffbf; stroke: #414b54; stroke-width: 0.85"/></g><text x="938" y="300" font-size="16" fill="#273746">Sinkhorn</text><g transform="translate(616.5607682863308 189.07880912688893)" opacity=".9"><title>Procrustes</title><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #a0c4ff; stroke: #414b54; stroke-width: 0.85"/></g><g transform="translate(920 324)" opacity=".9"><title>Procrustes</title><path d="M 0 6.123724 
+C 1.624031 6.123724 3.181764 5.47849 4.330127 4.330127 
+C 5.47849 3.181764 6.123724 1.624031 6.123724 0 
+C 6.123724 -1.624031 5.47849 -3.181764 4.330127 -4.330127 
+C 3.181764 -5.47849 1.624031 -6.123724 0 -6.123724 
+C -1.624031 -6.123724 -3.181764 -5.47849 -4.330127 -4.330127 
+C -5.47849 -3.181764 -6.123724 -1.624031 -6.123724 0 
+C -6.123724 1.624031 -5.47849 3.181764 -4.330127 4.330127 
+C -3.181764 5.47849 -1.624031 6.123724 0 6.123724 
+z
+" style="fill: #a0c4ff; stroke: #414b54; stroke-width: 0.85"/></g><text x="938" y="329" font-size="16" fill="#273746">Procrustes</text><g transform="translate(701.1157394648278 270.48020814343965)" opacity=".9"><title>Group-Sparse</title><path d="M 0 -6.123724 
+L -6.123724 6.123724 
+L 6.123724 6.123724 
+z
+" style="fill: #bdb2ff; stroke: #414b54; stroke-width: 0.85"/></g><g transform="translate(920 353)" opacity=".9"><title>Group-Sparse</title><path d="M 0 -6.123724 
+L -6.123724 6.123724 
+L 6.123724 6.123724 
+z
+" style="fill: #bdb2ff; stroke: #414b54; stroke-width: 0.85"/></g><text x="938" y="358" font-size="16" fill="#273746">Group-Sparse</text><g transform="translate(681.3711924301641 284.01991700647636)" opacity=".9"><title>Iso-Energy</title><path d="M 0 -6.123724 
+L -6.123724 6.123724 
+L 6.123724 6.123724 
+z
+" style="fill: #ffc6ff; stroke: #414b54; stroke-width: 0.85"/></g><g transform="translate(920 382)" opacity=".9"><title>Iso-Energy</title><path d="M 0 -6.123724 
+L -6.123724 6.123724 
+L 6.123724 6.123724 
+z
+" style="fill: #ffc6ff; stroke: #414b54; stroke-width: 0.85"/></g><text x="938" y="387" font-size="16" fill="#273746">Iso-Energy</text><g transform="translate(-26.547889162308138 20.238457843607563)"><title>접근 129 · F1 40.11% · R@5 45.73%</title><polygon points="742.31,187.69 744.78,194.29 751.82,194.60 746.31,198.98 748.19,205.78 742.31,201.89 736.43,205.78 738.32,198.98 732.80,194.60 739.84,194.29" stroke="#2564bf" stroke-width="2" fill="white"/></g><g transform="translate(-27.952709556973105 63.72159690573278)"><title>접근 138 · F1 40.39% · R@5 53.23%</title><polygon points="748.21,112.72 750.68,119.32 757.72,119.63 752.21,124.02 754.09,130.81 748.21,126.92 742.33,130.81 744.22,124.02 738.70,119.63 745.74,119.32" stroke="#c83243" stroke-width="2" fill="white"/></g><text style="paint-order:stroke;stroke:white;stroke-width:3px;font-weight:700" x="405.61118946097474" y="166.15142462221155" font-size="16" fill="#273746">#1</text><text style="paint-order:stroke;stroke:white;stroke-width:3px;font-weight:700" x="612.3434108103667" y="192.05081974094506" font-size="16" fill="#273746">#10</text><text style="paint-order:stroke;stroke:white;stroke-width:3px;font-weight:700" x="764.6707294151367" y="103.15652602542576" font-size="16" fill="#273746">#100</text><text style="paint-order:stroke;stroke:white;stroke-width:3px;font-weight:700" x="726.7621108376918" y="235.92845784360756" font-size="16" fill="#273746">#129</text><text style="paint-order:stroke;stroke:white;stroke-width:3px;font-weight:700" x="731.2572904430269" y="176.44159690573278" font-size="16" fill="#273746">#138</text><text x="314" y="469" font-size="16" fill="#273746">이미지·텍스트 평균 개념 예측 F1 (%)</text></svg></section>
+<section class="slide result-slide reg-slide"><p class="eyebrow">금주 방법론</p><h2>129번 · 활성값 크기 예측 (이미지에서 텍스트로)</h2><p>한 이미지·캡션 쌍에서 관측한 SAE 활성값 벡터를 <span data-tex="z_x,z_y"></span>, 특징별로 표준화한 열벡터를 <span data-tex="x,y"></span>로 정의.</p><div class="reg-grid amp" style="grid-template-columns:1fr"><div><h3>129번의 목표 · 활성값 크기</h3><p>각 텍스트 특징의 활성값에서 해당 특징의 학습 표본 평균을 뺀 값을 예측.</p><div class="reg-eq" data-tex="t_y=z_y-\mathbb E[z_y]"></div></div></div><h3>이미지 특징의 가중합으로 텍스트 특징을 예측</h3><div class="reg-eq" data-tex="W_{xy}=\arg\min_W\;\mathbb E\|t_y-W^\top x\|_2^2+\lambda_x\|W\|_F^2=(\Sigma_{xx}+\lambda_x I)^{-1}\operatorname{Cov}(x,t_y)"></div><p>이미지 조합 행렬에는 추정한 회귀 계수를 사용. 텍스트 조합 행렬에는 각 특징의 척도를 예측 대상에 맞추는 대각행렬을 사용.</p><div class="reg-eq" data-tex="A=W_{xy},\qquad B=D_y,\qquad M=AB^\top=W_{xy}D_y"></div><p class="reg-note"><span data-tex="D_m=\operatorname{diag}(\mathrm{SD}(z_{mj}))"></span>　표준화한 각 특징에 해당 특징의 표준편차를 곱해 원래 활성값 단위를 복원.</p><p class="reg-note">검색에서는 <span data-tex="A^\top x"></span>와 <span data-tex="B^\top y"></span>의 코사인 유사도를 사용.</p><p class="reg-note" style="position:absolute;bottom:20px;left:60px;margin:0">* 표준화한 입력 특징 4,096개의 학습 표본 분산을 평균해 <span data-tex="\lambda">λ</span>로 사용</p></section><section class="slide result-slide reg-slide"><p class="eyebrow">금주 방법론</p><h2>129번 · 활성값 크기 예측 (대칭)</h2><p>한 이미지·캡션 쌍에서 관측한 SAE 활성값 벡터를 <span data-tex="z_x,z_y"></span>, 특징별로 표준화한 열벡터를 <span data-tex="x,y"></span>로 정의. 이미지의 예측 대상 <span data-tex="t_x"></span>도 동일한 방식으로 정의.</p><div class="reg-grid amp" style="grid-template-columns:1fr"><div><h3>129번의 목표 · 활성값 크기</h3><p>각 텍스트 특징의 활성값에서 해당 특징의 학습 표본 평균을 뺀 값을 예측.</p><div class="reg-eq" data-tex="t_y=z_y-\mathbb E[z_y]"></div></div></div><h3>모달리티를 바꿔 역방향 회귀도 독립적으로 학습</h3><div class="reg-eq" data-tex="W_{xy}=(\Sigma_{xx}+\lambda_x I)^{-1}\operatorname{Cov}(x,t_y),\quad W_{yx}=(\Sigma_{yy}+\lambda_y I)^{-1}\operatorname{Cov}(y,t_x)"></div><p>첫 번째 블록에서는 이미지 좌표와 텍스트로 예측한 이미지 좌표를 비교. 두 번째 블록에서는 이미지로 예측한 텍스트 좌표와 텍스트 좌표를 비교.</p><div class="reg-eq" data-tex="A=[D_x\mid W_{xy}],\quad B=[W_{yx}\mid D_y],\quad M=AB^\top=D_xW_{yx}^\top+W_{xy}D_y"></div><p class="reg-note"><span data-tex="D_m=\operatorname{diag}(\mathrm{SD}(z_{mj}))"></span>　표준화한 각 특징에 해당 특징의 표준편차를 곱해 원래 활성값 단위를 복원.</p><p class="reg-note">검색에서는 <span data-tex="A^\top x"></span>와 <span data-tex="B^\top y"></span>의 코사인 유사도를 사용.</p><p class="reg-note" style="position:absolute;bottom:20px;left:60px;margin:0">* 표준화한 입력 특징 4,096개의 학습 표본 분산을 평균해 <span data-tex="\lambda">λ</span>로 사용</p></section><section class="slide result-slide reg-slide"><p class="eyebrow">금주 방법론</p><h2>138번 · 활성화 여부 예측 (이미지에서 텍스트로)</h2><p>한 이미지·캡션 쌍에서 관측한 SAE 활성값 벡터를 <span data-tex="z_x,z_y"></span>, 특징별로 표준화한 열벡터를 <span data-tex="x,y"></span>로 정의.</p><div class="reg-grid ev"><div><h3>129번의 목표 · 활성값 크기</h3><p>각 텍스트 특징의 활성값에서 해당 특징의 학습 표본 평균을 뺀 값을 예측.</p><div class="reg-eq" data-tex="t_y=z_y-\mathbb E[z_y]"></div></div><div><h3>138번의 목표 · 활성화 여부</h3><p>활성값이 양수이면 1, 그 외에는 0으로 정의한 지시변수에서 해당 특징의 학습 표본 활성화 비율을 뺌.</p><div class="reg-eq" data-tex="h_y=\mathbf1[z_y&gt;0],\quad t_y=h_y-\mathbb E[h_y]"></div></div></div><h3>이미지 특징의 가중합으로 텍스트 특징을 예측</h3><div class="reg-eq" data-tex="W_{xy}=\arg\min_W\;\mathbb E\|t_y-W^\top x\|_2^2+\lambda_x\|W\|_F^2=(\Sigma_{xx}+\lambda_x I)^{-1}\operatorname{Cov}(x,t_y)"></div><p>이미지 조합 행렬에는 추정한 회귀 계수를 사용. 텍스트 조합 행렬에는 각 특징의 척도를 예측 대상에 맞추는 대각행렬을 사용.</p><div class="reg-eq" data-tex="A=W_{xy},\qquad B=S_y,\qquad M=AB^\top=W_{xy}S_y"></div><p class="reg-note"><span data-tex="(S_m)_{jj}=\operatorname{Cov}(m_j,h_{mj})/\operatorname{Var}(m_j)"></span>　각 대각 원소에는 해당 특징의 표준화된 활성값으로 활성화 여부를 예측하는 단변량 회귀계수를 사용.</p><p class="reg-note">검색에서는 <span data-tex="A^\top x"></span>와 <span data-tex="B^\top y"></span>의 코사인 유사도를 사용.</p><p class="reg-note" style="position:absolute;bottom:20px;left:60px;margin:0">* 표준화한 입력 특징 4,096개의 학습 표본 분산을 평균해 <span data-tex="\lambda">λ</span>로 사용</p></section><section class="slide result-slide reg-slide"><p class="eyebrow">금주 방법론</p><h2>138번 · 활성화 여부 예측 (대칭)</h2><p>한 이미지·캡션 쌍에서 관측한 SAE 활성값 벡터를 <span data-tex="z_x,z_y"></span>, 특징별로 표준화한 열벡터를 <span data-tex="x,y"></span>로 정의. 이미지의 예측 대상 <span data-tex="t_x"></span>도 동일한 방식으로 정의.</p><div class="reg-grid ev"><div><h3>129번의 목표 · 활성값 크기</h3><p>각 텍스트 특징의 활성값에서 해당 특징의 학습 표본 평균을 뺀 값을 예측.</p><div class="reg-eq" data-tex="t_y=z_y-\mathbb E[z_y]"></div></div><div><h3>138번의 목표 · 활성화 여부</h3><p>활성값이 양수이면 1, 그 외에는 0으로 정의한 지시변수에서 해당 특징의 학습 표본 활성화 비율을 뺌.</p><div class="reg-eq" data-tex="h_y=\mathbf1[z_y&gt;0],\quad t_y=h_y-\mathbb E[h_y]"></div></div></div><h3>모달리티를 바꿔 역방향 회귀도 독립적으로 학습</h3><div class="reg-eq" data-tex="W_{xy}=(\Sigma_{xx}+\lambda_x I)^{-1}\operatorname{Cov}(x,t_y),\quad W_{yx}=(\Sigma_{yy}+\lambda_y I)^{-1}\operatorname{Cov}(y,t_x)"></div><p>첫 번째 블록에서는 이미지 좌표와 텍스트로 예측한 이미지 좌표를 비교. 두 번째 블록에서는 이미지로 예측한 텍스트 좌표와 텍스트 좌표를 비교.</p><div class="reg-eq" data-tex="A=[S_x\mid W_{xy}],\quad B=[W_{yx}\mid S_y],\quad M=AB^\top=S_xW_{yx}^\top+W_{xy}S_y"></div><p class="reg-note"><span data-tex="(S_m)_{jj}=\operatorname{Cov}(m_j,h_{mj})/\operatorname{Var}(m_j)"></span>　각 대각 원소에는 해당 특징의 표준화된 활성값으로 활성화 여부를 예측하는 단변량 회귀계수를 사용.</p><p class="reg-note">검색에서는 <span data-tex="A^\top x"></span>와 <span data-tex="B^\top y"></span>의 코사인 유사도를 사용.</p><p class="reg-note" style="position:absolute;bottom:20px;left:60px;margin:0">* 표준화한 입력 특징 4,096개의 학습 표본 분산을 평균해 <span data-tex="\lambda">λ</span>로 사용</p></section><section class="slide concept-results" id="s12" aria-label="이미지 개념 예측 성능">
+        <p class="eyebrow">모달리티 내의 개념 대응</p>
+        <div class="table-heading"><h2>이미지 개념 예측 성능</h2></div>
+        <p class="scope">COCO-Stuff의 물체 80개와 배경 91개, 총 171개 개념에 같은 비중을 두어 평균</p>
+        <ul class="metric-definitions">
+          <li><strong>재현율(Recall)</strong>은 해당 개념이 실제로 있는 이미지 중 모델이 있다고 예측한 비율입니다.</li>
+          <li><strong>정밀도(Precision)</strong>는 모델이 해당 개념이 있다고 예측한 이미지 중 실제로 그 개념이 있는 비율입니다.</li>
+        </ul>
+        <table aria-label="이미지 개념 예측 재현율, 정밀도, F1">
+          <thead><tr><th scope="col">방법</th><th scope="col">재현율 Recall (%)</th><th scope="col">정밀도 Precision (%)</th><th scope="col">F1 (%)</th></tr></thead>
+          <tbody>
+<tr><th scope="row">Hungarian</th><td>23.9</td><td>53.8</td><td>29.9</td></tr>
+<tr><th scope="row">PLS-SVD (rank=256)</th><td>11.1 <small class="relative drop">(-53.4%)</small></td><td>29.2 <small class="relative drop">(-45.6%)</small></td><td>14.6 <small class="relative drop">(-51.1%)</small></td></tr>
+<tr><th scope="row">CCA (λ=1, rank=256)</th><td>13.8 <small class="relative drop">(-42.2%)</small></td><td>32.1 <small class="relative drop">(-40.3%)</small></td><td>17.6 <small class="relative drop">(-41.2%)</small></td></tr>
+<tr><th scope="row">Sinkhorn (ε=0.05)</th><td>25.1 <small class="relative gain">(+4.9%)</small></td><td>50.1 <small class="relative drop">(-6.8%)</small></td><td>31.0 <small class="relative gain">(+3.7%)</small></td></tr>
+<tr><th scope="row">Procrustes</th><td>23.5 <small class="relative drop">(-1.9%)</small></td><td>55.3 <small class="relative gain">(+2.8%)</small></td><td>29.8 <small class="relative drop">(-0.3%)</small></td></tr>
+<tr class="rule-above"><th scope="row">Group-Sparse</th><td>21.0 <small class="relative drop">(-12.1%)</small></td><td><strong>57.3</strong> <small class="relative gain">(+6.6%)</small></td><td>27.9 <small class="relative drop">(-6.4%)</small></td></tr>
+<tr><th scope="row">Iso-Energy</th><td>23.4 <small class="relative drop">(-2.2%)</small></td><td>54.0 <small class="relative gain">(+0.4%)</small></td><td>29.4 <small class="relative drop">(-1.7%)</small></td></tr>
+<tr class="rule-above"><th scope="row">활성값 크기 회귀 (대칭)</th><td>27.8 <small class="relative gain">(+16.2%)</small></td><td>53.0 <small class="relative drop">(-1.4%)</small></td><td>34.0 <small class="relative gain">(+13.9%)</small></td></tr>
+<tr><th scope="row">활성 여부 회귀 (대칭)</th><td><strong>28.4</strong> <small class="relative gain">(+19.0%)</small></td><td>54.0 <small class="relative gain">(+0.5%)</small></td><td><strong>34.7</strong> <small class="relative gain">(+16.3%)</small></td></tr>
+</tbody>
+        </table>
+        <p class="metric-note">헝가리안·Sinkhorn·Procrustes는 이미지를 텍스트 좌표로 옮긴 뒤 개념별로 좌표 하나를 선택<br>학습된 계수를 모두 사용하며, 예측 확률 0.5 이상을 양성으로 판정. 괄호는 같은 열에서 헝가리안 대비 변화율(%)</p>
+      </section>
+<section class="slide concept-results" id="s13" aria-label="텍스트 개념 예측 성능">
+        <p class="eyebrow">모달리티 내의 개념 대응</p>
+        <div class="table-heading"><h2>텍스트 개념 예측 성능</h2></div>
+        <p class="scope">Visual Genome 내의 COCO 이미지에 붙은 영역 캡션 문장에서 물체 170개 개념에 같은 비중을 두어 평균</p>
+        <table aria-label="텍스트 개념 예측 재현율, 정밀도, F1">
+          <thead><tr><th scope="col">방법</th><th scope="col">재현율 Recall (%)</th><th scope="col">정밀도 Precision (%)</th><th scope="col">F1 (%)</th></tr></thead>
+          <tbody>
+<tr><th scope="row">Hungarian</th><td>42.4</td><td>53.9</td><td>46.3</td></tr>
+<tr><th scope="row">PLS-SVD (rank=256)</th><td>5.2 <small class="relative drop">(-87.8%)</small></td><td>15.1 <small class="relative drop">(-72.1%)</small></td><td>6.9 <small class="relative drop">(-85.0%)</small></td></tr>
+<tr><th scope="row">CCA (λ=1, rank=256)</th><td>5.6 <small class="relative drop">(-86.9%)</small></td><td>15.5 <small class="relative drop">(-71.3%)</small></td><td>7.4 <small class="relative drop">(-84.0%)</small></td></tr>
+<tr><th scope="row">Sinkhorn (ε=0.05)</th><td>33.5 <small class="relative drop">(-21.0%)</small></td><td>44.3 <small class="relative drop">(-17.9%)</small></td><td>37.1 <small class="relative drop">(-19.9%)</small></td></tr>
+<tr><th scope="row">Procrustes</th><td>32.6 <small class="relative drop">(-23.1%)</small></td><td>49.6 <small class="relative drop">(-8.0%)</small></td><td>38.1 <small class="relative drop">(-17.9%)</small></td></tr>
+<tr class="rule-above"><th scope="row">Group-Sparse</th><td><strong>44.8</strong> <small class="relative gain">(+5.5%)</small></td><td><strong>60.7</strong> <small class="relative gain">(+12.4%)</small></td><td><strong>50.4</strong> <small class="relative gain">(+8.8%)</small></td></tr>
+<tr><th scope="row">Iso-Energy</th><td>42.3 <small class="relative drop">(-0.3%)</small></td><td>55.1 <small class="relative gain">(+2.2%)</small></td><td>46.6 <small class="relative gain">(+0.5%)</small></td></tr>
+<tr class="rule-above"><th scope="row">활성값 크기 회귀 (대칭)</th><td>43.5 <small class="relative gain">(+2.5%)</small></td><td>55.7 <small class="relative gain">(+3.2%)</small></td><td>47.6 <small class="relative gain">(+2.8%)</small></td></tr>
+<tr><th scope="row">활성 여부 회귀 (대칭)</th><td>43.1 <small class="relative gain">(+1.5%)</small></td><td>55.3 <small class="relative gain">(+2.6%)</small></td><td>47.2 <small class="relative gain">(+1.8%)</small></td></tr>
+</tbody>
+        </table>
+        <p class="metric-note">헝가리안·Sinkhorn·Procrustes는 텍스트를 이미지 좌표로 옮긴 뒤 개념별로 좌표 하나를 선택<br>학습된 계수를 모두 사용하며, 예측 확률 0.5 이상을 양성으로 판정. 괄호는 같은 열에서 헝가리안 대비 변화율(%)</p>
+      </section>
+<section class="slide concept-results retrieval-results" id="s16" aria-label="이미지와 텍스트 검색 Recall@5">
+        <p class="eyebrow">모달리티 간의 대응</p>
+        <div class="table-heading"><h2>이미지와 텍스트 검색 성능 · Recall@5 (%)</h2></div>
+        <p class="scope">정답이 상위 5개 안에 든 질의의 비율. 각 방향의 평균은 네 벤치마크에 같은 비중을 두어 계산.</p>
+        <table aria-label="9개 방법의 벤치마크별 양방향 Recall@5">
+          <colgroup><col></colgroup><colgroup span="5"></colgroup><colgroup span="5"></colgroup>
+          <thead><tr><th rowspan="2" scope="col">방법</th><th colspan="5" scope="colgroup">이미지 검색 · 이미지로 정답 캡션 찾기</th><th colspan="5" scope="colgroup">텍스트 검색 · 캡션으로 정답 이미지 찾기</th></tr>
+          <tr><th scope="col">COCO</th><th scope="col">Flickr30K</th><th scope="col">DOCCI</th><th scope="col">IIW</th><th scope="col">평균</th><th scope="col">COCO</th><th scope="col">Flickr30K</th><th scope="col">DOCCI</th><th scope="col">IIW</th><th scope="col">평균</th></tr></thead>
+          <tbody>
+<tr><th scope="row">Hungarian</th><td>25.3</td><td>42.9</td><td>23.3</td><td>65.5</td><td>39.3</td><td>19.3</td><td>41.3</td><td>25.0</td><td>68.5</td><td>38.5</td></tr>
+<tr><th scope="row">PLS-SVD (rank=256)</th><td>41.2</td><td>64.2</td><td>38.7</td><td>80.0</td><td>56.0</td><td>31.5</td><td>60.0</td><td><strong>41.6</strong></td><td><strong>84.2</strong></td><td>54.4</td></tr>
+<tr><th scope="row">CCA (λ=1, rank=256)</th><td>41.2</td><td>65.1</td><td>37.7</td><td>77.8</td><td>55.4</td><td>30.7</td><td>59.8</td><td>39.8</td><td>81.2</td><td>52.9</td></tr>
+<tr><th scope="row">Sinkhorn (ε=0.05)</th><td>33.8</td><td>56.4</td><td>31.3</td><td>75.2</td><td>49.2</td><td>17.3</td><td>44.8</td><td>24.5</td><td>69.8</td><td>39.1</td></tr>
+<tr><th scope="row">Procrustes</th><td>38.9</td><td>64.2</td><td>37.6</td><td>76.2</td><td>54.2</td><td>28.1</td><td>60.1</td><td>38.7</td><td>77.0</td><td>51.0</td></tr>
+<tr class="rule-above"><th scope="row">Group-Sparse</th><td>15.2</td><td>30.8</td><td>26.4</td><td>59.0</td><td>32.8</td><td>10.7</td><td>24.5</td><td>31.4</td><td>67.8</td><td>33.6</td></tr>
+<tr><th scope="row">Iso-Energy</th><td>15.2</td><td>28.4</td><td>18.4</td><td>45.0</td><td>26.8</td><td>10.6</td><td>24.7</td><td>31.6</td><td>66.0</td><td>33.2</td></tr>
+<tr class="rule-above"><th scope="row">활성값 크기 회귀 (대칭)</th><td>35.2</td><td>64.4</td><td>35.4</td><td>81.5</td><td>54.1</td><td>28.2</td><td>57.0</td><td>30.6</td><td>67.5</td><td>45.8</td></tr>
+<tr><th scope="row">활성 여부 회귀 (대칭)</th><td><strong>42.7</strong></td><td><strong>69.6</strong></td><td><strong>40.0</strong></td><td><strong>83.8</strong></td><td><strong>59.0</strong></td><td><strong>33.3</strong></td><td><strong>62.9</strong></td><td><strong>41.6</strong></td><td>83.8</td><td><strong>55.4</strong></td></tr>
+</tbody>
+        </table>
+      </section>
+<section class="slide concept-results sparse-compare"><p class="eyebrow">대칭 회귀의 희소화</p><h2>희소화 전후의 이미지·텍스트 개념 예측 성능</h2><p class="scope">각 <span data-tex="A">A</span>, <span data-tex="B">B</span>의 조합에서 음의 계수를 제거한 뒤, 양의 계수를 큰 순서로 누적해 양의 계수 제곱합의 90%에 처음 도달할 때까지 유지.</p><div class="sparse-pair"><div><h3>이미지 · COCO-Stuff 171개 개념</h3><table><thead><tr><th>방법</th><th>재현율</th><th>정밀도</th><th>F1</th><th>특징 수</th></tr></thead><tbody><tr><th scope="row">활성값 크기 회귀 (대칭)</th><td><strong>27.79</strong></td><td>53.00</td><td><strong>34.01</strong></td><td>3,706.0</td></tr><tr><th scope="row" style="padding-left:26px;font-weight:500">+ 희소화</th><td>26.93<small class="relative drop" style="display:block;font-size:13px">(-3.1%)</small></td><td><strong>53.02</strong><small class="relative gain" style="display:block;font-size:13px">(+0.1%)</small></td><td>33.24<small class="relative drop" style="display:block;font-size:13px">(-2.2%)</small></td><td>34.1<small class="relative drop" style="display:block;font-size:13px">(-99.1%)</small></td></tr><tr class="rule-above"><th scope="row">활성 여부 회귀 (대칭)</th><td><strong>28.44</strong></td><td><strong>54.02</strong></td><td><strong>34.73</strong></td><td>3,706.0</td></tr><tr><th scope="row" style="padding-left:26px;font-weight:500">+ 희소화</th><td>27.78<small class="relative drop" style="display:block;font-size:13px">(-2.3%)</small></td><td>53.87<small class="relative drop" style="display:block;font-size:13px">(-0.3%)</small></td><td>34.10<small class="relative drop" style="display:block;font-size:13px">(-1.8%)</small></td><td>47.8<small class="relative drop" style="display:block;font-size:13px">(-98.7%)</small></td></tr></tbody></table></div><div><h3>텍스트 · Visual Genome 170개 물체</h3><table><thead><tr><th>방법</th><th>재현율</th><th>정밀도</th><th>F1</th><th>특징 수</th></tr></thead><tbody><tr><th scope="row">활성값 크기 회귀 (대칭)</th><td><strong>43.49</strong></td><td><strong>55.66</strong></td><td><strong>47.63</strong></td><td>3,241.0</td></tr><tr><th scope="row" style="padding-left:26px;font-weight:500">+ 희소화</th><td>43.39<small class="relative drop" style="display:block;font-size:13px">(-0.2%)</small></td><td>55.51<small class="relative drop" style="display:block;font-size:13px">(-0.3%)</small></td><td>47.48<small class="relative drop" style="display:block;font-size:13px">(-0.3%)</small></td><td>35.4<small class="relative drop" style="display:block;font-size:13px">(-98.9%)</small></td></tr><tr class="rule-above"><th scope="row">활성 여부 회귀 (대칭)</th><td>43.08</td><td><strong>55.33</strong></td><td>47.19</td><td>3,241.0</td></tr><tr><th scope="row" style="padding-left:26px;font-weight:500">+ 희소화</th><td><strong>43.16</strong><small class="relative gain" style="display:block;font-size:13px">(+0.2%)</small></td><td>55.18<small class="relative drop" style="display:block;font-size:13px">(-0.3%)</small></td><td><strong>47.22</strong><small class="relative gain" style="display:block;font-size:13px">(+0.1%)</small></td><td>47.3<small class="relative drop" style="display:block;font-size:13px">(-98.5%)</small></td></tr></tbody></table></div></div><p style="font-size:15px;margin:8px 0">괄호는 같은 회귀의 희소화 전 대비 변화율(%).</p></section><section class="slide concept-results sparse-compare"><p class="eyebrow">대칭 회귀의 희소화</p><h2>희소화 전후의 이미지·텍스트 검색 성능</h2><p class="scope">이미지로 정답 캡션을 찾는 경우와 캡션으로 정답 이미지를 찾는 경우의 R@5 (%). 방향별 평균은 네 자료에 동일한 비중을 부여.</p><table class="sparse-search"><thead><tr><th rowspan="2">방법</th><th colspan="5">이미지로 정답 캡션 검색</th><th colspan="5">캡션으로 정답 이미지 검색</th><th rowspan="2">양방향<br>평균</th></tr><tr><th>COCO</th><th>Flickr30K</th><th>DOCCI</th><th>IIW</th><th>평균</th><th>COCO</th><th>Flickr30K</th><th>DOCCI</th><th>IIW</th><th>평균</th></tr></thead><tbody><tr><th scope="row">활성값 크기 회귀 (대칭)</th><td><strong>35.2</strong></td><td><strong>64.4</strong></td><td><strong>35.4</strong></td><td><strong>81.5</strong></td><td><strong>54.1</strong></td><td><strong>28.2</strong></td><td>57.0</td><td>30.6</td><td>67.5</td><td>45.8</td><td>49.98</td></tr><tr><th scope="row" style="padding-left:26px;font-weight:500">+ 희소화</th><td>34.4<small class="relative drop" style="display:block;font-size:13px">(-2.2%)</small></td><td>63.8<small class="relative drop" style="display:block;font-size:13px">(-0.9%)</small></td><td>34.8<small class="relative drop" style="display:block;font-size:13px">(-1.7%)</small></td><td>80.2<small class="relative drop" style="display:block;font-size:13px">(-1.5%)</small></td><td>53.3<small class="relative drop" style="display:block;font-size:13px">(-1.5%)</small></td><td>27.0<small class="relative drop" style="display:block;font-size:13px">(-4.4%)</small></td><td><strong>57.2</strong><small class="relative gain" style="display:block;font-size:13px">(+0.3%)</small></td><td><strong>33.5</strong><small class="relative gain" style="display:block;font-size:13px">(+9.5%)</small></td><td><strong>73.2</strong><small class="relative gain" style="display:block;font-size:13px">(+8.5%)</small></td><td><strong>47.7</strong><small class="relative gain" style="display:block;font-size:13px">(+4.1%)</small></td><td><strong>50.53</strong><small class="relative gain" style="display:block;font-size:13px">(+1.1%)</small></td></tr><tr class="rule-above"><th scope="row">활성 여부 회귀 (대칭)</th><td><strong>42.7</strong></td><td>69.6</td><td><strong>40.0</strong></td><td><strong>83.8</strong></td><td><strong>59.0</strong></td><td><strong>33.3</strong></td><td><strong>62.9</strong></td><td>41.6</td><td>83.8</td><td><strong>55.4</strong></td><td><strong>57.21</strong></td></tr><tr><th scope="row" style="padding-left:26px;font-weight:500">+ 희소화</th><td>41.3<small class="relative drop" style="display:block;font-size:13px">(-3.4%)</small></td><td>69.6<small class="relative equal" style="display:block;font-size:13px">(0.0%)</small></td><td>39.9<small class="relative drop" style="display:block;font-size:13px">(-0.3%)</small></td><td>83.0<small class="relative drop" style="display:block;font-size:13px">(-0.9%)</small></td><td>58.4<small class="relative drop" style="display:block;font-size:13px">(-1.0%)</small></td><td>32.0<small class="relative drop" style="display:block;font-size:13px">(-3.9%)</small></td><td>61.7<small class="relative drop" style="display:block;font-size:13px">(-1.9%)</small></td><td><strong>41.9</strong><small class="relative gain" style="display:block;font-size:13px">(+0.7%)</small></td><td><strong>84.8</strong><small class="relative gain" style="display:block;font-size:13px">(+1.2%)</small></td><td>55.1<small class="relative drop" style="display:block;font-size:13px">(-0.5%)</small></td><td>56.77<small class="relative drop" style="display:block;font-size:13px">(-0.8%)</small></td></tr></tbody></table><p style="font-size:15px;margin:8px 0">괄호는 같은 회귀의 희소화 전 대비 변화율(%).</p></section><section class="slide concept-results direction-compare"><p class="eyebrow">단방향 회귀 비교</p><h2>회귀의 예측 방향에 따른 개념 예측과 검색 성능</h2><p class="scope">괄호 안의 방향은 회귀의 입력과 예측 대상. 검색은 모든 방법에서 양방향으로 평가. 단위는 %.</p><table style="font-size:17px"><thead><tr><th rowspan="2">방법</th><th colspan="3" style="text-align:center">이미지 개념 예측</th><th colspan="3" style="text-align:center">텍스트 개념 예측</th></tr><tr><th>재현율</th><th>정밀도</th><th>F1</th><th>재현율</th><th>정밀도</th><th>F1</th></tr></thead><tbody><tr><th scope="row">Hungarian</th><td colspan="1">23.91</td><td colspan="1">53.77</td><td colspan="1">29.86</td><td colspan="1">42.43</td><td colspan="1">53.95</td><td colspan="1">46.34</td></tr><tr class="rule-above"><th scope="row">활성값 크기 회귀 (이미지 → 텍스트)</th><td colspan="1">27.40</td><td colspan="1">53.26</td><td colspan="1">33.88</td><td colspan="1">42.43</td><td colspan="1">53.95</td><td colspan="1">46.34</td></tr><tr><th scope="row">활성값 크기 회귀 (텍스트 → 이미지)</th><td colspan="1">23.91</td><td colspan="1">53.77</td><td colspan="1">29.86</td><td colspan="1">32.47</td><td colspan="1">48.46</td><td colspan="1">37.24</td></tr><tr class="rule-above"><th scope="row">활성 여부 회귀 (이미지 → 텍스트)</th><td colspan="1">27.98</td><td colspan="1">53.92</td><td colspan="1">34.44</td><td colspan="1">42.43</td><td colspan="1">53.95</td><td colspan="1">46.34</td></tr><tr><th scope="row">활성 여부 회귀 (텍스트 → 이미지)</th><td colspan="1">23.91</td><td colspan="1">53.77</td><td colspan="1">29.86</td><td colspan="1">30.77</td><td colspan="1">47.27</td><td colspan="1">35.48</td></tr></tbody><tbody><tr style="height:46px;background:#edf0f3"><th>검색 R@5</th><th colspan="2">이미지로 캡션 검색</th><th colspan="2">캡션으로 이미지 검색</th><th colspan="2">양방향 평균</th></tr><tr><th scope="row">Hungarian</th><td colspan="2">39.26</td><td colspan="2">38.51</td><td colspan="2">38.88</td></tr><tr class="rule-above"><th scope="row">활성값 크기 회귀 (이미지 → 텍스트)</th><td colspan="2">49.50</td><td colspan="2">41.97</td><td colspan="2">45.73</td></tr><tr><th scope="row">활성값 크기 회귀 (텍스트 → 이미지)</th><td colspan="2">63.54</td><td colspan="2">50.50</td><td colspan="2">57.02</td></tr><tr class="rule-above"><th scope="row">활성 여부 회귀 (이미지 → 텍스트)</th><td colspan="2">52.21</td><td colspan="2">54.24</td><td colspan="2">53.23</td></tr><tr><th scope="row">활성 여부 회귀 (텍스트 → 이미지)</th><td colspan="2">68.99</td><td colspan="2">54.56</td><td colspan="2">61.77</td></tr></tbody></table></section>
+<section class="slide discussion-slide" id="s17" aria-label="이번 실험의 Takeaway와 차주 계획">
+        <p class="eyebrow">연구 질문과 다음 실험</p>
+        <h2>이번 실험의 Takeaway와 차주 계획</h2>
+        <div class="discussion-section"><h3>Takeaway</h3><ul><li><strong>회귀 기반 매핑의 가능성 확인.</strong> 상대 모달리티의 SAE 특징을 양방향으로 예측하도록 조합 행렬 <span data-tex="A,B"></span>를 구했을 때, 공분산 기반 PLS-SVD와 상관 기반 CCA보다 이미지·텍스트 개념 예측 F1이 모두 높았음. 특히 <strong>활성 여부를 예측한 대칭 회귀</strong>에서는 검색 R@5도 두 방법을 웃돌았음.</li></ul></div>
+<div class="discussion-section"><h3>차주 계획</h3><ul><li><strong>회귀 기반 매핑에서 개념 예측이 개선되는 이유를 분석할 계획.</strong> 같은 개념에 대해 대칭 회귀와 PLS-SVD·CCA가 각각 어떤 SAE 특징을 묶는지 비교하고, 논문에서 회귀 방식을 제안하는 근거로 활용하고자 함.</li></ul></div>
+</section>
+    </div>
+  </main>
+  <nav class="nav" aria-label="슬라이드 이동">
+    <button id="prev" disabled>이전</button>
+    <span class="counter">1 / 17</span>
+    <button id="next">다음</button>
+  </nav>
+  <script src="assets/katex/katex.min.js"></script>
+  <script>
+    document.querySelectorAll("[data-tex]").forEach(el => katex.render(el.dataset.tex, el, {throwOnError:false}));
+    const slides = [...document.querySelectorAll('.slide')];
+    let current = 0;
+    function fit() {
+      const scale = Math.max(.05, Math.min((innerWidth - 32) / 1280, (innerHeight - 66) / 720));
+      document.querySelector('.stage').style.transform = `scale(${scale})`;
+    }
+    function show(index) {
+      current = Math.max(0, Math.min(slides.length - 1, index));
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === current));
+      document.querySelector('.counter').textContent = `${current + 1} / ${slides.length}`;
+      document.getElementById('prev').disabled = current === 0;
+      document.getElementById('next').disabled = current === slides.length - 1;
+      history.replaceState(null, '', '#' + (current + 1));
+    }
+    document.getElementById('prev').onclick = () => show(current - 1);
+    document.getElementById('next').onclick = () => show(current + 1);
+    addEventListener('resize', fit);
+    addEventListener('hashchange', () => show((parseInt(location.hash.slice(1), 10) || 1) - 1));
+    addEventListener('keydown', async event => {
+      if (event.target.closest('button,a,input,select,textarea')) return;
+      if (event.ctrlKey || event.metaKey || event.altKey || event.target.isContentEditable) return;
+      if (['ArrowRight','ArrowDown','PageDown',' '].includes(event.key)) { event.preventDefault(); show(current + 1); }
+      if (['ArrowLeft','ArrowUp','PageUp'].includes(event.key)) { event.preventDefault(); show(current - 1); }
+      if (event.key === 'Home') show(0);
+      if (event.key === 'End') show(slides.length - 1);
+      if (event.key.toLowerCase() === 'f') {
+        try {
+          if (document.fullscreenElement) await document.exitFullscreen();
+          else await document.documentElement.requestFullscreen();
+        } catch (_) {}
+      }
+    });
+    fit();
+    show((parseInt(location.hash.slice(1), 10) || 1) - 1);
+  </script>
+
+  
+
+</body>
+</html>
